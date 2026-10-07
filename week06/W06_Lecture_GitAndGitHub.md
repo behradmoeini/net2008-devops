@@ -6,7 +6,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 ## How to follow this guide
 
 - Keep this page in one browser tab and your Codespace in another.
-- Every grey box is **one command**. The first line, starting with `#`, is a comment that says what the command does. The terminal ignores it. Copy the whole box, paste it into the terminal with `Ctrl+V` (Windows, Linux) or `Cmd+V` (macOS), press Enter, then go to the next box.
+- Every grey box is **one command**. Everything after the `#` at the end of the line is a comment that says what the command does. The terminal ignores it. Copy the whole line, paste it into the terminal with `Ctrl+V` (Windows, Linux) or `Cmd+V` (macOS), press Enter, then go to the next box.
 - **You should see** shows roughly what the terminal prints. IDs like `a1b2c3d` will differ.
 - Do the steps in order. Each step builds on the one before.
 - All practice work happens in one folder, `~/netops-practice`.
@@ -84,40 +84,33 @@ Your prompt looks like this. The word in brackets is your Git branch:
 Run these five commands once, one at a time. They check your tools and keep Git from opening extra windows:
 
 ```bash
-# Print the installed Git version, to prove Git works.
-git --version
+git --version  # Print the installed Git version, to prove Git works.
 ```
 
 ```bash
-# Stop Git from opening a scrolling viewer for long output.
-export GIT_PAGER=cat
+export GIT_PAGER=cat  # Stop Git from opening a scrolling viewer for long output.
 ```
 
 ```bash
-# Stop Git from opening a text editor when it wants a message.
-export GIT_EDITOR=true
+export GIT_EDITOR=true  # Stop Git from opening a text editor when it wants a message.
 ```
 
 ```bash
-# Show the name Git will put on your commits.
-git config --global user.name
+git config --global user.name  # Show the name Git will put on your commits.
 ```
 
 ```bash
-# Show the email Git will put on your commits.
-git config --global user.email
+git config --global user.email  # Show the email Git will put on your commits.
 ```
 
 You should see a Git version, then your name and email. If the last two print nothing:
 
 ```bash
-# Set your name for every commit you make.
-git config --global user.name  "Your Name"
+git config --global user.name  "Your Name"  # Set your name for every commit you make.
 ```
 
 ```bash
-# Set your email for every commit you make.
-git config --global user.email "you@example.com"
+git config --global user.email "you@example.com"  # Set your email for every commit you make.
 ```
 
 When you finish for the day: <https://github.com/codespaces>, three dots, **Stop codespace**. Your files are kept.
@@ -128,23 +121,19 @@ When you finish for the day: <https://github.com/codespaces>, three dots, **Stop
 A **repository** (repo) is a folder whose history Git tracks.
 
 ```bash
-# Create the practice folder (no error if it already exists).
-mkdir -p ~/netops-practice
+mkdir -p ~/netops-practice  # Create the practice folder (no error if it already exists).
 ```
 
 ```bash
-# Move the terminal into the practice folder.
-cd ~/netops-practice
+cd ~/netops-practice  # Move the terminal into the practice folder.
 ```
 
 ```bash
-# Turn this folder into a Git repository with a branch named main.
-git init -b main
+git init -b main  # Turn this folder into a Git repository with a branch named main.
 ```
 
 ```bash
-# Show the state of your repository: new, changed and staged files.
-git status
+git status  # Show the state of your repository: new, changed and staged files.
 ```
 
 You should see `Initialized empty Git repository` and `No commits yet`. `git status` is the command you will use most. Run it often.
@@ -159,30 +148,25 @@ A **commit** is a saved snapshot of your files. Every change goes through three 
 Create a file and check what Git sees:
 
 ```bash
-# Create core-rtr.cfg containing two lines of router config.
-printf 'hostname core-rtr-01\nntp server 10.0.0.10\n' > core-rtr.cfg
+printf 'hostname core-rtr-01\nntp server 10.0.0.10\n' > core-rtr.cfg  # Create core-rtr.cfg containing two lines of router config.
 ```
 
 ```bash
-# Show the state again: core-rtr.cfg should now be listed as modified.
-git status
+git status  # Show the state again: core-rtr.cfg should now be listed as modified.
 ```
 
 You should see `core-rtr.cfg` under **Untracked files**. Stage it, then commit it:
 
 ```bash
-# Stage core-rtr.cfg so it goes into the next commit.
-git add core-rtr.cfg
+git add core-rtr.cfg  # Stage core-rtr.cfg so it goes into the next commit.
 ```
 
 ```bash
-# Save the staged file as a commit with this message.
-git commit -m "Add core router config"
+git commit -m "Add core router config"  # Save the staged file as a commit with this message.
 ```
 
 ```bash
-# Show the history, one short line per commit.
-git log --oneline
+git log --oneline  # Show the history, one short line per commit.
 ```
 
 You should see one line with an ID and your message. Write messages that start with a verb and say what changed.
@@ -190,33 +174,27 @@ You should see one line with an ID and your message. Write messages that start w
 Change the file and look at the difference. Lines starting with `+` were added:
 
 ```bash
-# Append one line to the end of core-rtr.cfg.
-echo "snmp-server community netops-ro RO" >> core-rtr.cfg
+echo "snmp-server community netops-ro RO" >> core-rtr.cfg  # Append one line to the end of core-rtr.cfg.
 ```
 
 ```bash
-# Show the state: both new files are listed as untracked.
-git status
+git status  # Show the state: both new files are listed as untracked.
 ```
 
 ```bash
-# Show what changed in your files since the last commit (+ is added).
-git diff
+git diff  # Show what changed in your files since the last commit (+ is added).
 ```
 
 ```bash
-# Stage core-rtr.cfg so it goes into the next commit.
-git add core-rtr.cfg
+git add core-rtr.cfg  # Stage core-rtr.cfg so it goes into the next commit.
 ```
 
 ```bash
-# Save the staged change as a commit with this message.
-git commit -m "Enable SNMP read-only"
+git commit -m "Enable SNMP read-only"  # Save the staged change as a commit with this message.
 ```
 
 ```bash
-# Show the history, one short line per commit.
-git log --oneline
+git log --oneline  # Show the history, one short line per commit.
 ```
 
 The `git status` above shows `core-rtr.cfg` as **modified, not staged for commit**. The three states you will see:
@@ -235,40 +213,33 @@ The `git status` above shows `core-rtr.cfg` as **modified, not staged for commit
 Logs and passwords must never be committed. A `.gitignore` file tells Git to skip them:
 
 ```bash
-# Create a log file that should never be committed.
-echo "noisy log line" > router.log
+echo "noisy log line" > router.log  # Create a log file that should never be committed.
 ```
 
 ```bash
-# Create a fake secrets file that should never be committed.
-echo "ADMIN_PASSWORD=do-not-commit" > secrets.env
+echo "ADMIN_PASSWORD=do-not-commit" > secrets.env  # Create a fake secrets file that should never be committed.
 ```
 
 ```bash
-# Show the state: only .gitignore is listed now, the ignored files are hidden.
-git status
+git status  # Show the state: only .gitignore is listed now, the ignored files are hidden.
 ```
 
 ```bash
-# Write the .gitignore file: skip every .log file and secrets.env.
-printf '*.log\nsecrets.env\n' > .gitignore
+printf '*.log\nsecrets.env\n' > .gitignore  # Write the .gitignore file: skip every .log file and secrets.env.
 ```
 
 ```bash
-# Show the state: it should say the working tree is clean.
-git status
+git status  # Show the state: it should say the working tree is clean.
 ```
 
 The first `git status` lists both files. The second lists only `.gitignore`. Commit it:
 
 ```bash
-# Stage .gitignore so it goes into the next commit.
-git add .gitignore
+git add .gitignore  # Stage .gitignore so it goes into the next commit.
 ```
 
 ```bash
-# Save .gitignore as a commit.
-git commit -m "Add .gitignore"
+git commit -m "Add .gitignore"  # Save .gitignore as a commit.
 ```
 
 **Important:** `.gitignore` only affects files Git is **not yet tracking**. If `secrets.env` had already been committed, adding it to `.gitignore` would not help: Git would keep tracking it, and it stays in the history. Ignore a file **before** you first commit it.
@@ -284,18 +255,15 @@ git commit -m "Add .gitignore"
 Throw away an edit:
 
 ```bash
-# Append a bad line to the file, as a pretend mistake.
-echo "THIS IS A MISTAKE" >> core-rtr.cfg
+echo "THIS IS A MISTAKE" >> core-rtr.cfg  # Append a bad line to the file, as a pretend mistake.
 ```
 
 ```bash
-# Throw away your uncommitted edits and bring back the last saved version.
-git restore core-rtr.cfg
+git restore core-rtr.cfg  # Throw away your uncommitted edits and bring back the last saved version.
 ```
 
 ```bash
-# Print the file to check its contents.
-cat core-rtr.cfg
+cat core-rtr.cfg  # Print the file to check its contents.
 ```
 
 The bad line is gone for good. `git restore` cannot be undone.
@@ -303,30 +271,25 @@ The bad line is gone for good. `git restore` cannot be undone.
 Undo a commit. First make a bad one:
 
 ```bash
-# Append a bad config (shuts down an interface) to the file.
-printf 'interface Gi0/1\n shutdown\n' >> core-rtr.cfg
+printf 'interface Gi0/1\n shutdown\n' >> core-rtr.cfg  # Append a bad config (shuts down an interface) to the file.
 ```
 
 ```bash
-# Stage core-rtr.cfg so it goes into the next commit.
-git add core-rtr.cfg
+git add core-rtr.cfg  # Stage core-rtr.cfg so it goes into the next commit.
 ```
 
 ```bash
-# Save the bad change as a commit, so we can practice undoing it.
-git commit -m "Shut down core uplink"
+git commit -m "Shut down core uplink"  # Save the bad change as a commit, so we can practice undoing it.
 ```
 
 `git revert` adds a **new commit** that cancels it. Nothing is erased, so it is safe:
 
 ```bash
-# Add a new commit that cancels the latest commit, keeping the default message.
-git revert --no-edit HEAD
+git revert --no-edit HEAD  # Add a new commit that cancels the latest commit, keeping the default message.
 ```
 
 ```bash
-# Show the history, one short line per commit.
-git log --oneline
+git log --oneline  # Show the history, one short line per commit.
 ```
 
 You should see a new commit that starts with `Revert`. The wrong commit stays in the history, and the new one undoes it.
@@ -337,55 +300,45 @@ You should see a new commit that starts with `Revert`. The wrong commit stays in
 A **branch** is a separate line of work. You can experiment without touching `main`, then merge it back.
 
 ```bash
-# Create a new branch called guest-vlan and switch to it.
-git switch -c guest-vlan
+git switch -c guest-vlan  # Create a new branch called guest-vlan and switch to it.
 ```
 
 ```bash
-# Append a guest VLAN config to the file (on this branch only).
-printf 'vlan 200\n name guest\n' >> core-rtr.cfg
+printf 'vlan 200\n name guest\n' >> core-rtr.cfg  # Append a guest VLAN config to the file (on this branch only).
 ```
 
 ```bash
-# Stage core-rtr.cfg so it goes into the next commit.
-git add core-rtr.cfg
+git add core-rtr.cfg  # Stage core-rtr.cfg so it goes into the next commit.
 ```
 
 ```bash
-# Save the VLAN change as a commit on the guest-vlan branch.
-git commit -m "Add guest VLAN"
+git commit -m "Add guest VLAN"  # Save the VLAN change as a commit on the guest-vlan branch.
 ```
 
 ```bash
-# Switch back to the main branch.
-git switch main
+git switch main  # Switch back to the main branch.
 ```
 
 ```bash
-# Print the file: the VLAN lines should not be there yet, because they are on another branch.
-cat core-rtr.cfg
+cat core-rtr.cfg  # Print the file: the VLAN lines should not be there yet, because they are on another branch.
 ```
 
 The VLAN is not on `main` yet. Merge the branch in:
 
 ```bash
-# Bring the commits from guest-vlan into the branch you are on (main).
-git merge guest-vlan
+git merge guest-vlan  # Bring the commits from guest-vlan into the branch you are on (main).
 ```
 
 ```bash
-# Print the file: the VLAN lines are now on main.
-cat core-rtr.cfg
+cat core-rtr.cfg  # Print the file: the VLAN lines are now on main.
 ```
 
 ```bash
-# Show every branch in the history as a graph.
-git log --oneline --graph --all
+git log --oneline --graph --all  # Show every branch in the history as a graph.
 ```
 
 ```bash
-# Delete the guest-vlan branch. Its work is already merged into main.
-git branch -d guest-vlan
+git branch -d guest-vlan  # Delete the guest-vlan branch. Its work is already merged into main.
 ```
 
 You should see `Fast-forward`, and the VLAN is now on `main`.
@@ -400,58 +353,47 @@ A **conflict** happens when two branches change the **same line**. Git cannot ch
 Set it up: the same line is changed two different ways.
 
 ```bash
-# Create ntp.cfg with one line.
-echo "ntp server 10.0.0.10" > ntp.cfg
+echo "ntp server 10.0.0.10" > ntp.cfg  # Create ntp.cfg with one line.
 ```
 
 ```bash
-# Stage ntp.cfg so it goes into the next commit.
-git add ntp.cfg
+git add ntp.cfg  # Stage ntp.cfg so it goes into the next commit.
 ```
 
 ```bash
-# Save ntp.cfg as a commit.
-git commit -m "Add NTP config"
+git commit -m "Add NTP config"  # Save ntp.cfg as a commit.
 ```
 
 ```bash
-# Create a new branch called ntp-primary and switch to it.
-git switch -c ntp-primary
+git switch -c ntp-primary  # Create a new branch called ntp-primary and switch to it.
 ```
 
 ```bash
-# Overwrite ntp.cfg with a different server (this branch).
-echo "ntp server 10.0.0.11" > ntp.cfg
+echo "ntp server 10.0.0.11" > ntp.cfg  # Overwrite ntp.cfg with a different server (this branch).
 ```
 
 ```bash
-# Stage all changes to tracked files and commit them in one step.
-git commit -a -m "Use primary NTP server"
+git commit -a -m "Use primary NTP server"  # Stage all changes to tracked files and commit them in one step.
 ```
 
 ```bash
-# Switch back to the main branch.
-git switch main
+git switch main  # Switch back to the main branch.
 ```
 
 ```bash
-# Overwrite the same line with another server (on main).
-echo "ntp server 10.0.0.12" > ntp.cfg
+echo "ntp server 10.0.0.12" > ntp.cfg  # Overwrite the same line with another server (on main).
 ```
 
 ```bash
-# Stage all changes to tracked files and commit them in one step.
-git commit -a -m "Use backup NTP server"
+git commit -a -m "Use backup NTP server"  # Stage all changes to tracked files and commit them in one step.
 ```
 
 ```bash
-# Merge ntp-primary into main. Both changed the same line, so this conflicts.
-git merge ntp-primary
+git merge ntp-primary  # Merge ntp-primary into main. Both changed the same line, so this conflicts.
 ```
 
 ```bash
-# Print ntp.cfg to see the conflict markers Git inserted.
-cat ntp.cfg
+cat ntp.cfg  # Print ntp.cfg to see the conflict markers Git inserted.
 ```
 
 You should see `CONFLICT` and a file that looks like this:
@@ -467,28 +409,23 @@ ntp server 10.0.0.11
 The top half is your side, the bottom half is the other side. You decide what the file should say and delete the three marker lines. We keep both servers:
 
 ```bash
-# Replace the conflicted file with the final text we chose (markers removed).
-printf 'ntp server 10.0.0.11 prefer\nntp server 10.0.0.12\n' > ntp.cfg
+printf 'ntp server 10.0.0.11 prefer\nntp server 10.0.0.12\n' > ntp.cfg  # Replace the conflicted file with the final text we chose (markers removed).
 ```
 
 ```bash
-# Mark the conflict as resolved by staging the fixed ntp.cfg.
-git add ntp.cfg
+git add ntp.cfg  # Mark the conflict as resolved by staging the fixed ntp.cfg.
 ```
 
 ```bash
-# Finish the merge with Git's default merge message.
-git commit --no-edit
+git commit --no-edit  # Finish the merge with Git's default merge message.
 ```
 
 ```bash
-# Delete the ntp-primary branch. Its work is already merged.
-git branch -d ntp-primary
+git branch -d ntp-primary  # Delete the ntp-primary branch. Its work is already merged.
 ```
 
 ```bash
-# Show every branch in the history as a graph.
-git log --oneline --graph --all
+git log --oneline --graph --all  # Show every branch in the history as a graph.
 ```
 
 The markers are `<<<<<<<`, `=======` and `>>>>>>>`. The three steps for any conflict: **edit the file, `git add` it, `git commit`**.
@@ -499,18 +436,15 @@ The markers are `<<<<<<<`, `=======` and `>>>>>>>`. The three steps for any conf
 **GitHub** stores a copy of your repository online. That copy is called a **remote**, named `origin`. In a Codespace you are already signed in. Create the GitHub repo from your folder and push:
 
 ```bash
-# Create a public GitHub repo from this folder, link it as origin, and upload your commits.
-gh repo create netops-practice --public --source=. --remote=origin --push
+gh repo create netops-practice --public --source=. --remote=origin --push  # Create a public GitHub repo from this folder, link it as origin, and upload your commits.
 ```
 
 ```bash
-# List the remotes (online copies) this repository knows about.
-git remote -v
+git remote -v  # List the remotes (online copies) this repository knows about.
 ```
 
 ```bash
-# Open this repository on github.com in your browser.
-gh repo view --web
+gh repo view --web  # Open this repository on github.com in your browser.
 ```
 
 Your repository opens in the browser, with your files and commits.
@@ -518,13 +452,11 @@ Your repository opens in the browser, with your files and commits.
 **Without `gh`:** create an empty repository on github.com (no README), then run:
 
 ```bash
-# Link your empty GitHub repo to this folder under the name origin.
-git remote add origin https://github.com/YOUR-USERNAME/netops-practice.git
+git remote add origin https://github.com/YOUR-USERNAME/netops-practice.git  # Link your empty GitHub repo to this folder under the name origin.
 ```
 
 ```bash
-# Upload main to origin and remember it as the default for git push and git pull.
-git push -u origin main
+git push -u origin main  # Upload main to origin and remember it as the default for git push and git pull.
 ```
 
 `git push -u origin main` uploads `main` to the remote named `origin` and sets it as the **upstream** of your local `main`. After that you can type just `git push` and `git pull`.
@@ -543,13 +475,11 @@ Other people change the repository too. You play the teammate by editing on GitH
 Your Codespace does not have it yet. Download it:
 
 ```bash
-# Download new commits from GitHub and merge them into your branch.
-git pull
+git pull  # Download new commits from GitHub and merge them into your branch.
 ```
 
 ```bash
-# Print the file: the new syslog line from GitHub should be there.
-cat core-rtr.cfg
+cat core-rtr.cfg  # Print the file: the new syslog line from GitHub should be there.
 ```
 
 You should see the new line in your file.
@@ -568,18 +498,15 @@ Habit: `git pull` before you start, `git push` when you finish.
 A **tag** names one commit as a release, with a version like `v1.0.0` (MAJOR.MINOR.PATCH).
 
 ```bash
-# Label the current commit v1.0.0, with a message.
-git tag -a v1.0.0 -m "First release"
+git tag -a v1.0.0 -m "First release"  # Label the current commit v1.0.0, with a message.
 ```
 
 ```bash
-# Upload the v1.0.0 tag to GitHub (tags are not pushed automatically).
-git push origin v1.0.0
+git push origin v1.0.0  # Upload the v1.0.0 tag to GitHub (tags are not pushed automatically).
 ```
 
 ```bash
-# List all tags in this repository.
-git tag
+git tag  # List all tags in this repository.
 ```
 
 Version numbers follow **semantic versioning**, MAJOR.MINOR.PATCH:
@@ -596,50 +523,41 @@ Version numbers follow **semantic versioning**, MAJOR.MINOR.PATCH:
 On a team, nobody edits `main` directly. You work on a branch, push it, and open a **pull request** (PR): a request to merge changes from one branch into another, which teammates can review first.
 
 ```bash
-# Create a new branch called add-banner and switch to it.
-git switch -c add-banner
+git switch -c add-banner  # Create a new branch called add-banner and switch to it.
 ```
 
 ```bash
-# Append a login banner line to the file.
-echo "banner motd Authorized access only" >> core-rtr.cfg
+echo "banner motd Authorized access only" >> core-rtr.cfg  # Append a login banner line to the file.
 ```
 
 ```bash
-# Stage core-rtr.cfg so it goes into the next commit.
-git add core-rtr.cfg
+git add core-rtr.cfg  # Stage core-rtr.cfg so it goes into the next commit.
 ```
 
 ```bash
-# Save the banner change as a commit.
-git commit -m "Add login banner"
+git commit -m "Add login banner"  # Save the banner change as a commit.
 ```
 
 ```bash
-# Upload the add-banner branch to GitHub and set it as its upstream.
-git push -u origin add-banner
+git push -u origin add-banner  # Upload the add-banner branch to GitHub and set it as its upstream.
 ```
 
 ```bash
-# Open a pull request on GitHub that asks to merge add-banner into main.
-gh pr create --base main --head add-banner --title "Add login banner" --body "Adds a login banner."
+gh pr create --base main --head add-banner --title "Add login banner" --body "Adds a login banner."  # Open a pull request on GitHub that asks to merge add-banner into main.
 ```
 
 `gh` prints a link. Open it. Click **Merge pull request**, then **Confirm merge**. Then bring `main` up to date:
 
 ```bash
-# Switch back to the main branch.
-git switch main
+git switch main  # Switch back to the main branch.
 ```
 
 ```bash
-# Bring your local main up to date with GitHub, including the merged pull request.
-git pull
+git pull  # Bring your local main up to date with GitHub, including the merged pull request.
 ```
 
 ```bash
-# Show the last 5 commits as a short list with a branch graph.
-git log --oneline --graph -5
+git log --oneline --graph -5  # Show the last 5 commits as a short list with a branch graph.
 ```
 
 You should see your banner commit on `main`.
@@ -648,20 +566,17 @@ You should see your banner commit on `main`.
 ## Finish
 
 ```bash
-# Show the state of your repository. It should be clean.
-git status
+git status  # Show the state of your repository. It should be clean.
 ```
 
 You should see `nothing to commit, working tree clean`. Stop your Codespace (Step 1). To start over, delete the practice folder:
 
 ```bash
-# Go back to your home folder.
-cd ~
+cd ~  # Go back to your home folder.
 ```
 
 ```bash
-# Delete the practice folder and everything in it. This cannot be undone.
-rm -rf ~/netops-practice
+rm -rf ~/netops-practice  # Delete the practice folder and everything in it. This cannot be undone.
 ```
 
 ---
