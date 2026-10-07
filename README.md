@@ -1,6 +1,6 @@
 # NET2008 DevOps: course repository
 
-Course material for NET2008 DevOps (Algonquin College). You work in **GitHub Codespaces**: GitHub gives you a Linux computer in your web browser with Python, Git and the GitHub command line already installed. You install nothing, and it works the same on Windows, macOS and Linux.
+Course material for NET2008 DevOps (Algonquin College). You have the option to work in **GitHub Codespaces**: GitHub gives you a Linux computer in your web browser with Python, Git and the GitHub command line already installed. You install nothing, and it works the same on Windows, macOS and Linux.
 
 ## Schedule and materials
 
@@ -22,23 +22,9 @@ Course material for NET2008 DevOps (Algonquin College). You work in **GitHub Cod
 | 14 | Monitoring and Exam Review | | Lab: Nagios, Splunk, Zabbix and ELK (3%) |
 | 15 | Final | | Practical Assessment 4: Pipeline Incident Audit |
 
-Labs total 20%. The four practical assessments total 20%. Course information and the full curriculum are in [course-info](course-info/).
+Course information and the full curriculum are in [course-info](course-info/).
 
 Materials for a week appear here when that week starts. The schedule can change, and Brightspace is the final source for due dates.
-
-## Repository layout
-
-```text
-course-info/    Course information and curriculum (Word)
-week02/         Lecture and lab
-week03/         Lecture and lab
-week04/         Lecture and lab
-week05/         Lecture and lab, pa1/ (Practical Assessment 1 brief and sample log)
-week06/         Git and GitHub lecture
-.devcontainer/  Codespace configuration
-```
-
-File names follow `W<week>_Lecture_<Topic>` and `W<week>_Lab_<Topic>`. The week number is the course week, not the order the files were written.
 
 ## Open a Codespace (first time)
 
