@@ -59,7 +59,7 @@ Your work moves through four places. Learn this picture: the rest of the lecture
 | **Local repository** | The saved history, in a hidden `.git` folder | `git push` |
 | **GitHub (origin)** | The copy online | |
 
-The orange arrows go the other way: `git restore` throws away an edit, `git restore --staged` takes a file out of staging, and `git pull` brings new work down from GitHub.
+The orange arrows go the other way: `git restore` throws away an edit, `git restore --staged` takes a file out of staging, and `git pull` brings new work down from GitHub. The purple arrow is `git revert`. It does not go back in time. It adds a new commit that cancels an older one.
 
 The bottom row of the picture is what `git status` tells you about a file: **untracked** (new, Git has never seen it), **modified** (changed since the last commit), **staged** (picked with `git add`), **committed** (saved).
 
@@ -207,6 +207,14 @@ The `git status` above shows `core-rtr.cfg` as **modified, not staged for commit
 
 `git log --oneline` prints the history, one short line per commit.
 
+See who last changed each line of a file:
+
+```bash
+git blame core-rtr.cfg  # Show, for every line, the commit and the author that last changed it.
+```
+
+You should see one row per line: a commit ID, then in brackets the author, the date and time and the line number, then the line itself. The first two lines carry the ID of "Add core router config". A `^` in front of an ID marks the very first commit of the repository. The SNMP line carries the ID of "Enable SNMP read-only". Use `git blame` to find out who changed a line and when. Then run `git show` followed by that ID to read the commit message and the change.
+
 ---
 ## Step 4. Ignore files
 
@@ -282,7 +290,43 @@ git add core-rtr.cfg  # Stage core-rtr.cfg so it goes into the next commit.
 git commit -m "Shut down core uplink"  # Save the bad change as a commit, so we can practice undoing it.
 ```
 
-`git revert` adds a **new commit** that cancels it. Nothing is erased, so it is safe:
+Undoing a commit means putting the old version of the file back and saving that as a **new commit**. You already know the tools: `git restore --staged` fills the staging area, `git restore` fills the working directory, and `git commit` saves the result. By default they use the last commit. Add `--source=HEAD~1` to use the version from one commit earlier instead. `HEAD` is the latest commit, so `HEAD~1` is the commit before it, the one without the mistake. Do it by hand:
+
+```bash
+git restore --source=HEAD~1 --staged core-rtr.cfg  # Put the version from before the bad commit into the staging area.
+```
+
+```bash
+git restore --source=HEAD~1 core-rtr.cfg  # Put the same version into the working directory.
+```
+
+```bash
+git status  # Show the state: the old version is staged and ready to commit.
+```
+
+```bash
+git commit -m "Undo core uplink shutdown"  # Save the old version as a new commit that cancels the bad one.
+```
+
+```bash
+git log --oneline  # Show the history, one short line per commit.
+```
+
+You should see your undo commit on top of the bad commit. The bad commit stays in the history, and the new commit cancels it. Nothing is erased, so this is safe.
+
+`git revert` runs those steps in one command. Make a second bad commit, then revert it:
+
+```bash
+printf 'interface Gi0/2\n shutdown\n' >> core-rtr.cfg  # Append another bad config (shuts down a second interface) to the file.
+```
+
+```bash
+git add core-rtr.cfg  # Stage core-rtr.cfg so it goes into the next commit.
+```
+
+```bash
+git commit -m "Shut down core downlink"  # Save the bad change as a commit, so we can practice undoing it again.
+```
 
 ```bash
 git revert --no-edit HEAD  # Add a new commit that cancels the latest commit, keeping the default message.
@@ -292,12 +336,16 @@ git revert --no-edit HEAD  # Add a new commit that cancels the latest commit, ke
 git log --oneline  # Show the history, one short line per commit.
 ```
 
-You should see a new commit that starts with `Revert`. The wrong commit stays in the history, and the new one undoes it.
+You should see a new commit that starts with `Revert`. Both ways end the same: a new commit that cancels the wrong one. In real work use `git revert`. It also works on an older commit, not only the latest: `git revert COMMIT`.
 
 ---
 ## Step 6. Branches and merging
 
 A **branch** is a separate line of work. You can experiment without touching `main`, then merge it back.
+
+![Three stages of a branch: before the merge, after the merge, and after deleting the branch, with the output of git branch at each stage](images/git-branching.svg)
+
+Keep this picture in view. It shows the three stages of this step.
 
 ```bash
 git switch -c guest-vlan  # Create a new branch called guest-vlan and switch to it.
@@ -338,17 +386,40 @@ git log --oneline --graph --all  # Show every branch in the history as a graph.
 ```
 
 ```bash
+git branch  # List your local branches. The star marks the branch you are on.
+```
+
+You should see both branches. `guest-vlan` still exists even though its work is merged:
+
+```text
+  guest-vlan
+* main
+```
+
+Delete the branch, then list the branches again:
+
+```bash
 git branch -d guest-vlan  # Delete the guest-vlan branch. Its work is already merged into main.
 ```
 
-You should see `Fast-forward`, and the VLAN is now on `main`.
+```bash
+git branch  # List your local branches again.
+```
 
-A **fast-forward** is possible when `main` has no new commits since the branch was created. Git just moves the `main` pointer forward. If `main` has moved on, Git makes a **merge commit** instead (you will see this in Step 7).
+You should see only `main`:
+
+```text
+* main
+```
+
+The VLAN lines are still on `main`. Deleting a branch deletes only its label, not the commits.
 
 ---
 ## Step 7. Fix a merge conflict
 
 A **conflict** happens when two branches change the **same line**. Git cannot choose, so you do. Conflicts are normal.
+
+![Two branches change the same line, then a merge commit with two parents joins them](images/git-merge-conflict.svg)
 
 Set it up: the same line is changed two different ways.
 
@@ -417,7 +488,7 @@ git add ntp.cfg  # Mark the conflict as resolved by staging the fixed ntp.cfg.
 ```
 
 ```bash
-git commit --no-edit  # Finish the merge with Git's default merge message.
+git commit -m "Merge ntp-primary, keep both NTP servers"  # Finish the merge with a message that says what you decided.
 ```
 
 ```bash
@@ -428,15 +499,59 @@ git branch -d ntp-primary  # Delete the ntp-primary branch. Its work is already 
 git log --oneline --graph --all  # Show every branch in the history as a graph.
 ```
 
+You should see your merge commit on top, with two lines joining into it. That is Z in the picture: a commit with two parents, one from each branch.
+
 The markers are `<<<<<<<`, `=======` and `>>>>>>>`. The three steps for any conflict: **edit the file, `git add` it, `git commit`**.
 
 ---
 ## Step 8. Put your repository on GitHub
 
-**GitHub** stores a copy of your repository online. That copy is called a **remote**, named `origin`. In a Codespace you are already signed in. Create the GitHub repo from your folder and push:
+**GitHub** stores a copy of your repository online. That copy is called a **remote**, named `origin`. You create the empty copy in your browser, then connect your folder to it.
+
+**Why SSH:** a Codespace is logged in to GitHub with a built-in login that only covers the course repository. A push to your own repository over `https://` fails with `403`, which means permission denied. An SSH key belongs to your own GitHub account, so it works for every repository you own.
+
+### 8a. Create an empty repository on GitHub
+
+1. In your browser, open <https://github.com/new>.
+2. **Repository name:** type `netops-practice`.
+3. Select **Public**.
+4. Leave **Add a README file**, **Add .gitignore** and **Choose a license** off. The repository must be empty.
+5. Click **Create repository**. Keep the page open.
+
+### 8b. Create an SSH key in your Codespace
+
+An SSH key is a pair of files. The **private key** stays in your Codespace and is never shared. The **public key** is the one you give to GitHub.
 
 ```bash
-gh repo create netops-practice --public --source=. --remote=origin --push  # Create a public GitHub repo from this folder, link it as origin, and upload your commits.
+ssh-keygen -t ed25519 -C "$(git config --global user.email)" -f ~/.ssh/id_ed25519 -N ""  # Create a new SSH key pair with no passphrase, labelled with your email.
+```
+
+```bash
+cat ~/.ssh/id_ed25519.pub  # Print the public key so you can copy it.
+```
+
+You should see one long line that starts with `ssh-ed25519` and ends with your email.
+
+### 8c. Add the public key to GitHub
+
+1. Select the whole line that `cat` printed and copy it.
+2. On github.com, click your profile picture (top right), then **Settings**, then **SSH and GPG keys**, then **New SSH key**.
+3. **Title:** `codespace`. **Key type:** **Authentication Key**. **Key:** paste the line. Click **Add SSH key**.
+
+Test the connection:
+
+```bash
+ssh -T git@github.com  # Test the SSH login to GitHub. If it asks "Are you sure you want to continue connecting", type yes.
+```
+
+You should see `Hi YOUR-USERNAME! You've successfully authenticated, but GitHub does not provide shell access.` That message means it worked.
+
+### 8d. Connect your folder and push
+
+On the empty repository page, click the **SSH** tab and copy the URL. It looks like `git@github.com:YOUR-USERNAME/netops-practice.git`. Use your own username.
+
+```bash
+git remote add origin git@github.com:YOUR-USERNAME/netops-practice.git  # Link your empty GitHub repo to this folder under the name origin.
 ```
 
 ```bash
@@ -444,22 +559,18 @@ git remote -v  # List the remotes (online copies) this repository knows about.
 ```
 
 ```bash
-gh repo view --web  # Open this repository on github.com in your browser.
-```
-
-Your repository opens in the browser, with your files and commits.
-
-**Without `gh`:** create an empty repository on github.com (no README), then run:
-
-```bash
-git remote add origin https://github.com/YOUR-USERNAME/netops-practice.git  # Link your empty GitHub repo to this folder under the name origin.
-```
-
-```bash
 git push -u origin main  # Upload main to origin and remember it as the default for git push and git pull.
 ```
 
+Reload the repository page on GitHub. Your files and commits are there.
+
 `git push -u origin main` uploads `main` to the remote named `origin` and sets it as the **upstream** of your local `main`. After that you can type just `git push` and `git pull`.
+
+If `git remote add` says `remote origin already exists`, change the URL instead:
+
+```bash
+git remote set-url origin git@github.com:YOUR-USERNAME/netops-practice.git  # Change the URL that origin points to.
+```
 
 **Never use `git push --force` on a shared branch.** It can overwrite commits on GitHub and destroy your teammates' work.
 
@@ -493,32 +604,7 @@ You should see the new line in your file.
 Habit: `git pull` before you start, `git push` when you finish.
 
 ---
-## Step 10. Tag a release
-
-A **tag** names one commit as a release, with a version like `v1.0.0` (MAJOR.MINOR.PATCH).
-
-```bash
-git tag -a v1.0.0 -m "First release"  # Label the current commit v1.0.0, with a message.
-```
-
-```bash
-git push origin v1.0.0  # Upload the v1.0.0 tag to GitHub (tags are not pushed automatically).
-```
-
-```bash
-git tag  # List all tags in this repository.
-```
-
-Version numbers follow **semantic versioning**, MAJOR.MINOR.PATCH:
-
-| Change | Number that goes up | Example |
-|---|---|---|
-| Breaking change | MAJOR | v1.4.2 to v2.0.0 |
-| New feature, backward compatible | MINOR | v1.4.2 to v1.5.0 |
-| Bug fix, backward compatible | PATCH | v1.4.2 to v1.4.3 |
-
----
-## Step 11. A pull request
+## Step 10. A pull request
 
 On a team, nobody edits `main` directly. You work on a branch, push it, and open a **pull request** (PR): a request to merge changes from one branch into another, which teammates can review first.
 
@@ -542,11 +628,17 @@ git commit -m "Add login banner"  # Save the banner change as a commit.
 git push -u origin add-banner  # Upload the add-banner branch to GitHub and set it as its upstream.
 ```
 
-```bash
-gh pr create --base main --head add-banner --title "Add login banner" --body "Adds a login banner."  # Open a pull request on GitHub that asks to merge add-banner into main.
-```
+Open the pull request in your browser:
 
-`gh` prints a link. Open it. Click **Merge pull request**, then **Confirm merge**. Then bring `main` up to date:
+1. Open your `netops-practice` repository on github.com.
+2. Click **Compare & pull request** in the yellow banner. If there is no banner, open the **Pull requests** tab, click **New pull request**, then set **base** to `main` and **compare** to `add-banner`.
+3. Check the branch names: **base: main** on the left and **compare: add-banner** on the right.
+4. **Title:** `Add login banner`. **Description:** `Adds a login banner.`
+5. Click **Create pull request**.
+6. Open the **Files changed** tab. It shows the one line you added. A teammate would review it here.
+7. Go back to the **Conversation** tab. Click **Merge pull request**, then **Confirm merge**.
+
+Then bring `main` up to date:
 
 ```bash
 git switch main  # Switch back to the main branch.
@@ -579,6 +671,8 @@ cd ~  # Go back to your home folder.
 rm -rf ~/netops-practice  # Delete the practice folder and everything in it. This cannot be undone.
 ```
 
+If you will not use this Codespace again, also remove its key from GitHub: **Settings**, **SSH and GPG keys**, then **Delete** next to `codespace`.
+
 ---
 ## Command cheat sheet
 
@@ -589,15 +683,16 @@ rm -rf ~/netops-practice  # Delete the practice folder and everything in it. Thi
 | Stage / commit | `git add FILE` / `git commit -m "message"` |
 | See changes | `git diff` |
 | See history | `git log --oneline --graph --all` |
+| See who changed a line | `git blame FILE` |
 | Discard an edit | `git restore FILE` |
-| Undo a commit safely | `git revert COMMIT` |
+| Undo a commit safely | `git revert COMMIT` (restore the old version, then commit) |
 | New branch / switch branch | `git switch -c NAME` / `git switch NAME` |
+| List branches / delete a branch | `git branch` / `git branch -d NAME` |
 | Merge a branch | `git merge NAME` |
 | Finish a conflict | edit, `git add FILE`, `git commit` |
-| Publish a repo | `gh repo create NAME --public --source=. --push` |
+| Publish a repo | Create an empty repo on github.com, then `git remote add origin git@github.com:USER/NAME.git` and `git push -u origin main` |
 | Download only / download and merge | `git fetch` / `git pull` |
 | Upload | `git push` |
-| Tag a release | `git tag -a v1.0.0 -m "msg"` |
 
 ## If something goes wrong
 
@@ -608,5 +703,8 @@ rm -rf ~/netops-practice  # Delete the practice folder and everything in it. Thi
 | Terminal shows `>` and waits | Press `Ctrl+C` and retype the command. |
 | A strange editor opens (vim) | Press `Esc`, type `:q!`, Enter. Run `export GIT_EDITOR=true`. |
 | `Updates were rejected` on push | Run `git pull`, then `git push`. |
+| `remote origin already exists` | Run `git remote set-url origin git@github.com:YOUR-USERNAME/netops-practice.git`. |
+| `Permission denied (publickey)` | GitHub does not have your public key. Redo 8b and 8c in Step 8. |
+| `403` when you push | You used an `https://` URL. Switch to the SSH URL with `git remote set-url` (Step 8). |
 | `CONFLICT` | Follow Step 7. |
 | Everything is a mess | `cd ~`, `rm -rf ~/netops-practice`, start again at Step 2. |

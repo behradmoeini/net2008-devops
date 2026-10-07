@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 540" width="1000" height="540" font-family="Helvetica, Arial, sans-serif">
+  <title>Branching and merging</title>
+  <desc>Three stages of the guest-vlan branch: before the merge, after the merge, and after deleting the branch, with the output of git branch at each stage.</desc>
+  <rect width="1000" height="540" fill="#ffffff"/>
+
+  <!-- Panel 1: before the merge -->
+  <rect x="10" y="15" width="980" height="148" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+  <g fill="#111827">
+    <text x="25" y="47" font-size="15" font-weight="bold">1. Before the merge</text>
+    <text x="25" y="69" font-size="13" font-family="Menlo, Consolas, monospace">git switch main</text>
+    <text x="25" y="95" font-size="13">You are on main.</text>
+    <text x="25" y="113" font-size="13">guest-vlan has one extra commit, C.</text>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="none">
+    <line x1="300" y1="87" x2="430" y2="87"/>
+    <line x1="430" y1="87" x2="560" y2="133"/>
+    <line x1="430" y1="51" x2="430" y2="69"/>
+    <line x1="578" y1="133" x2="592" y2="133"/>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="#ffffff">
+    <circle cx="300" cy="87" r="18"/>
+    <circle cx="430" cy="87" r="18"/>
+    <circle cx="560" cy="133" r="18"/>
+  </g>
+  <g text-anchor="middle" font-size="14" font-weight="bold" fill="#111827">
+    <text x="300" y="92">A</text>
+    <text x="430" y="92">B</text>
+    <text x="560" y="138">C</text>
+  </g>
+  <g font-family="Menlo, Consolas, monospace" font-size="13" text-anchor="middle" fill="#111827">
+    <rect x="378" y="29" width="104" height="22" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+    <text x="430" y="45">HEAD -&gt; main</text>
+    <rect x="592" y="122" width="96" height="22" rx="6" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+    <text x="640" y="138">guest-vlan</text>
+  </g>
+  <rect x="790" y="37" width="190" height="104" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="802" y="57" font-size="12" font-family="Menlo, Consolas, monospace" font-weight="bold" fill="#6b7280">git branch</text>
+  <g font-size="14" font-family="Menlo, Consolas, monospace" fill="#111827" xml:space="preserve">
+    <text x="802" y="86">  guest-vlan</text>
+    <text x="802" y="110">* main</text>
+  </g>
+
+  <!-- Panel 2: after the merge -->
+  <rect x="10" y="173" width="980" height="148" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+  <g fill="#111827">
+    <text x="25" y="205" font-size="15" font-weight="bold">2. After the merge</text>
+    <text x="25" y="227" font-size="13" font-family="Menlo, Consolas, monospace">git merge guest-vlan</text>
+    <text x="25" y="253" font-size="13">main moves forward to C.</text>
+    <text x="25" y="271" font-size="13">Both labels point at C.</text>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="none">
+    <line x1="300" y1="245" x2="560" y2="245"/>
+    <line x1="522" y1="209" x2="552" y2="228"/>
+    <line x1="630" y1="209" x2="568" y2="228"/>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="#ffffff">
+    <circle cx="300" cy="245" r="18"/>
+    <circle cx="430" cy="245" r="18"/>
+    <circle cx="560" cy="245" r="18"/>
+  </g>
+  <g text-anchor="middle" font-size="14" font-weight="bold" fill="#111827">
+    <text x="300" y="250">A</text>
+    <text x="430" y="250">B</text>
+    <text x="560" y="250">C</text>
+  </g>
+  <g font-family="Menlo, Consolas, monospace" font-size="13" text-anchor="middle" fill="#111827">
+    <rect x="470" y="187" width="104" height="22" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+    <text x="522" y="203">HEAD -&gt; main</text>
+    <rect x="584" y="187" width="92" height="22" rx="6" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+    <text x="630" y="203">guest-vlan</text>
+  </g>
+  <rect x="790" y="195" width="190" height="104" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="802" y="215" font-size="12" font-family="Menlo, Consolas, monospace" font-weight="bold" fill="#6b7280">git branch</text>
+  <g font-size="14" font-family="Menlo, Consolas, monospace" fill="#111827" xml:space="preserve">
+    <text x="802" y="244">  guest-vlan</text>
+    <text x="802" y="268">* main</text>
+  </g>
+
+  <!-- Panel 3: after deleting the branch -->
+  <rect x="10" y="331" width="980" height="148" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+  <g fill="#111827">
+    <text x="25" y="363" font-size="15" font-weight="bold">3. After deleting the branch</text>
+    <text x="25" y="385" font-size="13" font-family="Menlo, Consolas, monospace">git branch -d guest-vlan</text>
+    <text x="25" y="411" font-size="13">Only the label is deleted.</text>
+    <text x="25" y="429" font-size="13">The commits stay in main.</text>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="none">
+    <line x1="300" y1="403" x2="560" y2="403"/>
+    <line x1="560" y1="367" x2="560" y2="385"/>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="#ffffff">
+    <circle cx="300" cy="403" r="18"/>
+    <circle cx="430" cy="403" r="18"/>
+    <circle cx="560" cy="403" r="18"/>
+  </g>
+  <g text-anchor="middle" font-size="14" font-weight="bold" fill="#111827">
+    <text x="300" y="408">A</text>
+    <text x="430" y="408">B</text>
+    <text x="560" y="408">C</text>
+  </g>
+  <g font-family="Menlo, Consolas, monospace" font-size="13" text-anchor="middle" fill="#111827">
+    <rect x="508" y="345" width="104" height="22" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+    <text x="560" y="361">HEAD -&gt; main</text>
+  </g>
+  <rect x="640" y="345" width="92" height="22" rx="6" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="686" y="361" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" fill="#9ca3af">guest-vlan</text>
+  <line x1="644" y1="356" x2="728" y2="356" stroke="#9ca3af" stroke-width="1.5"/>
+  <rect x="790" y="353" width="190" height="104" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="802" y="373" font-size="12" font-family="Menlo, Consolas, monospace" font-weight="bold" fill="#6b7280">git branch</text>
+  <g font-size="14" font-family="Menlo, Consolas, monospace" fill="#111827" xml:space="preserve">
+    <text x="802" y="402">* main</text>
+  </g>
+
+  <text x="500" y="506" text-anchor="middle" font-size="14" fill="#374151">A and B are earlier commits. C is the commit "Add guest VLAN".</text>
+  <text x="500" y="526" text-anchor="middle" font-size="14" fill="#374151">A branch is only a label that points at one commit. Deleting the label does not delete commits.</text>
+</svg>

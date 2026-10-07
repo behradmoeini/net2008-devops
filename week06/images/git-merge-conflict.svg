@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 450" width="1000" height="450" font-family="Helvetica, Arial, sans-serif">
+  <title>Merging two branches that changed the same line</title>
+  <desc>Before the merge, main and ntp-primary each changed line 1 of ntp.cfg. After you resolve the conflict, the merge commit has two parents.</desc>
+  <rect width="1000" height="450" fill="#ffffff"/>
+
+  <!-- Panel 1: before the merge -->
+  <rect x="10" y="15" width="980" height="175" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+  <g fill="#111827">
+    <text x="25" y="47" font-size="15" font-weight="bold">1. Before the merge</text>
+    <text x="25" y="73" font-size="13">main and ntp-primary changed</text>
+    <text x="25" y="91" font-size="13">line 1 of ntp.cfg differently.</text>
+    <text x="25" y="117" font-size="13" font-family="Menlo, Consolas, monospace">git merge ntp-primary</text>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="none">
+    <line x1="300" y1="85" x2="460" y2="85"/>
+    <line x1="300" y1="85" x2="460" y2="140"/>
+    <line x1="460" y1="49" x2="460" y2="67"/>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="#ffffff">
+    <circle cx="300" cy="85" r="18"/>
+    <circle cx="460" cy="85" r="18"/>
+    <circle cx="460" cy="140" r="18"/>
+  </g>
+  <g text-anchor="middle" font-size="14" font-weight="bold" fill="#111827">
+    <text x="300" y="90">N</text>
+    <text x="460" y="90">M</text>
+    <text x="460" y="145">P</text>
+  </g>
+  <g font-family="Menlo, Consolas, monospace" font-size="13" text-anchor="middle" fill="#111827">
+    <rect x="408" y="27" width="104" height="22" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+    <text x="460" y="43">HEAD -&gt; main</text>
+    <rect x="410" y="162" width="100" height="22" rx="6" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+    <text x="460" y="178">ntp-primary</text>
+  </g>
+  <line x1="505" y1="72" x2="505" y2="153" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5 4"/>
+  <g font-size="13" fill="#b91c1c" font-weight="bold">
+    <text x="520" y="108">Same line changed on both sides.</text>
+    <text x="520" y="127">Git reports a conflict and stops.</text>
+  </g>
+
+  <!-- Panel 2: after the merge commit -->
+  <rect x="10" y="205" width="980" height="175" rx="10" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+  <g fill="#111827">
+    <text x="25" y="237" font-size="15" font-weight="bold">2. After the merge commit</text>
+    <text x="25" y="263" font-size="13">You fix ntp.cfg, run git add, then</text>
+    <text x="25" y="281" font-size="13">git commit. Z is the merge commit.</text>
+    <text x="25" y="307" font-size="13">Z has two parents: M and P.</text>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="none">
+    <line x1="300" y1="275" x2="460" y2="275"/>
+    <line x1="300" y1="275" x2="460" y2="330"/>
+    <line x1="460" y1="275" x2="680" y2="275"/>
+    <line x1="460" y1="330" x2="680" y2="275"/>
+    <line x1="680" y1="239" x2="680" y2="257"/>
+  </g>
+  <g stroke="#1f2937" stroke-width="2.5" fill="#ffffff">
+    <circle cx="300" cy="275" r="18"/>
+    <circle cx="460" cy="275" r="18"/>
+    <circle cx="460" cy="330" r="18"/>
+    <circle cx="680" cy="275" r="18"/>
+  </g>
+  <g text-anchor="middle" font-size="14" font-weight="bold" fill="#111827">
+    <text x="300" y="280">N</text>
+    <text x="460" y="280">M</text>
+    <text x="460" y="335">P</text>
+    <text x="680" y="280">Z</text>
+  </g>
+  <g font-family="Menlo, Consolas, monospace" font-size="13" text-anchor="middle" fill="#111827">
+    <rect x="628" y="217" width="104" height="22" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+    <text x="680" y="233">HEAD -&gt; main</text>
+    <rect x="410" y="352" width="100" height="22" rx="6" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+    <text x="460" y="368">ntp-primary</text>
+  </g>
+
+  <text x="500" y="406" text-anchor="middle" font-size="14" fill="#374151">N: "Add NTP config". M: "Use backup NTP server" (main). P: "Use primary NTP server" (ntp-primary).</text>
+  <text x="500" y="426" text-anchor="middle" font-size="14" fill="#374151">Z: the merge commit. A merge commit is a commit with two parents.</text>
+</svg>
