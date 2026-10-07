@@ -1,0 +1,56 @@
+2026-09-16T08:01:11Z [DEBUG] web: cache refresh, bad address 300.6.1.1 ignored
+2026-09-16T08:02:23Z [WARN ] auth: user "mpatel" from 10.10.5.75 failed login (attempt 7/15)
+2026-09-16T08:02:36Z [DEBUG] web: cache refresh, bad address 300.3.1.1 ignored
+2026-09-16T08:04:06Z [WARN ] db: slow query took 8436 ms
+2026-09-16T08:04:52Z [WARN ] auth: user "mpatel" from 185.164.216.176 failed login (attempt 10/15)
+2026-09-16T08:05:01Z [INFO ] web: GET /health 200 from 10.17.6.207
+2026-09-16T08:06:05Z [INFO ] web: GET /health 200 from 91.39.225.181
+2026-09-16T08:06:08Z [WARN ] db: slow query took 1859 ms
+2026-09-16T08:07:22Z [CRIT ] net: link down on Gi0/2 for 45 min (peer 10.9.1.235)
+2026-09-16 08:07:22Z [INFO ] web: bad timestamp
+2026-09-16T08:08:00Z [ERROR] net: link down on Gi0/9 for 600 min (peer 91.39.225.181)
+2026-09-16T08:08:42Z [INFO ] web: GET /health 200 from 10.27.6.65
+2026-09-16T08:09:06Z [INFO ] web: GET /health 200 from 10.10.5.75
+2026-09-16T08:10:22Z [INFO ] net: link up on Gi0/1 peer=10.27.6.65
+2026-09-16T08:10:31Z [INFO ] web: GET /health 200 from 10.17.6.207
+2026-09-16T08:11:33Z [INFO ] net: link up on Gi0/21 peer=203.36.141.16
+2026-09-16T08:11:42Z [CRIT ] net: link down on Gi0/3 for 600 min (peer 10.1.3.99)
+2026-09-16T08:12:47Z [WARN ] auth: user "svc-backup" from 91.39.225.181 failed login (attempt 9/15)
+2026-09-16T08:14:17Z [INFO ] auth: user "root" logged in from 185.164.216.176
+
+2026-09-16T08:15:35Z [WARN ] db: slow query took 2502 ms
+2026-09-16T08:16:10Z [INFO ] auth: user "jlee" logged in from 10.10.5.75
+2026-09-16T08:16:19Z [DEBUG] web: cache refresh, bad address 300.6.1.1 ignored
+2026-09-16T08:17:02Z [WARN ] auth: user "root" from 10.6.8.170 failed login (attempt 2/15)
+2026-09-16T08:17:44Z [INFO ] net: link up on Gi0/16 peer=185.164.216.176
+2026-09-16T08:17:56Z [DEBUG] web: cache refresh, bad address 300.9.1.1 ignored
+2026-09-16T08:19:20Z [CRIT ] net: link down on Gi0/19 for 12 min (peer 10.9.1.235)
+2026-09-16T08:20:00Z [WARN ] auth: user "svc-backup" from 203.36.141.16 failed login (attempt 7/15)
+2026-09-16T08:21:05Z [CRIT ] net: link down on Gi0/17 for 600 min (peer 91.209.202.225)
+2026-09-16T08:21:05Z [INFO ] nocolon here
+2026-09-16T08:21:17Z [ERROR] disk: usage 87% on /var
+2026-09-16T08:22:21Z [INFO ] web: GET /health 200 from 10.9.1.235
+2026-09-16T08:23:10Z [WARN ] auth: user "svc-backup" from 91.39.225.181 failed login (attempt 9/15)
+2026-09-16T08:24:07Z [WARN ] auth: user "svc-backup" from 10.27.6.65 failed login (attempt 3/15)
+2026-09-16T08:25:21Z [CRIT ] net: link down on Gi0/12 for 12 min (peer 91.39.225.181)
+2026-09-16T08:25:51Z [INFO ] net: link up on Gi0/12 peer=185.164.216.176
+2026-09-16T08:26:51Z [WARN ] auth: user "kadmin" from 91.209.202.225 failed login (attempt 9/15)
+2026-09-16T08:26:55Z [ERROR] net: link down on Gi0/15 for 90 min (peer 91.39.225.181)
+2026-09-16T08:27:55Z [DEBUG] web: cache refresh, bad address 300.9.1.1 ignored
+2026-09-16T08:27:55Z [INFO ] disk: 
+2026-09-16T08:28:58Z [ERROR] disk: usage 89% on /var
+2026-09-16T08:29:34Z [INFO ] auth: user "root" logged in from 10.17.6.207
+2026-09-16T08:30:20Z [INFO ] web: GET /health 200 from 10.9.1.235
+2026-09-16T08:30:29Z [INFO ] net: link up on Gi0/17 peer=10.10.5.75
+2026-09-16T08:31:57Z [WARN ] auth: user "kadmin" from 10.17.6.207 failed login (attempt 8/15)
+2026-09-16T08:32:38Z [ERROR] net: link down on Gi0/15 for 200 min (peer 10.10.5.75)
+2026-09-16T08:33:09Z [WARN ] auth: user "kadmin" from 185.164.216.176 failed login (attempt 7/15)
+2026-09-16T08:33:19Z [DEBUG] web: cache refresh, bad address 300.4.1.1 ignored
+2026-09-16T08:34:30Z [INFO ] net: link up on Gi0/12 peer=10.1.3.99
+2026-09-16T08:34:30Z INFO web: no brackets
+2026-09-16T08:35:42Z [WARN ] db: slow query took 8378 ms
+2026-09-16T08:35:45Z [DEBUG] web: cache refresh, bad address 300.2.1.1 ignored
+2026-09-16T08:35:52Z [INFO ] net: link up on Gi0/11 peer=10.27.6.65
+2026-09-16T08:36:10Z [INFO ] web: GET /health 200 from 10.6.8.170
+2026-09-16T08:37:21Z [CRIT ] net: link down on Gi0/15 for 3 min (peer 203.36.141.16)
+2026-09-16T08:37:56Z [CRIT ] net: link down on Gi0/10 for 600 min (peer 10.10.5.75)
