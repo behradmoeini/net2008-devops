@@ -655,6 +655,52 @@ git log --oneline --graph -5  # Show the last 5 commits as a short list with a b
 You should see your banner commit on `main`.
 
 ---
+## Step 11. Clone a repository
+
+`git clone` downloads a full copy of a repository that already exists on GitHub: all files, the whole history, and the `origin` remote already set. Use `git init` to start a new project. Use `git clone` to get an existing one.
+
+Clone your own repository into a new folder:
+
+```bash
+cd ~  # Move to your home folder, outside any other repository.
+```
+
+```bash
+git clone git@github.com:YOUR-USERNAME/netops-practice.git netops-copy  # Download a full copy of your repo into a new folder named netops-copy.
+```
+
+```bash
+cd netops-copy  # Move into the clone.
+```
+
+```bash
+git log --oneline  # Show the history: every commit came with the clone.
+```
+
+```bash
+git remote -v  # Show the remotes: origin already points to the URL you cloned.
+```
+
+You should see all your commits and an `origin` line with your SSH URL. Without the last word in the clone command, Git names the folder after the repository.
+
+| Command | What it does |
+|---|---|
+| `git clone URL` | Copy the repo into a folder named after it |
+| `git clone URL NAME` | Copy the repo into a folder called `NAME` |
+| `git clone -b BRANCH URL` | Copy the repo and start on `BRANCH` instead of the default branch |
+| `git clone --depth 1 URL` | Copy only the latest snapshot, without the history (faster for big repos) |
+
+Private repositories need the SSH key from Step 8. Remove the copy when you are done:
+
+```bash
+cd ~  # Go back to your home folder.
+```
+
+```bash
+rm -rf ~/netops-copy  # Delete the cloned copy. Your repo on GitHub is not affected.
+```
+
+---
 ## Finish
 
 ```bash
@@ -691,6 +737,7 @@ If you will not use this Codespace again, also remove its key from GitHub: **Set
 | Merge a branch | `git merge NAME` |
 | Finish a conflict | edit, `git add FILE`, `git commit` |
 | Publish a repo | Create an empty repo on github.com, then `git remote add origin git@github.com:USER/NAME.git` and `git push -u origin main` |
+| Copy an existing repo from GitHub | `git clone URL` |
 | Download only / download and merge | `git fetch` / `git pull` |
 | Upload | `git push` |
 
