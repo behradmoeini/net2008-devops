@@ -11,8 +11,8 @@ Course material for NET2008 DevOps (Algonquin College). You have the option to w
 | 3 | Python Review | [Lecture](week03/W03_Lecture_PythonFundamentals.ipynb), [Lab](week03/W03_Lab_PythonFundamentals.ipynb) | Lab: Python (1%) |
 | 4 | Python Review | [Lecture](week04/W04_Lecture_PythonReview_Part2.ipynb), [Lab](week04/W04_Lab_PythonFundamentals_Part2.ipynb) | Lab: Python (1%) |
 | 5 | APIs and Data Formats | [Lecture](week05/W05_Lecture_APIs_DataFormats.ipynb), [Lab](week05/W05_Lab_APIs_DataFormats.ipynb) | Lab: API (1%), [Practical Assessment 1](week05/pa1/PA1_Project_Brief.pdf) (5%) |
-| 6 | Version Control | [Lecture](week06/W06_Lecture_GitAndGitHub.md), [Lab](week06/W06_Lab_GitAndGitHub.md) | Lab: Git/GitHub (2%) |
-| 7 | Mid-term Review | [Practical Assessment 2 brief](week07/pa2/PA2_Project_Brief.pdf), [sample inventory](week07/pa2/PA2_sample.xml), [sample policy](week07/pa2/PA2_policy.yaml) | Mid-term, [Practical Assessment 2: Fleet Compliance Auditor](week07/pa2/PA2_Project_Brief.pdf) (5%) |
+| 6 | Version Control + Mid-term Review | [Lecture](week06/W06_Lecture_GitAndGitHub.md), [Lab](week06/W06_Lab_GitAndGitHub.md) | Lab: Git/GitHub (2%) |
+| 7 | Mid-term | [Practical Assessment 2 brief](week07/pa2/PA2_Project_Brief.pdf), [sample inventory](week07/pa2/PA2_sample.xml), [sample policy](week07/pa2/PA2_policy.yaml) | Mid-term, [Practical Assessment 2: Fleet Compliance Auditor](week07/pa2/PA2_Project_Brief.pdf) (5%) |
 | 8 | Study Break | | |
 | 9 | Containers | | Lab: Docker Containers (2%) |
 | 10 | Container Orchestration | | Lab: Kubernetes (2%) |
