@@ -5,7 +5,7 @@ This lab is graded (2% of final grade). You create three servers (Docker contain
 
 **Rules**
 
-- Work in a real terminal: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Ansible does not run in plain PowerShell. Docker must be running and Ansible installed (see [W09_Setup_Your_Laptop.md](../week09/containers/W09_Setup_Your_Laptop.md), section 5).
+- Work in a real terminal: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Ansible does not run in plain PowerShell. Docker must be running and Ansible installed (see [W09_Setup_Your_Laptop.md](../week09/lab/W09_Setup_Your_Laptop.md), section 5).
 - Do the parts in order. Each part builds on the one before.
 - Use the **exact** names and file names given here. The self-check and your instructor look for them.
 - Every command is one grey box. Run it, read the output, then go on. Do not copy-paste the whole lab at once.

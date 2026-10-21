@@ -5,7 +5,7 @@ This lab is graded (2% of final grade). You write a small Python module with tes
 
 **Rules**
 
-- Work in a real terminal: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Docker must be running. You need Python 3, Git, and a GitHub account with an SSH key (see [W09_Setup_Your_Laptop.md](../week09/containers/W09_Setup_Your_Laptop.md)).
+- Work in a real terminal: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Docker must be running. You need Python 3, Git, and a GitHub account with an SSH key (see [W09_Setup_Your_Laptop.md](../week09/lab/W09_Setup_Your_Laptop.md)).
 - Do the parts in order. Use the **exact** names and file names given here. The self-check and your instructor look for them.
 - Every command is one grey box. Run it, read the output, then go on. Do not copy-paste the whole lab at once.
 - If you get stuck, use the lecture and the "If something goes wrong" table at the end. Do not ask someone to type the commands for you.

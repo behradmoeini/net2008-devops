@@ -280,7 +280,7 @@ docker ps -a  # Check that no lab container is left.
 The self-check reads your lab folder and asks Docker for the images and the volume. It changes nothing. Run it from your lab folder, with the stack from Part 4 still running for the best result. Use the path of your copy of the course repository:
 
 ```bash
-python3 ~/net2008-devops/week09/containers/W09_Lab_selfcheck.py --seed "$SEED"  # Check your work against the lab.
+python3 ~/net2008-devops/week09/lab/W09_Lab_selfcheck.py --seed "$SEED"  # Check your work against the lab.
 ```
 
 Fix every `FAIL` line, then run it again. It checks that things exist and have the right shape. Your instructor also reads the files in your repository and `answers.txt`.
