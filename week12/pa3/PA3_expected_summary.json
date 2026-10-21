@@ -1,0 +1,26 @@
+{
+  "total_requests": 40,
+  "malformed": 3,
+  "status_classes": {
+    "2xx": 20,
+    "3xx": 5,
+    "4xx": 5,
+    "5xx": 10
+  },
+  "top_paths": [
+    {
+      "path": "/login",
+      "count": 11
+    },
+    {
+      "path": "/index.html",
+      "count": 8
+    },
+    {
+      "path": "/api/devices",
+      "count": 7
+    }
+  ],
+  "total_bytes": 174930,
+  "unique_clients": 9
+}
