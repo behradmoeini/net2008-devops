@@ -1,7 +1,7 @@
 # Week 12 Lecture: Configuration Management with Ansible
 **NET2008 DevOps · Algonquin College**
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). Ansible does not run in plain Windows PowerShell. You need Docker running and Ansible installed in your Python virtual environment (see [W09_Setup_Your_Laptop.md](../week09/W09_Setup_Your_Laptop.md), section 5).
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). Ansible does not run in plain Windows PowerShell. You need Docker running and Ansible installed in your Python virtual environment (see [W09_Setup_Your_Laptop.md](../week09/containers/W09_Setup_Your_Laptop.md), section 5).
 
 ## How to follow this guide
 

@@ -1,7 +1,7 @@
 # Week 10 Lecture: Container Orchestration with Kubernetes
 **NET2008 DevOps · Algonquin College**
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running and `kubectl` and `minikube` installed (see [W09_Setup_Your_Laptop.md](../week09/W09_Setup_Your_Laptop.md), section 3). Run `python3 ../week09/check_tools.py` to check.
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running and `kubectl` and `minikube` installed (see [W09_Setup_Your_Laptop.md](../week09/containers/W09_Setup_Your_Laptop.md), section 3). Run `python3 ../week09/containers/check_tools.py` to check.
 
 ## How to follow this guide
 
