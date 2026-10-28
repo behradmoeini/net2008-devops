@@ -10,6 +10,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - Every grey box is **one command** (or one file you create). Everything after the `#` on the first line is a comment that says what the command does. Copy the whole box, paste it into the terminal, press Enter, then go to the next box.
 - **You should see** shows roughly what the terminal prints. IDs and times will differ.
 - Do the steps in order. Each step builds on the one before.
+- Steps and subsections marked **REFERENCE** are not presented in class. The full detail stays here for you to read on your own, and the lab practises it.
 - All practice work happens in one folder, `~/container-practice`.
 
 ---
@@ -247,6 +248,8 @@ docker rm -f zoo web1  # Delete both containers (-f stops them first). The image
 ---
 ## Step 5. Images and tags
 
+> **REFERENCE** Read it on your own; the lab practises it.
+
 ```bash
 docker images  # List the images on your computer.
 ```
@@ -325,7 +328,9 @@ docker build -t site:1.1 .  # Build again. Lines that did not change say CACHED.
 docker rm -f site1  # Delete the old container.
 ```
 
-Other Dockerfile instructions you will use in the lab:
+### More Dockerfile instructions
+
+> **REFERENCE** Read it on your own; the lab uses them.
 
 | Instruction | Meaning |
 |---|---|
@@ -452,6 +457,8 @@ The built-in Flask server is fine for learning. A production service would use a
 ---
 ## Step 8. Environment variables
 
+> **REFERENCE** Read it on your own; the lab practises it.
+
 ```bash
 docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('site =', os.environ['SITE'])"  # Pass a variable with -e and read it inside the container.
 ```
@@ -460,6 +467,8 @@ docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('si
 
 ---
 ## Step 9. Volumes: keep data after the container is gone
+
+> **REFERENCE** Read it on your own; the lab practises it.
 
 First prove the problem. Start the app from Step 7 and call it three times:
 
@@ -537,6 +546,8 @@ A **bind mount** (`-v /path/on/your/computer:/path/in/container`) mounts one of 
 
 ---
 ## Step 10. Networks: containers talk by name
+
+> **REFERENCE** Read it on your own; the lab uses it in Part 4 (Compose).
 
 By default a container can reach the internet but not find other containers by name. A **user-defined network** adds name lookup (DNS).
 
@@ -628,6 +639,8 @@ docker compose down -v  # Stop and delete the containers, the network and (with 
 
 ---
 ## Step 12. Clean up
+
+> **REFERENCE** Read it on your own; the lab practises it.
 
 ```bash
 docker ps -a  # Check what is still around.
