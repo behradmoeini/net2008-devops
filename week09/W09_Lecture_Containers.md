@@ -143,45 +143,102 @@ curl http://localhost:8081  # Ask the web server for its page.
 ---
 ## Step 4. Look inside a running container
 
+nginx is boring to watch. Start a container that runs a small Python program: a help desk intern who works on one ticket every two seconds and has a limited supply of excuses.
+
 ```bash
-docker ps  # List running containers.
+cd ~/container-practice/demo  # Go back to the demo folder from Step 2.
 ```
 
 ```bash
-docker logs web1  # Print what the container wrote to its output (the web server's access log).
+cat > worker.py <<'EOF'
+import itertools
+import random
+import time
+
+excuses = [
+    "It works on my machine.",
+    "Have you tried turning it off and on again?",
+    "It is always DNS.",
+    "I did not touch anything. It was like that.",
+    "The network is fine. The network is always fine.",
+    "Let me check the logs. Oh. These are the logs.",
+    "That is not a bug. That is a feature request.",
+    "It was working yesterday.",
+]
+
+print("Intern started. Ticket queue: 0. Coffee level: 100%", flush=True)
+for ticket in itertools.count(1):
+    print(f"ticket #{ticket}: {random.choice(excuses)}", flush=True)
+    time.sleep(2)
+EOF
 ```
 
 ```bash
-docker exec web1 cat /etc/os-release  # Run one command inside the container. It is Alpine Linux.
+docker run -d --name intern -v "$PWD":/app -w /app python:3.11-slim python worker.py  # Start the intern in the background. The script comes from your folder, the Python comes from the image.
+```
+
+Now inspect it:
+
+```bash
+docker ps  # List running containers. You see web1 (nginx) and intern (Python).
 ```
 
 ```bash
-docker exec -it web1 sh  # Open an interactive shell inside the container. Type exit to leave.
-```
-
-Inside that shell try `ls /usr/share/nginx/html` and `ps`, then type `exit`. You only see the container's own files and processes.
-
-```bash
-docker stop web1  # Stop the container. It still exists.
+docker logs intern  # Print everything the intern said so far. Whatever a program prints becomes the container log.
 ```
 
 ```bash
-docker ps -a  # List all containers, including stopped ones. web1 shows "Exited".
+docker logs -f --tail 3 intern  # Follow the log live, starting with the last 3 lines. Press Ctrl+C to stop following. The intern keeps working.
 ```
 
 ```bash
-docker start web1  # Start the same container again.
+docker exec intern python --version  # Run one command inside the container. It is the Python from the image, not the one on your laptop.
 ```
 
 ```bash
-docker rm -f web1  # Delete the container (-f stops it first). The image stays on disk.
+docker exec intern cat /etc/os-release  # The intern lives on Debian Linux, whatever your laptop runs.
+```
+
+```bash
+docker exec intern cat /proc/1/cmdline  # Show the command of process number 1 inside the container.
+```
+
+**You should see** `python` and `worker.py` glued together. The container is not a machine. It is this one process, and the container ends when the process ends.
+
+```bash
+docker exec -it intern bash  # Open an interactive shell inside the container. Type exit to leave.
+```
+
+Inside that shell try `ls /app`, `hostname` and `whoami`, then type `exit`. You see only the container's own files, and you are `root` there. The intern has no idea that your laptop, your photos or your other containers exist.
+
+Now manage the intern's career:
+
+```bash
+docker stop intern  # Stop the container. It still exists. The intern goes home.
+```
+
+```bash
+docker ps -a  # List all containers, including stopped ones. intern shows "Exited".
+```
+
+```bash
+docker start intern  # Start the same container again. The intern comes back as if nothing happened.
+```
+
+```bash
+docker logs --tail 4 intern  # The old tickets are still in the log, and the ticket count starts again at #1 because the program restarted.
+```
+
+```bash
+docker rm -f intern web1  # Delete both containers (-f stops them first). The images stay on disk. The intern is fired.
 ```
 
 | Command | What it does |
 |---|---|
 | `docker ps` / `docker ps -a` | Running / all containers |
-| `docker logs NAME` | Show the output of a container |
+| `docker logs NAME` | Show the output of a container (`-f` follows it live) |
 | `docker exec NAME CMD` | Run a command inside a running container |
+| `docker exec -it NAME bash` | Open a shell inside a running container |
 | `docker stop NAME` / `docker start NAME` | Stop / start |
 | `docker rm NAME` | Delete a stopped container (`-f` forces) |
 
