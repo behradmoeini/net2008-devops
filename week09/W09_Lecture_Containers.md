@@ -466,15 +466,17 @@ docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('si
 ---
 ## Step 9. Volumes: keep data after the container is gone
 
-A container's files disappear with the container. A **volume** is a folder that Docker keeps outside the container. You mount it at a path inside the container, and whatever the program writes there survives. The app from Step 7 writes its visit counter to `/data/count.txt`, so you mount the volume at `/data`.
+A container's files disappear with the container. A **volume** is a folder that Docker keeps outside the container. You mount it at a path inside the container, and whatever the program writes there survives. The app from Step 7 writes its visit counter to `/data`, so mount the volume there:
 
 ```bash
-docker volume create counter  # Create a volume managed by Docker.
+docker run -d --name count1 -p 8090:8000 -v counter:/data bytown-py:1.0  # Start the app with the volume counter mounted at /data. -v NAME:PATH.
 ```
 
-```bash
-docker run -d --name count1 -p 8090:8000 -v counter:/data bytown-py:1.0  # Start the app with the volume mounted at /data. -v NAME:PATH.
-```
+### Volume details
+
+> **REFERENCE** Read it on your own; the lab practises it.
+
+**Prove that the data survives.** Call the app three times, delete the container, start a new one with the same volume and call it again:
 
 ```bash
 curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits.
@@ -501,10 +503,6 @@ docker rm -f count2  # Clean up the container.
 ```bash
 docker volume rm counter  # Delete the volume (this deletes the data).
 ```
-
-### Volume details
-
-> **REFERENCE** Read it on your own; the lab practises it.
 
 **The problem without a volume.** Start the app without `-v` and call it three times. Delete the container and start a new one: the counter starts again at 1.
 
@@ -553,11 +551,17 @@ A **bind mount** (`-v /path/on/your/computer:/path/in/container`) mounts one of 
 ---
 ## Step 10. Networks: containers talk by name
 
-By default a container can reach the internet but not find other containers by name. A **user-defined network** adds name lookup (DNS): containers on it use each other's names as host names.
+By default a container can reach the internet but not find other containers by name. A **user-defined network** adds name lookup: containers on it use each other's names as host names.
 
 ```bash
 docker network create labnet  # Create a user-defined network.
 ```
+
+### Network details
+
+> **REFERENCE** Read it on your own; the lab uses it in Part 4 (Compose).
+
+**Reach a container by name.** Start a web server on the network, then call it by name from a second container:
 
 ```bash
 docker run -d --name backend --network labnet nginx:alpine  # Start a web server on that network. It has no published port.
@@ -576,10 +580,6 @@ docker rm -f backend  # Clean up the container.
 ```bash
 docker network rm labnet  # Clean up the network.
 ```
-
-### Network details
-
-> **REFERENCE** Read it on your own; the lab uses it in Part 4 (Compose).
 
 This is how you keep a database private and expose only the web server: put both on one network and publish a port (`-p`) only for the web server. Compose does this for you, which is why Step 11 needs no `docker network` command.
 
