@@ -1,7 +1,7 @@
 # Week 11 Lecture: Virtualization and Infrastructure as Code
 **NET2008 DevOps · Algonquin College**
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running and **Terraform** installed (see [W09_Setup_Your_Laptop.md](../week09/W09_Setup_Your_Laptop.md), section 3). **Vagrant and VirtualBox are optional**: the Terraform part of this week runs with Docker only, so every student can finish it.
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running and **Terraform** installed (see [W11_Setup_Terraform.md](W11_Setup_Terraform.md)). **Vagrant and VirtualBox are optional**: the Terraform part of this week runs with Docker only, so every student can finish it.
 
 ## How to follow this guide
 
@@ -9,7 +9,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - Do the steps in order. All practice work happens in one folder, `~/iac-practice`.
 
 ---
-## The big picture: read this first
+## The big picture
 
 ### Part A. Virtual machines
 
@@ -391,7 +391,7 @@ The `.tf` files are all you need to build it again. That is the point of IaC.
 | `Error: Unsupported argument` | A typo in an attribute name, or the wrong block type. Read the line and column in the message. |
 | `Error: container exited immediately` | The image or command is wrong. `docker logs NAME`. |
 | `Error acquiring the state lock` | A previous run was killed. Wait a minute, or `terraform force-unlock ID` (the ID is in the message). |
-| `terraform: command not found` | Terraform is not installed in this terminal. See the setup guide, section 4. |
+| `terraform: command not found` | Terraform is not installed in this terminal. See [W11_Setup_Terraform.md](W11_Setup_Terraform.md). |
 | macOS: `unix:///var/run/docker.sock` not found | Docker Desktop > Settings > Advanced: enable **Allow the default Docker socket to be used**, or set `provider "docker" { host = "unix:///Users/YOU/.docker/run/docker.sock" }`. |
 | Windows: Docker works in Ubuntu but Terraform does not | Run Terraform in the **Ubuntu** terminal, with Docker Desktop's WSL integration on. |
 

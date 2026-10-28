@@ -9,7 +9,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - All practice work happens in one folder, `~/monitor-practice`.
 
 ---
-## The big picture: read this first
+## The big picture
 
 You cannot fix what you cannot see. Production systems fail at 3 a.m., and the first question is always "what happened, and since when?". **Monitoring** answers it with data collected all the time.
 

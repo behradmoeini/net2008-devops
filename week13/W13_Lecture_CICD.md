@@ -9,7 +9,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - Do the steps in order. All practice work happens in one folder, `~/ci-practice`.
 
 ---
-## The big picture: read this first
+## The big picture
 
 ### The problem
 

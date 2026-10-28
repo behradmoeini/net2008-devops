@@ -12,7 +12,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - All practice work happens in one folder, `~/netops-practice`.
 
 ---
-## The big picture: read this first
+## The big picture
 
 You do not need to know anything about Git yet. Read this section once, then start Step 1.
 

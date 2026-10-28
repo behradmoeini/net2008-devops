@@ -13,7 +13,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - All practice work happens in one folder, `~/container-practice`.
 
 ---
-## The big picture: read this first
+## The big picture
 
 ### The problem
 
@@ -50,7 +50,7 @@ Dockerfile  --docker build-->  image  --docker run-->  container
  (recipe)                      (package)               (running process)
 ```
 
-One image can start many containers. Deleting a container does not delete the image. **Data written inside a container is lost when the container is deleted.** Volumes fix that (Step 7).
+One image can start many containers. Deleting a container does not delete the image. **Data written inside a container is lost when the container is deleted.** Volumes fix that (Step 9).
 
 ---
 ## Step 1. Check that Docker works
@@ -74,7 +74,49 @@ mkdir -p ~/container-practice && cd ~/container-practice  # Create the practice 
 ```
 
 ---
-## Step 2. Run your first container
+## Step 2. See the problem first
+
+You will run one small Python script twice: on your laptop and in a container. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
+
+```bash
+mkdir -p ~/container-practice/demo && cd ~/container-practice/demo  # Create the folder for this demo and move into it.
+```
+
+```bash
+cat > demo.py <<'EOF'
+import platform
+import cowsay
+
+cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
+EOF
+```
+
+Run it on your laptop first:
+
+```bash
+python3 demo.py  # Run the script with the Python installed on your laptop.
+```
+
+**You should see** `ModuleNotFoundError: No module named 'cowsay'`. This is the "works on my machine" problem: the script needs a library that your laptop does not have, and on a server it would be another missing library or another Python version.
+
+Now run the same file in a container that has Python 3.11:
+
+```bash
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
+```
+
+**You should see** a cow that says `I run on Python 3.11.x on Linux`. Your laptop is untouched: the library exists only inside that container, and the container is deleted when the script ends (`--rm`).
+
+Run it again with a different Python version. Only the image tag changes:
+
+```bash
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
+```
+
+The cow now reports Python 3.12. One file, two Python versions, no installation on your laptop. The rest of this guide shows how to package, store and connect programs like this one.
+
+---
+## Step 3. Run your first container
 
 ```bash
 docker run -d --name web1 -p 8081:80 nginx:alpine  # Start the nginx web server in the background (-d), name it web1, and map port 8081 of your computer to port 80 inside the container.
@@ -96,10 +138,10 @@ The first time, Docker downloads the image. Then test it:
 curl http://localhost:8081  # Ask the web server for its page.
 ```
 
-**You should see** HTML that contains `Welcome to nginx!`. In Codespaces you can also open the **Ports** tab and click the globe next to port 8081.
+**You should see** HTML that contains `Welcome to nginx!`.
 
 ---
-## Step 3. Look inside a running container
+## Step 4. Look inside a running container
 
 ```bash
 docker ps  # List running containers.
@@ -144,7 +186,7 @@ docker rm -f web1  # Delete the container (-f stops it first). The image stays o
 | `docker rm NAME` | Delete a stopped container (`-f` forces) |
 
 ---
-## Step 4. Images and tags
+## Step 5. Images and tags
 
 ```bash
 docker images  # List the images on your computer.
@@ -165,7 +207,7 @@ docker history nginx:alpine  # Show the layers that make up the image. Each Dock
 An image name has the form `NAME:TAG`. **Always use a tag.** If you leave it out, Docker uses `latest`, which changes over time and makes your builds unpredictable.
 
 ---
-## Step 5. Build your own image with a Dockerfile
+## Step 6. Build your own image with a Dockerfile
 
 Create a small website and a Dockerfile in a new folder:
 
@@ -236,7 +278,120 @@ Other Dockerfile instructions you will use in the lab:
 | `CMD ["cmd", "arg"]` | The command that runs **when the container starts** |
 
 ---
-## Step 6. Environment variables
+## Step 7. Package a Python web app
+
+Now you package a real program: a small Python web service that reports which container answered and counts the visits.
+
+```bash
+mkdir -p ~/container-practice/pyapp && cd ~/container-practice/pyapp  # Create the folder for the app and move into it.
+```
+
+```bash
+cat > app.py <<'EOF'
+import os
+import platform
+import socket
+
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+COUNT_FILE = os.environ.get("COUNT_FILE", "/data/count.txt")
+GREETING = os.environ.get("GREETING", "Hello from Bytown NetOps")
+
+
+def next_count():
+    os.makedirs(os.path.dirname(COUNT_FILE), exist_ok=True)
+    try:
+        with open(COUNT_FILE) as f:
+            count = int(f.read())
+    except (FileNotFoundError, ValueError):
+        count = 0
+    count += 1
+    with open(COUNT_FILE, "w") as f:
+        f.write(str(count))
+    return count
+
+
+@app.get("/")
+def index():
+    return jsonify(
+        message=GREETING,
+        container=socket.gethostname(),
+        python=platform.python_version(),
+        visits=next_count(),
+    )
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
+EOF
+```
+
+```bash
+echo "flask==3.0.3" > requirements.txt  # List the libraries the app needs, with fixed versions.
+```
+
+```bash
+cat > Dockerfile <<'EOF'
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
+ENV GREETING="Hello from Bytown NetOps"
+EXPOSE 8000
+CMD ["python", "app.py"]
+EOF
+```
+
+Read the Dockerfile from the top: start from Python 3.11, work in `/app`, copy the library list, install the libraries, copy the program, set a default greeting, and start the program when a container starts. The library list is copied **before** the program on purpose: Docker caches each layer, so the slow `pip install` runs again only when `requirements.txt` changes.
+
+```bash
+docker build -t bytown-py:1.0 .  # Build the image. The first build downloads Flask and takes a minute.
+```
+
+```bash
+docker run -d --name py1 -p 8090:8000 bytown-py:1.0  # Start a container from the image on host port 8090.
+```
+
+```bash
+curl -s http://localhost:8090  # Call the app.
+```
+
+**You should see** JSON with `"message": "Hello from Bytown NetOps"`, the Python version, a `container` value (a short hex ID) and `"visits": 1`. Run the `curl` again: the visits go up.
+
+One image starts many containers. Start a second one with a different greeting:
+
+```bash
+docker run -d --name py2 -p 8091:8000 -e GREETING="Hello from container two" bytown-py:1.0  # A second container from the same image. -e overrides the greeting.
+```
+
+```bash
+curl -s http://localhost:8091  # The container ID and the greeting differ from py1, and the visits start at 1.
+```
+
+Each container has its own ID, its own environment and its own counter file. Now look at the logs and prove the build cache:
+
+```bash
+docker logs py1  # The app prints one line per request it received.
+```
+
+```bash
+echo "# changed" >> app.py  # Change the program but not the library list.
+```
+
+```bash
+docker build -t bytown-py:1.1 .  # Rebuild. The pip install step says CACHED, so this takes a second.
+```
+
+```bash
+docker rm -f py1 py2  # Delete both containers. The images stay.
+```
+
+The built-in Flask server is fine for learning. A production service would use a server such as gunicorn.
+
+---
+## Step 8. Environment variables
 
 ```bash
 docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('site =', os.environ['SITE'])"  # Pass a variable with -e and read it inside the container.
@@ -245,58 +400,84 @@ docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('si
 **You should see** `site = ott-dc1`. Environment variables are how you configure a container without rebuilding the image. **Never put passwords in a Dockerfile**: anyone with the image can read them.
 
 ---
-## Step 7. Volumes: keep data after the container is gone
+## Step 9. Volumes: keep data after the container is gone
 
-First prove the problem:
+First prove the problem. Start the app from Step 7 and call it three times:
 
 ```bash
-docker run -d --name tmp1 nginx:alpine  # Start a throw-away container with no volume.
+docker run -d --name count1 -p 8090:8000 bytown-py:1.0  # Start the app with no volume.
 ```
 
 ```bash
-docker exec tmp1 sh -c "echo hello > /usr/share/nginx/html/note.txt"  # Write a file inside the container.
+curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits.
+```
+
+**You should see** `"visits": 3` in the last answer. Now delete the container and start a new one:
+
+```bash
+docker rm -f count1  # Delete the container. The counter file inside it is gone with it.
 ```
 
 ```bash
-docker rm -f tmp1  # Delete the container. The file is gone with it.
-```
-
-Now do it with a **named volume**:
-
-```bash
-docker volume create webdata  # Create a volume managed by Docker.
+docker run -d --name count2 -p 8090:8000 bytown-py:1.0  # Start a fresh container from the same image.
 ```
 
 ```bash
-docker run -d --name vol1 -v webdata:/usr/share/nginx/html nginx:alpine  # Mount the volume at the folder nginx serves. -v NAME:PATH.
+curl -s http://localhost:8090  # The counter starts again at 1.
 ```
 
 ```bash
-docker exec vol1 sh -c "echo saved > /usr/share/nginx/html/note.txt"  # Write a file into the volume.
+docker rm -f count2  # Clean up.
+```
+
+Now do it with a **named volume**. The app writes its counter to `/data/count.txt`, so you mount the volume at `/data`:
+
+```bash
+docker volume create counter  # Create a volume managed by Docker.
 ```
 
 ```bash
-docker rm -f vol1  # Delete the container. The volume stays.
+docker run -d --name count3 -p 8090:8000 -v counter:/data bytown-py:1.0  # Start the app with the volume mounted at /data. -v NAME:PATH.
 ```
 
 ```bash
-docker run --rm -v webdata:/data alpine cat /data/note.txt  # Mount the same volume in a new container and read the file. It is still there.
+curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits again.
 ```
 
-**You should see** `saved`.
+```bash
+docker rm -f count3  # Delete the container. The volume stays.
+```
+
+```bash
+docker run -d --name count4 -p 8090:8000 -v counter:/data bytown-py:1.0  # A brand new container, the same volume.
+```
+
+```bash
+curl -s http://localhost:8090  # The counter continues.
+```
+
+**You should see** `"visits": 4`. The container is new, the data is not. You can also read the file from a different container:
+
+```bash
+docker run --rm -v counter:/data alpine cat /data/count.txt  # Mount the same volume in a throw-away container and print the file.
+```
+
+```bash
+docker rm -f count4  # Delete the app container.
+```
 
 ```bash
 docker volume ls  # List volumes.
 ```
 
 ```bash
-docker volume rm webdata  # Delete the volume (this deletes the data).
+docker volume rm counter  # Delete the volume (this deletes the data).
 ```
 
 A **bind mount** (`-v /path/on/your/computer:/path/in/container`) mounts one of your own folders. Use it in development. Use named volumes for data that the container owns.
 
 ---
-## Step 8. Networks: containers talk by name
+## Step 10. Networks: containers talk by name
 
 By default a container can reach the internet but not find other containers by name. A **user-defined network** adds name lookup (DNS).
 
@@ -323,7 +504,7 @@ docker network rm labnet  # Clean up the network.
 ```
 
 ---
-## Step 9. Docker Compose: many containers, one file
+## Step 11. Docker Compose: many containers, one file
 
 Typing five long `docker run` commands is slow and easy to get wrong. **Compose** describes the whole system in one YAML file.
 
@@ -334,24 +515,27 @@ mkdir -p ~/container-practice/stack && cd ~/container-practice/stack  # Create a
 ```bash
 cat > compose.yaml <<'EOF'
 services:
-  web:
-    image: nginx:alpine
+  app:
+    build: ../pyapp
+    image: bytown-py:compose
     ports:
-      - "8083:80"
+      - "8083:8000"
+    environment:
+      GREETING: "Hello from Compose"
     volumes:
-      - pages:/usr/share/nginx/html
+      - counter:/data
   tools:
     image: alpine:3.20
     command: ["sleep", "3600"]
 volumes:
-  pages:
+  counter:
 EOF
 ```
 
-YAML uses **spaces** for indentation (never tabs). Compose creates a network for the stack, so `tools` can reach `web` by the name `web`.
+YAML uses **spaces** for indentation (never tabs). Compose creates a network for the stack, so `tools` can reach `app` by the name `app`. The `build` line tells Compose to build the image from the Python app folder of Step 7.
 
 ```bash
-docker compose up -d  # Create the network, the volume and both containers, and start them.
+docker compose up -d --build  # Build the app image, create the network and the volume, and start both containers.
 ```
 
 ```bash
@@ -359,11 +543,15 @@ docker compose ps  # List the containers of this stack.
 ```
 
 ```bash
-docker compose exec tools wget -qO- http://web  # From the tools container, fetch the web container's page by name.
+curl -s http://localhost:8083  # Call the app from your laptop through the published port.
 ```
 
 ```bash
-docker compose logs web  # Show the logs of one service.
+docker compose exec tools wget -qO- http://app:8000  # From the tools container, call the app by its service name. Visits go up, because both calls reach the same app.
+```
+
+```bash
+docker compose logs app  # Show the logs of one service: you see both requests.
 ```
 
 ```bash
@@ -372,7 +560,7 @@ docker compose down -v  # Stop and delete the containers, the network and (with 
 
 | Command | What it does |
 |---|---|
-| `docker compose up -d` | Create and start everything |
+| `docker compose up -d --build` | Build if needed, then create and start everything |
 | `docker compose ps` | Show the containers |
 | `docker compose logs SERVICE` | Show logs |
 | `docker compose exec SERVICE CMD` | Run a command in a service |
@@ -380,7 +568,7 @@ docker compose down -v  # Stop and delete the containers, the network and (with 
 | `docker compose config` | Check the file and print it. Run it when Compose complains. |
 
 ---
-## Step 10. Clean up
+## Step 12. Clean up
 
 ```bash
 docker ps -a  # Check what is still around.
