@@ -1,19 +1,7 @@
 # Week 9 Setup: Your Laptop Toolchain
 **NET2008 DevOps · Algonquin College**
 
-From Week 9 to Week 15 you do everything on **your own laptop**. You do not need a server, a lab machine, a cloud account or a Codespace. Do this setup **once**, before the Week 9 lecture. Install only what each week needs, in the order below. If you already have a tool, skip its step.
-
-## Minimum laptop
-
-| | Minimum | Better |
-|---|---|---|
-| Processor | 64-bit Intel, AMD or Apple silicon | |
-| Memory | 8 GB | 16 GB |
-| Free disk space | 25 GB | 40 GB |
-| System | Windows 10 (22H2) or 11, macOS 12 or newer, a recent Linux | |
-| Virtualization | Switched on in the BIOS (Windows) | |
-
-If your laptop is below this, tell your instructor in the first week. Do not wait until the lab.
+From Week 9 to Week 15 you do everything on **your own laptop**. You do not need a server, a lab machine, a cloud account or a Codespace. Do this setup **once**, before the Week 9 lecture. Install only what each week needs, in the order below. Week 10 has its own setup guide in the Week 10 folder. If you already have a tool, skip its step.
 
 ## What you install and when
 
@@ -21,7 +9,6 @@ If your laptop is below this, tell your instructor in the first week. Do not wai
 |---|---|---|
 | Terminal (Ubuntu on WSL 2 for Windows) | Week 9 | Where you type every command |
 | Docker | Weeks 9 to 14 | Containers |
-| kubectl and minikube | Week 10 | A one-node Kubernetes cluster on your laptop |
 | Terraform | Week 11 | Infrastructure as code |
 | Python virtual environment with Ansible | Week 12 | Configuration management |
 | VirtualBox and Vagrant (optional) | Week 11 | Virtual machines (see the note in the Week 11 lab) |
@@ -78,47 +65,7 @@ You must see `Hello from Docker!`.
 
 **Docker Desktop memory.** In Docker Desktop open Settings > Resources and give Docker **4 GB** of memory (6 GB on a 16 GB laptop). Kubernetes and the monitoring stack in later weeks need it.
 
-## 3. Kubernetes tools (needed in Week 10)
-
-**macOS.**
-
-```bash
-brew install kubectl minikube
-```
-
-**Windows (Ubuntu terminal) and Linux.**
-
-```bash
-ARCH=$(dpkg --print-architecture)  # amd64 on most laptops, arm64 on ARM laptops.
-```
-
-```bash
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$ARCH/kubectl"  # Download kubectl.
-```
-
-```bash
-sudo install kubectl /usr/local/bin/kubectl  # Put it on your PATH.
-```
-
-```bash
-curl -LO "https://storage.googleapis.com/minikube/releases/latest/minikube-linux-$ARCH"  # Download minikube.
-```
-
-```bash
-sudo install "minikube-linux-$ARCH" /usr/local/bin/minikube  # Put it on your PATH.
-```
-
-**Check:**
-
-```bash
-kubectl version --client
-```
-
-```bash
-minikube version
-```
-
-## 4. Terraform (needed in Week 11)
+## 3. Terraform (needed in Week 11)
 
 **macOS.**
 
@@ -146,7 +93,7 @@ sudo apt update && sudo apt install -y terraform
 terraform version
 ```
 
-## 5. Ansible in a Python virtual environment (needed in Week 12)
+## 4. Ansible in a Python virtual environment (needed in Week 12)
 
 Ansible runs on macOS, Linux and in the Ubuntu (WSL) terminal. It does **not** run in plain Windows PowerShell, which is why Windows students use Ubuntu.
 
@@ -182,7 +129,7 @@ ansible-galaxy collection install community.docker  # Install the Ansible collec
 ansible --version
 ```
 
-## 6. VirtualBox and Vagrant (optional, Week 11)
+## 5. VirtualBox and Vagrant (optional, Week 11)
 
 Virtual machines on a laptop depend on the processor. The Week 11 lab is written so that you finish **without** a virtual machine. Install these only if your laptop can run them, and only if you want to try `vagrant up`.
 
@@ -190,7 +137,7 @@ Virtual machines on a laptop depend on the processor. The Week 11 lab is written
 - **macOS with Intel:** the same two tools with Homebrew: `brew install --cask virtualbox vagrant`.
 - **macOS with Apple silicon (M1 to M4):** VirtualBox does not run Intel boxes. Skip this section. The lab has a path for you.
 
-## 7. Check everything with one command
+## 6. Check everything with one command
 
 Download [check_tools.py](check_tools.py) from the course repository (it is next to this file) and run it from the terminal you use for the course:
 
