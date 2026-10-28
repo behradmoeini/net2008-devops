@@ -1,7 +1,7 @@
 # Week 11 Lecture: Virtualization and Infrastructure as Code
 **NET2008 DevOps · Algonquin College**
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running and **Terraform** installed (see [W09_Setup_Your_Laptop.md](../week09/lab/W09_Setup_Your_Laptop.md), section 3). **Vagrant and VirtualBox are optional**: the Terraform part of this week runs with Docker only, so every student can finish it.
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running and **Terraform** installed (see [W09_Setup_Your_Laptop.md](../week09/W09_Setup_Your_Laptop.md), section 3). **Vagrant and VirtualBox are optional**: the Terraform part of this week runs with Docker only, so every student can finish it.
 
 ## How to follow this guide
 

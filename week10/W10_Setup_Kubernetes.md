@@ -1,7 +1,7 @@
 # Week 10 Setup: Kubernetes Tools
 **NET2008 DevOps · Algonquin College**
 
-You do this setup **once**, before the Week 10 lecture. It assumes you finished the [Week 9 setup](../week09/lab/W09_Setup_Your_Laptop.md): a working terminal (Ubuntu on WSL 2 for Windows) and Docker running. Give Docker Desktop **4 GB** of memory (6 GB on a 16 GB laptop) in Settings > Resources, because minikube runs inside Docker.
+You do this setup **once**, before the Week 10 lecture. It assumes you finished the [Week 9 setup](../week09/W09_Setup_Your_Laptop.md): a working terminal (Ubuntu on WSL 2 for Windows) and Docker running. Give Docker Desktop **4 GB** of memory (6 GB on a 16 GB laptop) in Settings > Resources, because minikube runs inside Docker.
 
 ## Install kubectl and minikube
 

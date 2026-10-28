@@ -5,7 +5,7 @@ This lab is graded (2% of final grade). You describe a virtual machine with Vagr
 
 **Rules**
 
-- Work in a real terminal: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Docker must be running and Terraform installed (see [W09_Setup_Your_Laptop.md](../week09/lab/W09_Setup_Your_Laptop.md)).
+- Work in a real terminal: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Docker must be running and Terraform installed (see [W09_Setup_Your_Laptop.md](../week09/W09_Setup_Your_Laptop.md)).
 - Do the parts in order. Each part builds on the one before.
 - Use the **exact** names and file names given here. The self-check and your instructor look for them.
 - Every command is one grey box. Run it, read the output, then go on. Do not copy-paste the whole lab at once.
