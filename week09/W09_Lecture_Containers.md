@@ -248,8 +248,6 @@ docker rm -f zoo web1  # Delete both containers (-f stops them first). The image
 ---
 ## Step 5. Images and tags
 
-> **REFERENCE** Read it on your own; the lab practises it.
-
 ```bash
 docker images  # List the images on your computer.
 ```
@@ -468,88 +466,94 @@ docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('si
 ---
 ## Step 9. Volumes: keep data after the container is gone
 
-> **REFERENCE** Read it on your own; the lab practises it.
-
-First prove the problem. Start the app from Step 7 and call it three times:
-
-```bash
-docker run -d --name count1 -p 8090:8000 bytown-py:1.0  # Start the app with no volume.
-```
-
-```bash
-curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits.
-```
-
-**You should see** `"visits": 3` in the last answer. Now delete the container and start a new one:
-
-```bash
-docker rm -f count1  # Delete the container. The counter file inside it is gone with it.
-```
-
-```bash
-docker run -d --name count2 -p 8090:8000 bytown-py:1.0  # Start a fresh container from the same image.
-```
-
-```bash
-curl -s http://localhost:8090  # The counter starts again at 1.
-```
-
-```bash
-docker rm -f count2  # Clean up.
-```
-
-Now do it with a **named volume**. The app writes its counter to `/data/count.txt`, so you mount the volume at `/data`:
+A container's files disappear with the container. A **volume** is a folder that Docker keeps outside the container. You mount it at a path inside the container, and whatever the program writes there survives. The app from Step 7 writes its visit counter to `/data/count.txt`, so you mount the volume at `/data`.
 
 ```bash
 docker volume create counter  # Create a volume managed by Docker.
 ```
 
 ```bash
-docker run -d --name count3 -p 8090:8000 -v counter:/data bytown-py:1.0  # Start the app with the volume mounted at /data. -v NAME:PATH.
+docker run -d --name count1 -p 8090:8000 -v counter:/data bytown-py:1.0  # Start the app with the volume mounted at /data. -v NAME:PATH.
 ```
 
 ```bash
-curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits again.
+curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits.
 ```
 
 ```bash
-docker rm -f count3  # Delete the container. The volume stays.
+docker rm -f count1  # Delete the container. The volume stays.
 ```
 
 ```bash
-docker run -d --name count4 -p 8090:8000 -v counter:/data bytown-py:1.0  # A brand new container, the same volume.
+docker run -d --name count2 -p 8090:8000 -v counter:/data bytown-py:1.0  # A brand new container, the same volume.
 ```
 
 ```bash
 curl -s http://localhost:8090  # The counter continues.
 ```
 
-**You should see** `"visits": 4`. The container is new, the data is not. You can also read the file from a different container:
+**You should see** `"visits": 4`. The container is new, the data is not.
 
 ```bash
-docker run --rm -v counter:/data alpine cat /data/count.txt  # Mount the same volume in a throw-away container and print the file.
-```
-
-```bash
-docker rm -f count4  # Delete the app container.
-```
-
-```bash
-docker volume ls  # List volumes.
+docker rm -f count2  # Clean up the container.
 ```
 
 ```bash
 docker volume rm counter  # Delete the volume (this deletes the data).
 ```
 
+### Volume details
+
+> **REFERENCE** Read it on your own; the lab practises it.
+
+**The problem without a volume.** Start the app without `-v` and call it three times. Delete the container and start a new one: the counter starts again at 1.
+
+```bash
+docker run -d --name count3 -p 8090:8000 bytown-py:1.0  # Start the app with no volume.
+```
+
+```bash
+curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits.
+```
+
+```bash
+docker rm -f count3 && docker run -d --name count4 -p 8090:8000 bytown-py:1.0  # Delete the container and start a fresh one.
+```
+
+```bash
+curl -s http://localhost:8090  # The counter is back at 1.
+```
+
+```bash
+docker rm -f count4  # Clean up.
+```
+
+**Share a volume between containers.** Any container can mount the same volume. Docker creates a named volume automatically if it does not exist:
+
+```bash
+docker run --rm -v demo:/data alpine sh -c "echo saved > /data/note.txt"  # Write a file into the volume demo with one container.
+```
+
+```bash
+docker run --rm -v demo:/data alpine cat /data/note.txt  # Read it with a second container. It prints saved.
+```
+
+```bash
+docker volume rm demo  # Clean up.
+```
+
+| Command | What it does |
+|---|---|
+| `docker volume ls` | List volumes |
+| `docker volume inspect NAME` | Show where Docker stores the volume |
+| `docker volume rm NAME` | Delete a volume (this deletes the data) |
+
 A **bind mount** (`-v /path/on/your/computer:/path/in/container`) mounts one of your own folders. Use it in development. Use named volumes for data that the container owns.
 
 ---
 ## Step 10. Networks: containers talk by name
 
-> **REFERENCE** Read it on your own; the lab uses it in Part 4 (Compose).
-
-By default a container can reach the internet but not find other containers by name. A **user-defined network** adds name lookup (DNS).
+By default a container can reach the internet but not find other containers by name. A **user-defined network** adds name lookup (DNS): containers on it use each other's names as host names.
 
 ```bash
 docker network create labnet  # Create a user-defined network.
@@ -563,7 +567,7 @@ docker run -d --name backend --network labnet nginx:alpine  # Start a web server
 docker run --rm --network labnet curlimages/curl curl -s http://backend  # A second container on the same network reaches the first one by its NAME.
 ```
 
-**You should see** the nginx welcome page. Container names are host names inside a user-defined network. Nothing outside can reach `backend`, because you did not publish a port. This is how you keep a database private and expose only the web server.
+**You should see** the nginx welcome page. Nothing outside the network can reach `backend`, because you did not publish a port.
 
 ```bash
 docker rm -f backend  # Clean up the container.
@@ -572,6 +576,18 @@ docker rm -f backend  # Clean up the container.
 ```bash
 docker network rm labnet  # Clean up the network.
 ```
+
+### Network details
+
+> **REFERENCE** Read it on your own; the lab uses it in Part 4 (Compose).
+
+This is how you keep a database private and expose only the web server: put both on one network and publish a port (`-p`) only for the web server. Compose does this for you, which is why Step 11 needs no `docker network` command.
+
+| Command | What it does |
+|---|---|
+| `docker network ls` | List networks |
+| `docker network inspect NAME` | Show the containers on a network and their addresses |
+| `docker run --network NAME ...` | Start a container on that network |
 
 ---
 ## Step 11. Docker Compose: many containers, one file
