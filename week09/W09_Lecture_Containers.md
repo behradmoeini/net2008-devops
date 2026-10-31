@@ -833,127 +833,175 @@ docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('si
 
 ## Volumes: keep data after the container is gone
 
-A container's files disappear with the container. A **volume** is a folder that Docker keeps outside the container. You mount it at a path inside the container, and whatever the program writes there survives. The Python web app above writes its visit counter to `/data`, so mount the volume there:
+A container's files disappear with the container. A **volume** is storage that Docker keeps outside the container, so the data survives. There are two kinds: a **named volume** (Docker owns the storage) and a **bind mount** (a folder from your own computer).
+
+### The problem: data dies with the container
+
+Write a file inside a container, delete the container, then look for the file in a new one:
 
 ```bash
-docker run -d --name count1 -p 8090:8000 -v counter:/data bytown-py:1.0  # Start the app with the volume counter mounted at /data. -v NAME:PATH.
+docker run --name box1 alpine sh -c "echo saved > /note.txt && cat /note.txt"
 ```
 
-### Volume details
+```bash
+docker rm box1
+```
 
-> **REFERENCE** Read it on your own; the lab practises it.
+```bash
+docker run --rm alpine cat /note.txt
+```
 
-**Prove that the data survives.** Call the app three times, delete the container, start a new one with the same volume and call it again:
+**You should see** `saved` the first time and `No such file or directory` the second time. The new container starts from the clean image, so the file is gone.
+
+### Named volume: Docker keeps the data
+
+Create a volume and mount it at `/data` (`-v NAME:PATH`) in one container, then read it from a second, different container:
+
+```bash
+docker volume create mydata
+```
+
+```bash
+docker run --rm -v mydata:/data alpine sh -c "echo saved > /data/note.txt"
+```
+
+```bash
+docker run --rm -v mydata:/data alpine cat /data/note.txt
+```
+
+**You should see** `saved`. Both containers were deleted (`--rm`), but the data lives in the volume. Look at the volume:
+
+```bash
+docker volume ls
+```
+
+```bash
+docker volume inspect mydata
+```
+
+`docker volume inspect` shows where Docker stores the volume. Delete it (this deletes the data):
+
+```bash
+docker volume rm mydata
+```
+
+### Bind mount: share a folder from your computer
+
+A bind mount connects a folder on **your computer** to a path inside the container. Both see the same files. Create a folder with one file:
 
 **macOS / Linux (Terminal):**
 
 ```bash
-curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits.
+mkdir -p ~/container-practice/shared && cd ~/container-practice/shared
+```
+
+```bash
+echo "hello from my computer" > hello.txt
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-curl.exe -s http://localhost:8090; curl.exe -s http://localhost:8090; curl.exe -s http://localhost:8090  # Three visits.
+New-Item -ItemType Directory -Force ~/container-practice/shared | Out-Null
+Set-Location ~/container-practice/shared
 ```
 
-```bash
-docker rm -f count1  # Delete the container. The volume stays.
+```powershell
+Set-Content hello.txt "hello from my computer"
 ```
 
-```bash
-docker run -d --name count2 -p 8090:8000 -v counter:/data bytown-py:1.0  # A brand new container, the same volume.
-```
+Start a container in the background with this folder mounted at `/data`. `sleep 3600` keeps it running for an hour:
 
 **macOS / Linux (Terminal):**
 
 ```bash
-curl -s http://localhost:8090  # The counter continues.
+docker run -d --name synced -v "$PWD":/data alpine sleep 3600
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-curl.exe -s http://localhost:8090  # The counter continues.
+docker run -d --name synced -v "${PWD}:/data" alpine sleep 3600
 ```
 
-**You should see** `"visits": 4`. The container is new, the data is not.
+Go inside and look at your file:
 
 ```bash
-docker rm -f count2  # Clean up the container.
+docker exec synced ls /data
 ```
 
 ```bash
-docker volume rm counter  # Delete the volume (this deletes the data).
+docker exec synced cat /data/hello.txt
 ```
 
-**The problem without a volume.** Start the app without `-v` and call it three times. Delete the container and start a new one: the counter starts again at 1.
+**You should see** `hello.txt` and `hello from my computer`: the file from your computer is inside the container.
 
-```bash
-docker run -d --name count3 -p 8090:8000 bytown-py:1.0  # Start the app with no volume.
-```
+**Change it on your computer.** Add a line, then read the file from inside the container again:
 
 **macOS / Linux (Terminal):**
 
 ```bash
-curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits.
+echo "second line" >> hello.txt
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-curl.exe -s http://localhost:8090; curl.exe -s http://localhost:8090; curl.exe -s http://localhost:8090  # Three visits.
+Add-Content hello.txt "second line"
+```
+
+```bash
+docker exec synced cat /data/hello.txt
+```
+
+**You should see** both lines. The container sees your change at once, with no copy and no restart.
+
+**Change it from inside the container.** Create a file there, then look for it on your computer:
+
+```bash
+docker exec synced sh -c "echo from the container > /data/from_container.txt"
 ```
 
 **macOS / Linux (Terminal):**
 
 ```bash
-docker rm -f count3 && docker run -d --name count4 -p 8090:8000 bytown-py:1.0  # Delete the container and start a fresh one.
+ls
+```
+
+```bash
+cat from_container.txt
 ```
 
 **Windows (PowerShell):**
 
 ```powershell
-docker rm -f count3; docker run -d --name count4 -p 8090:8000 bytown-py:1.0  # Delete the container and start a fresh one.
+dir
 ```
-
-**macOS / Linux (Terminal):**
-
-```bash
-curl -s http://localhost:8090  # The counter is back at 1.
-```
-
-**Windows (PowerShell):**
 
 ```powershell
-curl.exe -s http://localhost:8090  # The counter is back at 1.
+Get-Content from_container.txt
 ```
+
+**You should see** `from_container.txt` in your folder. It works in both directions: it is the same folder, seen from two places.
+
+Delete the container. Your files stay on your computer:
 
 ```bash
-docker rm -f count4  # Clean up.
+docker rm -f synced
 ```
 
-**Share a volume between containers.** Any container can mount the same volume. Docker creates a named volume automatically if it does not exist:
-
-```bash
-docker run --rm -v demo:/data alpine sh -c "echo saved > /data/note.txt"  # Write a file into the volume demo with one container.
-```
-
-```bash
-docker run --rm -v demo:/data alpine cat /data/note.txt  # Read it with a second container. It prints saved.
-```
-
-```bash
-docker volume rm demo  # Clean up.
-```
+| | Named volume | Bind mount |
+|---|---|---|
+| Created with | `-v NAME:/path` | `-v /folder/on/your/computer:/path` |
+| Who stores the data | Docker | Your computer, in a folder you choose |
+| Use it for | Data the container owns (a database) | Development: edit code on your computer, run it in the container |
 
 | Command | What it does |
 |---|---|
+| `docker volume create NAME` | Create a named volume |
 | `docker volume ls` | List volumes |
 | `docker volume inspect NAME` | Show where Docker stores the volume |
 | `docker volume rm NAME` | Delete a volume (this deletes the data) |
-
-A **bind mount** (`-v /path/on/your/computer:/path/in/container`) mounts one of your own folders. Use it in development. Use named volumes for data that the container owns.
 
 ## Networks: containers talk by name
 
