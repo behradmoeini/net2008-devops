@@ -319,23 +319,110 @@ Type `exit` to leave.
 
 ## Images and tags
 
-```bash
-docker images  # List the images on your computer.
-```
-
-```bash
-docker pull python:3.11-slim  # Download an image without running it. 3.11-slim is Python 3.11 on a small Debian.
-```
-
-```bash
-docker run --rm python:3.11-slim python --version  # Run one command in a new container. --rm deletes the container when it ends.
-```
-
-```bash
-docker history nginx:alpine  # Show the layers that make up the image. Each Dockerfile line becomes a layer.
-```
-
 An image name has the form `NAME:TAG`. **Always use a tag.** If you leave it out, Docker uses `latest`, which changes over time and makes your builds unpredictable.
+
+Download two images without running them:
+
+```bash
+docker pull nginx:alpine
+```
+
+```bash
+docker pull python:3.11-slim
+```
+
+List the images on your computer:
+
+```bash
+docker image ls
+```
+
+```bash
+docker images
+```
+
+Both commands do the same. You see the repository name, the tag, the **IMAGE ID**, when it was created and its size.
+
+Show the details of an image: its layers, environment variables, the command it starts, and more. The output is long (JSON):
+
+```bash
+docker inspect nginx:alpine
+```
+
+Run one command in a new container. The same program, `python`, runs in two images that differ only by tag:
+
+```bash
+docker run --rm python:3.11-slim python --version
+```
+
+```bash
+docker run --rm python:3.12-slim python --version
+```
+
+`--rm` deletes the container when the command ends. The second image downloads first, because you did not pull it.
+
+Show the layers that make up an image. Each Dockerfile line becomes a layer:
+
+```bash
+docker history nginx:alpine
+```
+
+### Remove an image
+
+Remove an image by name and tag:
+
+```bash
+docker rmi python:3.12-slim
+```
+
+or by **IMAGE ID**. Copy the ID of `python:3.11-slim` from `docker images` and replace `IMAGE_ID`:
+
+```bash
+docker rmi IMAGE_ID
+```
+
+`docker rmi` is the same as `docker image rm`. Run `docker images` again: both images are gone from your disk. Docker refuses to remove an image that a container still uses. Add `-f` to force it.
+
+### Tag an image
+
+A tag gives an image another name. Replace `YOUR_USERNAME` with your Docker Hub user name (create a free account at <https://hub.docker.com> first):
+
+```bash
+docker image tag nginx:alpine YOUR_USERNAME/nginx:alpine
+```
+
+```bash
+docker images
+```
+
+**You should see** the same IMAGE ID under two names, `nginx:alpine` and `YOUR_USERNAME/nginx:alpine`. A tag is a label, not a copy: no extra disk space is used.
+
+### Push an image to Docker Hub
+
+Log in. Docker asks for your Docker Hub user name and password, or opens your browser to confirm:
+
+```bash
+docker login
+```
+
+Upload the image to your profile:
+
+```bash
+docker push YOUR_USERNAME/nginx:alpine
+```
+
+**You should see** the layers upload. Open <https://hub.docker.com> and find `nginx` in your repositories. Anyone can now run `docker pull YOUR_USERNAME/nginx:alpine`. The name must start with your user name, which is why you tagged the image first.
+
+| Command | What it does |
+|---|---|
+| `docker image ls` / `docker images` | List the images on your computer |
+| `docker inspect NAME:TAG` | Show the details of an image (or of a container) |
+| `docker pull NAME:TAG` | Download an image without running it |
+| `docker history NAME:TAG` | Show the layers of an image |
+| `docker rmi NAME:TAG` or `docker rmi IMAGE_ID` | Remove an image (same as `docker image rm`) |
+| `docker image tag SOURCE[:TAG] TARGET[:TAG]` | Give an image another name |
+| `docker login` | Authenticate with Docker Hub |
+| `docker push NAME:TAG` | Upload an image to Docker Hub |
 
 ### Same script, different Python version
 
