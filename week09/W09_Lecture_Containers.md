@@ -1417,3 +1417,15 @@ docker image prune -f  # Delete unused dangling images (-f skips the confirmatio
 - `docker run -d --name N -p HOST:CONTAINER IMAGE:TAG` starts a service. `docker ps`, `logs`, `exec`, `stop`, `rm` manage it.
 - A Dockerfile builds an image. Use tags, put changing lines last, never store secrets in it.
 - Volumes keep data. User-defined networks give containers name lookup. Compose describes a whole stack in one YAML file.
+
+## Podman
+
+> **REFERENCE** Not presented in class. Read it on your own.
+
+Podman is a container engine used to create, run, and manage containers and images.
+
+- It is largely Docker-compatible, so many familiar Docker commands and concepts work with Podman.
+- Unlike Docker, Podman uses a daemonless architecture: there is no central Docker daemon that must remain running.
+- Podman supports pods, allowing multiple containers to share networking and other resources. This concept is inspired by Kubernetes.
+- Podman supports Dockerfiles and can build images using familiar commands.
+- Podman also supports Compose-based applications through `podman compose`.
