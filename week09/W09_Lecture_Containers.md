@@ -60,10 +60,10 @@ Dockerfile  --docker build-->  image  --docker run-->  container
  (recipe)                      (package)               (running process)
 ```
 
-One image can start many containers. Deleting a container does not delete the image. **Data written inside a container is lost when the container is deleted.** Volumes fix that (Step 9).
+One image can start many containers. Deleting a container does not delete the image. **Data written inside a container is lost when the container is deleted.** Volumes fix that (see Volumes below).
 
 ---
-## Step 1. Check that Docker works
+## Run your first container
 
 Docker must be installed and running on your laptop (see "How to install Docker" above). On Linux the Docker service runs in the background. Then:
 
@@ -77,78 +77,7 @@ docker run --rm hello-world  # Download a tiny test image, run it once, and dele
 
 **You should see** a message that starts with `Hello from Docker!`. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop (or `sudo systemctl start docker` on Linux).
 
-Create the practice folder:
-
-```bash
-mkdir -p ~/container-practice && cd ~/container-practice  # Create the practice folder and move into it.
-```
-
----
-## Step 2. Run a script in a container
-
-You will run one small Python script in a container. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
-
-```bash
-mkdir -p ~/container-practice/demo && cd ~/container-practice/demo
-```
-
-**PowerShell:**
-
-```powershell
-New-Item -ItemType Directory -Force ~/container-practice/demo | Out-Null
-Set-Location ~/container-practice/demo
-```
-
-```bash
-cat > demo.py <<'EOF'
-import platform
-import cowsay
-
-cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
-EOF
-```
-
-**PowerShell:**
-
-```powershell
-@'
-import platform
-import cowsay
-
-cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
-'@ | Set-Content demo.py -Encoding ascii
-```
-
-Run the file in a container that has Python 3.11:
-
-```bash
-docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
-```
-
-**PowerShell:**
-
-```powershell
-docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
-```
-
-**You should see** a cow that says `I run on Python 3.11.x on Linux`. Your laptop is untouched: the library exists only inside that container, and the container is deleted when the script ends (`--rm`).
-
-Run it again with a different Python version. Only the image tag changes:
-
-```bash
-docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
-```
-
-**PowerShell:**
-
-```powershell
-docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
-```
-
-The cow now reports Python 3.12. One file, two Python versions, no installation on your laptop. The rest of this guide shows how to package, store and connect programs like this one.
-
----
-## Step 3. Run your first container
+Now start a real program: the nginx web server.
 
 ```bash
 docker run -d --name web1 -p 8081:80 nginx:alpine  # Start the nginx web server in the background (-d), name it web1, and map port 8081 of your computer to port 80 inside the container.
@@ -179,18 +108,19 @@ curl.exe http://localhost:8081  # Ask the web server for its page.
 **You should see** HTML that contains `Welcome to nginx!`.
 
 ---
-## Step 4. Look inside a running container
+## Look inside a running container
 
 nginx is boring to watch. Start a container that runs a small Python program: a zoo where a random animal (cow, dragon, penguin, ghostbuster, T-Rex and more) tells a random programmer joke every three seconds, under a big banner.
 
 ```bash
-cd ~/container-practice/demo  # Go back to the demo folder from Step 2.
+mkdir -p ~/container-practice/zoo && cd ~/container-practice/zoo  # Create a folder for the zoo and move into it.
 ```
 
 **PowerShell:**
 
 ```powershell
-Set-Location ~/container-practice/demo  # Go back to the demo folder from Step 2.
+New-Item -ItemType Directory -Force ~/container-practice/zoo | Out-Null
+Set-Location ~/container-practice/zoo  # Create a folder for the zoo and move into it.
 ```
 
 ```bash
@@ -266,7 +196,7 @@ docker exec zoo cat /etc/os-release  # The zoo lives on Debian Linux, whatever y
 ```
 
 ```bash
-docker exec zoo pip list  # The libraries installed inside the container. Your laptop has none of them (Step 2).
+docker exec zoo pip list  # The libraries installed inside the container. Your laptop has none of them.
 ```
 
 ```bash
@@ -299,7 +229,7 @@ docker start zoo  # Start the same container again. It installs the libraries ag
 docker logs --tail 20 zoo  # The old show is still in the log, followed by the new one.
 ```
 
-Installing libraries every time the container starts is slow. Step 7 fixes this: you bake the libraries into an image once.
+Installing libraries every time the container starts is slow. The image sections below fix this: you bake the libraries into an image once.
 
 ```bash
 docker rm -f zoo web1  # Delete both containers (-f stops them first). The images stay on disk. The zoo closes.
@@ -315,7 +245,7 @@ docker rm -f zoo web1  # Delete both containers (-f stops them first). The image
 | `docker rm NAME` | Delete a stopped container (`-f` forces) |
 
 ---
-## Step 5. Images and tags
+## Images and tags
 
 ```bash
 docker images  # List the images on your computer.
@@ -335,8 +265,71 @@ docker history nginx:alpine  # Show the layers that make up the image. Each Dock
 
 An image name has the form `NAME:TAG`. **Always use a tag.** If you leave it out, Docker uses `latest`, which changes over time and makes your builds unpredictable.
 
+### Same script, different Python version
+
+An image is a ready-made environment. To see that, run one small Python script in two different Python images. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
+
+```bash
+mkdir -p ~/container-practice/demo && cd ~/container-practice/demo
+```
+
+**PowerShell:**
+
+```powershell
+New-Item -ItemType Directory -Force ~/container-practice/demo | Out-Null
+Set-Location ~/container-practice/demo
+```
+
+```bash
+cat > demo.py <<'EOF'
+import platform
+import cowsay
+
+cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
+EOF
+```
+
+**PowerShell:**
+
+```powershell
+@'
+import platform
+import cowsay
+
+cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
+'@ | Set-Content demo.py -Encoding ascii
+```
+
+Run the file in a container with Python 3.11. `-v` shares the current folder with the container and `-w` sets the folder to work in:
+
+```bash
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
+```
+
+**PowerShell:**
+
+```powershell
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
+```
+
+**You should see** a cow that says `I run on Python 3.11.x on Linux`. Your laptop is untouched: the library exists only inside that container, and the container is deleted when the script ends (`--rm`).
+
+Run it again with a different Python version. Only the image tag changes:
+
+```bash
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
+```
+
+**PowerShell:**
+
+```powershell
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
+```
+
+The cow now reports Python 3.12. One file, two Python versions, no installation on your laptop.
+
 ---
-## Step 6. Build your own image with a Dockerfile
+## Build your own image with a Dockerfile
 
 Create a small website and a Dockerfile in a new folder:
 
@@ -447,7 +440,7 @@ docker rm -f site1  # Delete the old container.
 | `CMD ["cmd", "arg"]` | The command that runs **when the container starts** |
 
 ---
-## Step 7. Package a Python web app
+## Package a Python web app
 
 Now you package a real program: a small Python web service that reports which container answered and counts the visits.
 
@@ -649,7 +642,7 @@ docker rm -f py1 py2  # Delete both containers. The images stay.
 The built-in Flask server is fine for learning. A production service would use a server such as gunicorn.
 
 ---
-## Step 8. Environment variables
+## Environment variables
 
 > **REFERENCE** Read it on your own; the lab practises it.
 
@@ -660,9 +653,9 @@ docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('si
 **You should see** `site = ott-dc1`. Environment variables are how you configure a container without rebuilding the image. **Never put passwords in a Dockerfile**: anyone with the image can read them.
 
 ---
-## Step 9. Volumes: keep data after the container is gone
+## Volumes: keep data after the container is gone
 
-A container's files disappear with the container. A **volume** is a folder that Docker keeps outside the container. You mount it at a path inside the container, and whatever the program writes there survives. The app from Step 7 writes its visit counter to `/data`, so mount the volume there:
+A container's files disappear with the container. A **volume** is a folder that Docker keeps outside the container. You mount it at a path inside the container, and whatever the program writes there survives. The Python web app above writes its visit counter to `/data`, so mount the volume there:
 
 ```bash
 docker run -d --name count1 -p 8090:8000 -v counter:/data bytown-py:1.0  # Start the app with the volume counter mounted at /data. -v NAME:PATH.
@@ -775,7 +768,7 @@ docker volume rm demo  # Clean up.
 A **bind mount** (`-v /path/on/your/computer:/path/in/container`) mounts one of your own folders. Use it in development. Use named volumes for data that the container owns.
 
 ---
-## Step 10. Networks: containers talk by name
+## Networks: containers talk by name
 
 By default a container can reach the internet but not find other containers by name. A **user-defined network** adds name lookup: containers on it use each other's names as host names.
 
@@ -807,7 +800,7 @@ docker rm -f backend  # Clean up the container.
 docker network rm labnet  # Clean up the network.
 ```
 
-This is how you keep a database private and expose only the web server: put both on one network and publish a port (`-p`) only for the web server. Compose does this for you, which is why Step 11 needs no `docker network` command.
+This is how you keep a database private and expose only the web server: put both on one network and publish a port (`-p`) only for the web server. Compose does this for you, which is why the Compose section needs no `docker network` command.
 
 | Command | What it does |
 |---|---|
@@ -816,7 +809,7 @@ This is how you keep a database private and expose only the web server: put both
 | `docker run --network NAME ...` | Start a container on that network |
 
 ---
-## Step 11. Docker Compose: many containers, one file
+## Docker Compose: many containers, one file
 
 Typing five long `docker run` commands is slow and easy to get wrong. **Compose** describes the whole system in one YAML file.
 
@@ -873,7 +866,7 @@ volumes:
 '@ | Set-Content compose.yaml -Encoding ascii
 ```
 
-YAML uses **spaces** for indentation (never tabs). Compose creates a network for the stack, so `tools` can reach `app` by the name `app`. The `build` line tells Compose to build the image from the Python app folder of Step 7.
+YAML uses **spaces** for indentation (never tabs). Compose creates a network for the stack, so `tools` can reach `app` by the name `app`. The `build` line tells Compose to build the image from the Python web app folder from "Package a Python web app".
 
 ```bash
 docker compose up -d --build  # Build the app image, create the network and the volume, and start both containers.
@@ -915,7 +908,7 @@ docker compose down -v  # Stop and delete the containers, the network and (with 
 | `docker compose config` | Check the file and print it. Run it when Compose complains. |
 
 ---
-## Step 12. Clean up
+## Clean up
 
 > **REFERENCE** Read it on your own; the lab practises it.
 
