@@ -22,7 +22,27 @@ Open Docker Desktop, accept the prompts, and wait until it says it is running. K
 
 **Linux users:** do not use Docker Desktop. Install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal.
 
-Then continue with "Getting started" below to check that Docker works.
+Check that Docker is installed and running. Docker Desktop must be open. In a terminal run:
+
+```bash
+docker --version
+```
+
+```bash
+docker info
+```
+
+```bash
+docker help
+```
+
+| Command | What it does |
+|---|---|
+| `docker --version` | Print the Docker version. Any recent version is fine. |
+| `docker info` | Show details about your Docker installation. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop. |
+| `docker help` | List all Docker commands. Add `--help` to any command (for example `docker run --help`) to see its options. |
+
+**Linux:** if a `docker` command says `permission denied`, you skipped `sudo usermod -aG docker $USER` in the install step. Run it and open a new terminal. You never need `sudo` in this guide.
 
 ## The big picture
 
@@ -63,32 +83,6 @@ Dockerfile  --docker build-->  image  --docker run-->  container
 
 One image can start many containers. Deleting a container does not delete the image. **Data written inside a container is lost when the container is deleted.** Volumes fix that (see Volumes below).
 
----
-## Getting started
-
-Docker Desktop must be running. In a terminal:
-
-```bash
-docker --version
-```
-
-```bash
-docker info
-```
-
-```bash
-docker help
-```
-
-| Command | What it does |
-|---|---|
-| `docker --version` | Print the Docker version. Any recent version is fine. |
-| `docker info` | Show details about your Docker installation. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop. |
-| `docker help` | List all Docker commands. Add `--help` to any command (for example `docker run --help`) to see its options. |
-
-**Linux:** if a `docker` command says `permission denied`, you skipped `sudo usermod -aG docker $USER` in the install step. Run it and open a new terminal. You never need `sudo` in this guide.
-
----
 ## Pull an image and run a test
 
 ```bash
