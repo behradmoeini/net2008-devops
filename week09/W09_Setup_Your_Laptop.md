@@ -7,7 +7,7 @@ From Week 9 to Week 15 you do everything on **your own laptop**. You do not need
 
 You can choose whether to install only on your terminal or use Docker desktop.
 
-## Terminal
+## Prepare to install Docker
 
 **Windows.** Open **PowerShell as administrator** (right-click Start, "Terminal (Admin)") and run:
 
