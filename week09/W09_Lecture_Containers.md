@@ -22,17 +22,7 @@ Open Docker Desktop, accept the prompts, and wait until it says it is running. K
 
 **Linux users:** do not use Docker Desktop. Install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal.
 
-Check that Docker works. Open a terminal and run:
-
-```bash
-docker --version  # Print the Docker version. Any recent version is fine.
-```
-
-```bash
-docker run --rm hello-world  # Download a tiny test image, run it once, and delete the container afterwards.
-```
-
-**You should see** a message that starts with `Hello from Docker!`. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop (or `sudo systemctl start docker` on Linux).
+Then continue with "Getting started" below to check that Docker works.
 
 ## The big picture
 
@@ -74,103 +64,204 @@ Dockerfile  --docker build-->  image  --docker run-->  container
 One image can start many containers. Deleting a container does not delete the image. **Data written inside a container is lost when the container is deleted.** Volumes fix that (see Volumes below).
 
 ---
-## Run your first container
+## Getting started
 
-Start a real program: the nginx web server. Docker must be running (see "How to install Docker" above).
-
-```bash
-docker run -d --name web1 -p 8081:80 nginx:alpine  # Start the nginx web server in the background (-d), name it web1, and map port 8081 of your computer to port 80 inside the container.
-```
-
-Read the command in pieces:
-
-| Part | Meaning |
-|---|---|
-| `docker run` | Create and start a container |
-| `-d` | **d**etached: run in the background |
-| `--name web1` | Give the container a name you can use later |
-| `-p 8081:80` | **p**ublish: `HOST_PORT:CONTAINER_PORT` |
-| `nginx:alpine` | The image. `nginx` is the name, `alpine` is the **tag** (a version label, here a small Linux base) |
-
-The first time, Docker downloads the image. Then test it:
-
-Open <http://localhost:8081> in your browser.
-
-**You should see** a page that says `Welcome to nginx!`.
-
----
-## Look inside a running container
-
-nginx is quiet. Start a second container that prints one line every second, so there is something to watch:
+Docker Desktop must be running. In a terminal:
 
 ```bash
-docker run -d --name pinger alpine ping 127.0.0.1  # Start a tiny Linux container (alpine) in the background. It pings itself once per second.
-```
-
-Now inspect it:
-
-```bash
-docker ps  # List running containers. You see web1 (nginx) and pinger.
+docker --version
 ```
 
 ```bash
-docker logs pinger  # Print everything the container said so far. Whatever a program prints becomes the container log.
+docker info
 ```
 
 ```bash
-docker logs -f --tail 5 pinger  # Follow the log live, starting with the last 5 lines. Press Ctrl+C to stop following. The container keeps running.
-```
-
-**You should see** a new `64 bytes from 127.0.0.1` line every second.
-
-Run commands **inside** the container with `docker exec`:
-
-```bash
-docker exec pinger cat /etc/os-release  # The container runs Alpine Linux, whatever your laptop runs.
-```
-
-```bash
-docker exec pinger ps  # List the processes inside the container.
-```
-
-**You should see** one main process, number 1: `ping 127.0.0.1`. The container is not a machine. It is this one process, and the container ends when the process ends.
-
-```bash
-docker exec -it pinger sh  # Open an interactive shell inside the container. Type exit to leave.
-```
-
-Inside that shell try `ls /`, `hostname` and `whoami`, then type `exit`. You see only the container's own files, and you are `root` there. The container has no idea that your laptop, your photos or your other containers exist.
-
-Now manage the container:
-
-```bash
-docker stop pinger  # Stop the container. It still exists.
-```
-
-```bash
-docker ps -a  # List all containers, including stopped ones. pinger shows "Exited".
-```
-
-```bash
-docker start pinger  # Start the same container again.
-```
-
-```bash
-docker logs --tail 5 pinger  # The old lines are still in the log, followed by the new ones.
-```
-
-```bash
-docker rm -f pinger web1  # Delete both containers (-f stops them first). The images stay on disk.
+docker help
 ```
 
 | Command | What it does |
 |---|---|
-| `docker ps` / `docker ps -a` | Running / all containers |
-| `docker logs NAME` | Show the output of a container (`-f` follows it live) |
-| `docker exec NAME CMD` | Run a command inside a running container |
-| `docker exec -it NAME sh` | Open a shell inside a running container |
-| `docker stop NAME` / `docker start NAME` | Stop / start |
-| `docker rm NAME` | Delete a stopped container (`-f` forces) |
+| `docker --version` | Print the Docker version. Any recent version is fine. |
+| `docker info` | Show details about your Docker installation. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop. |
+| `docker help` | List all Docker commands. Add `--help` to any command (for example `docker run --help`) to see its options. |
+
+**Linux:** if a `docker` command says `permission denied`, you skipped `sudo usermod -aG docker $USER` in the install step. Run it and open a new terminal. You never need `sudo` in this guide.
+
+---
+## Pull an image and run a test
+
+```bash
+docker pull hello-world
+```
+
+```bash
+docker run hello-world
+```
+
+```bash
+docker ps
+```
+
+```bash
+docker ps -a
+```
+
+| Command | What it does |
+|---|---|
+| `docker pull hello-world` | Download the `hello-world` image from the registry (Docker Hub). |
+| `docker run hello-world` | Create a container from the image and start it. |
+| `docker ps` | List **running** containers. Same as `docker container ls`. |
+| `docker ps -a` | List **all** containers, including stopped ones. Same as `docker container ls -a`. |
+
+**You should see** a message that starts with `Hello from Docker!`. Then `docker ps` shows nothing: the program printed its message and ended, so the container stopped. `docker ps -a` still lists it, with the status `Exited`.
+
+---
+## Run an environment
+
+Start a container from an Ubuntu image and work inside it:
+
+```bash
+docker run -it ubuntu bash
+```
+
+`-it` connects your keyboard to the container (**i**nteractive, with a **t**erminal). Your prompt changes: you are now **inside** the container. Try:
+
+```bash
+cat /etc/os-release
+```
+
+```bash
+whoami
+```
+
+```bash
+hostname
+```
+
+You are `root` on Ubuntu, whatever laptop you use. You see only the container's own files. Leave the container:
+
+```bash
+exit
+```
+
+The container stops when you leave, because `bash` was its only process.
+
+---
+## Running applications
+
+Start the nginx web server:
+
+```bash
+docker run nginx:alpine
+```
+
+The terminal is now busy showing nginx's log. Press **Ctrl+C** to stop it. Now run it in the background with `-d` (detached):
+
+```bash
+docker run -d nginx:alpine
+```
+
+```bash
+docker ps
+```
+
+nginx runs, but you cannot reach it from your browser yet: no port is connected to your laptop. Docker picked a random name for the container (see the `NAMES` column). Delete it, replacing `NAME` with that name:
+
+```bash
+docker rm -f NAME
+```
+
+Start it again with a name of your own and a published port:
+
+```bash
+docker run -d --name web1 -p 8081:80 nginx:alpine
+```
+
+| Part | Meaning |
+|---|---|
+| `-d` | **d**etached: run in the background |
+| `--name web1` | Give the container a name you can use later |
+| `-p 8081:80` | **p**ublish: `HOST_PORT:CONTAINER_PORT`. Port 8081 of your laptop goes to port 80 inside the container. |
+| `nginx:alpine` | The image. `nginx` is the name, `alpine` is the **tag** (a version label, here a small Linux base). |
+
+Open <http://localhost:8081> in your browser. **You should see** a page that says `Welcome to nginx!`.
+
+Now a database. The image is large, so the first download takes a minute:
+
+```bash
+docker run --name my_mongo -d mongo:noble
+```
+
+Here `mongo` is the image and `noble` is the tag (the Ubuntu version it is built on). Open a shell inside the running container:
+
+```bash
+docker exec -it my_mongo sh
+```
+
+`docker exec` runs a command inside a container that is already running. Try `ls /` and `hostname`, then:
+
+```bash
+exit
+```
+
+This time the container keeps running, because `exit` ended only the shell you started with `exec`, not the database.
+
+---
+## Stop and start a container
+
+```bash
+docker stop my_mongo
+```
+
+```bash
+docker start my_mongo
+```
+
+```bash
+docker restart my_mongo
+```
+
+```bash
+docker rm -f my_mongo
+```
+
+| Command | What it does |
+|---|---|
+| `docker stop NAME` | Stop a container. It still exists (`docker ps -a` shows `Exited`). |
+| `docker start NAME` | Start a stopped container again. |
+| `docker restart NAME` | Stop and start in one command. |
+| `docker rm -f NAME` | Stop (`-f`) and delete a container. The image stays on your disk. |
+
+Also useful: `docker logs NAME` shows what a container printed (`-f` follows it live), and `docker rm NAME` deletes a container that is already stopped. Clean up the web server too:
+
+```bash
+docker rm -f web1
+```
+
+---
+## Try it yourself
+
+Run this and explain what happens:
+
+```bash
+docker run -it alpine bash
+```
+
+Alpine has no `bash`. What can you do instead?
+
+<details>
+<summary>Answer</summary>
+
+Docker prints an error like `exec: "bash": executable file not found`, and the container exits at once. Alpine is a very small Linux and ships only the simpler shell `sh`. A container contains only what its image contains, so run:
+
+```bash
+docker run -it alpine sh
+```
+
+Type `exit` to leave.
+
+</details>
 
 ---
 ## Images and tags
