@@ -1,7 +1,7 @@
 # Week 12 Setup: Ansible
 **NET2008 DevOps · Algonquin College**
 
-You do this setup **once**, before the Week 12 lecture. It assumes you finished the [Week 9 setup](../week09/W09_Setup_Your_Laptop.md): a working terminal (Ubuntu on WSL 2 for Windows) and Docker running.
+You do this setup **once**, before the Week 12 lecture. It assumes you finished the [Week 9 lecture: How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker): a working terminal (Ubuntu on WSL 2 for Windows) and Docker running.
 
 ## Ansible in a Python virtual environment
 

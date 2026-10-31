@@ -1,7 +1,7 @@
 # Week 9 Lecture: Containers with Docker
 **NET2008 DevOps · Algonquin College**
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop**. You need nothing else: no server, no lab machine, no cloud account. Set up your laptop first with [W09_Setup_Your_Laptop.md](W09_Setup_Your_Laptop.md).
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop**. You need nothing else: no server, no lab machine, no cloud account. Install Docker first (see "How to install Docker" below).
 
 ## How to follow this guide
 
@@ -11,6 +11,17 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - Steps and subsections marked **REFERENCE** are not presented in class. The full detail stays here for you to read on your own, and the lab practises it.
 - All practice work happens in one folder, `~/container-practice`.
 - **Windows users:** use **PowerShell**. Where a command differs from Linux and macOS, a **PowerShell** box follows the grey box: run that one instead. `docker` commands are the same everywhere, so they get no second box. Linux and macOS users ignore the PowerShell boxes.
+
+### How to install Docker
+
+Download and install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/>. It includes Docker Engine, the `docker` command and Docker Compose.
+
+- **Windows:** run the installer and keep **Use WSL 2** switched on. Restart if it asks.
+- **macOS:** choose **Apple chip** or **Intel chip** to match your Mac (Apple menu > About This Mac). Drag Docker to Applications.
+
+Open Docker Desktop, accept the prompts, and wait until it says it is running. Keep it running whenever you use Docker.
+
+**Linux users:** do not use Docker Desktop. Install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal.
 
 ## The big picture
 
@@ -54,7 +65,7 @@ One image can start many containers. Deleting a container does not delete the im
 ---
 ## Step 1. Check that Docker works
 
-Docker must be installed and running on your laptop (see the setup guide). On Linux the Docker service runs in the background. Then:
+Docker must be installed and running on your laptop (see "How to install Docker" above). On Linux the Docker service runs in the background. Then:
 
 ```bash
 docker --version  # Print the Docker version. Any recent version is fine.
@@ -70,13 +81,6 @@ Create the practice folder:
 
 ```bash
 mkdir -p ~/container-practice && cd ~/container-practice  # Create the practice folder and move into it.
-```
-
-**PowerShell:**
-
-```powershell
-New-Item -ItemType Directory -Force ~/container-practice | Out-Null
-Set-Location ~/container-practice  # Create the practice folder and move into it.
 ```
 
 ---
