@@ -131,18 +131,10 @@ docker run -it ubuntu bash
 `-it` connects your keyboard to the container (**i**nteractive, with a **t**erminal). Your prompt changes: you are now **inside** the container. Try:
 
 ```bash
-cat /etc/os-release
+cat /etc/os-release && whoami && hostname
 ```
 
-```bash
-whoami
-```
-
-```bash
-hostname
-```
-
-You are `root` on Ubuntu, whatever laptop you use. You see only the container's own files. Leave the container:
+You see Ubuntu, then `root`, then the container ID. You are `root` on Ubuntu, whatever laptop you use. You see only the container's own files. Leave the container:
 
 ```bash
 exit
