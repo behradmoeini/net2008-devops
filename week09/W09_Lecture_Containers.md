@@ -22,6 +22,18 @@ Open Docker Desktop, accept the prompts, and wait until it says it is running. K
 
 **Linux users:** do not use Docker Desktop. Install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal.
 
+Check that Docker works. Open a terminal and run:
+
+```bash
+docker --version  # Print the Docker version. Any recent version is fine.
+```
+
+```bash
+docker run --rm hello-world  # Download a tiny test image, run it once, and delete the container afterwards.
+```
+
+**You should see** a message that starts with `Hello from Docker!`. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop (or `sudo systemctl start docker` on Linux).
+
 ## The big picture
 
 Your Python script runs on your laptop. It fails on the server: wrong Python version, a missing library, a different operating system. "It works on my machine" is the oldest problem in operations. A **container** solves it: you ship the program **together with everything it needs**, and it runs the same everywhere.
@@ -64,19 +76,7 @@ One image can start many containers. Deleting a container does not delete the im
 ---
 ## Run your first container
 
-Docker must be installed and running on your laptop (see "How to install Docker" above). On Linux the Docker service runs in the background. Then:
-
-```bash
-docker --version  # Print the Docker version. Any recent version is fine.
-```
-
-```bash
-docker run --rm hello-world  # Download a tiny test image, run it once, and delete the container afterwards.
-```
-
-**You should see** a message that starts with `Hello from Docker!`. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop (or `sudo systemctl start docker` on Linux).
-
-Now start a real program: the nginx web server.
+Start a real program: the nginx web server. Docker must be running (see "How to install Docker" above).
 
 ```bash
 docker run -d --name web1 -p 8081:80 nginx:alpine  # Start the nginx web server in the background (-d), name it web1, and map port 8081 of your computer to port 80 inside the container.
