@@ -1,7 +1,7 @@
 # Week 9 Lecture: Containers with Docker
 **NET2008 DevOps · Algonquin College**
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop**. You need nothing else: no server, no lab machine, no cloud account. Set up your laptop first with [W09_Setup_Your_Laptop.md](W09_Setup_Your_Laptop.md) (about 30 minutes, done once for the rest of the course).
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop**. You need nothing else: no server, no lab machine, no cloud account. Set up your laptop first with [W09_Setup_Your_Laptop.md](W09_Setup_Your_Laptop.md).
 
 ## How to follow this guide
 
