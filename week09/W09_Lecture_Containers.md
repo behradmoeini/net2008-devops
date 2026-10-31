@@ -22,25 +22,19 @@ Open Docker Desktop, accept the prompts, and wait until it says it is running. K
 
 **Linux users:** do not use Docker Desktop. Install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal.
 
-Check that Docker is installed and running. Docker Desktop must be open. In a terminal run:
+Check that Docker works. Docker Desktop must be open. In a terminal run:
 
 ```bash
 docker --version
 ```
 
 ```bash
-docker info
+docker run --rm hello-world
 ```
 
-```bash
-docker help
-```
+`docker --version` prints the Docker version (any recent version is fine). `docker run --rm hello-world` downloads a tiny test image, runs it once, and deletes the container afterwards (`--rm`).
 
-| Command | What it does |
-|---|---|
-| `docker --version` | Print the Docker version. Any recent version is fine. |
-| `docker info` | Show details about your Docker installation. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop. |
-| `docker help` | List all Docker commands. Add `--help` to any command (for example `docker run --help`) to see its options. |
+**You should see** a message that starts with `Hello from Docker!`. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop.
 
 **Linux:** if a `docker` command says `permission denied`, you skipped `sudo usermod -aG docker $USER` in the install step. Run it and open a new terminal. You never need `sudo` in this guide.
 
@@ -82,6 +76,22 @@ Dockerfile  --docker build-->  image  --docker run-->  container
 ```
 
 One image can start many containers. Deleting a container does not delete the image. **Data written inside a container is lost when the container is deleted.** Volumes fix that (see Volumes below).
+
+## Getting started
+
+Two commands to explore Docker before you run anything:
+
+```bash
+docker info
+```
+
+`docker info` shows details about your Docker installation: the version, how many containers and images you have, and the system Docker runs on. It also confirms that Docker is running.
+
+```bash
+docker help
+```
+
+`docker help` lists all Docker commands. Add `--help` to any command to see its options, for example `docker run --help`. Use it whenever you forget how a command works.
 
 ## Pull an image and run a test
 
