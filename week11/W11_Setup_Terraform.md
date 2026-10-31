@@ -5,13 +5,13 @@ You do this setup **once**, before the Week 11 lecture. It assumes you finished 
 
 ## 1. Terraform
 
-**macOS.**
+**macOS:**
 
 ```bash
 brew tap hashicorp/tap && brew install hashicorp/tap/terraform
 ```
 
-**Windows (Ubuntu terminal) and Ubuntu or Debian Linux.**
+**Windows (Ubuntu terminal) and Ubuntu or Debian Linux:**
 
 ```bash
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg

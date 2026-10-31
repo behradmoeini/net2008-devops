@@ -5,13 +5,13 @@ You do this setup **once**, before the Week 10 lecture. It assumes you finished 
 
 ## Install kubectl and minikube
 
-**macOS.**
+**macOS:**
 
 ```bash
 brew install kubectl minikube
 ```
 
-**Windows (Ubuntu terminal) and Linux.**
+**Windows (Ubuntu terminal) and Linux:**
 
 ```bash
 ARCH=$(dpkg --print-architecture)  # amd64 on most laptops, arm64 on ARM laptops.

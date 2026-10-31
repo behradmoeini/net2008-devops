@@ -27,7 +27,7 @@ Your Python script runs on your laptop. It fails on the server: wrong Python ver
 
 A container is not a small VM. It is a normal process that the kernel isolates, so it sees its own files, its own network and its own process list.
 
-### Seven words to know
+### Container Terminologies
 
 | Word | Meaning |
 |---|---|
@@ -51,7 +51,7 @@ One image can start many containers. Deleting a container does not delete the im
 ---
 ## Step 1. Check that Docker works
 
-Docker must be installed and running on your laptop (see the setup guide). On Windows and macOS start **Docker Desktop** and wait until it says it is running. On Linux the Docker service runs in the background. Then:
+Docker must be installed and running on your laptop (see the setup guide). On Linux the Docker service runs in the background. Then:
 
 ```bash
 docker --version  # Print the Docker version. Any recent version is fine.

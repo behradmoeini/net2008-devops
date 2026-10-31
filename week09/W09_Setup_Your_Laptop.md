@@ -11,7 +11,7 @@ You can choose whether to install only on your terminal or use Docker desktop. I
 
 ### Envronment
 
-**Windows.** Open **PowerShell as administrator** (right-click Start, "Terminal (Admin)") and run:
+**Windows:** Open **PowerShell as administrator** (right-click Start, "Terminal (Admin)") and run:
 
 ```powershell
 wsl --install -d Ubuntu
@@ -19,13 +19,13 @@ wsl --install -d Ubuntu
 
 Restart the laptop when it asks. Ubuntu opens and asks you to create a Linux user name and password (the password does not show as you type). From now on, **use the Ubuntu app for every command in Weeks 9 to 14**, not PowerShell and not Git Bash. Keep your work in the Linux home folder (`~`), not under `/mnt/c`: it is much faster.
 
-**macOS.** Use **Terminal**. Install Homebrew, the package manager used below:
+**macOS:** Use **Terminal**. Install Homebrew, the package manager used below:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-**Linux.** Use your terminal. The commands below assume Ubuntu or Debian. On another distribution use its package manager.
+**Linux:** Use your terminal. The commands below assume Ubuntu or Debian. On another distribution use its package manager.
 
 ### Docker Engine
 
