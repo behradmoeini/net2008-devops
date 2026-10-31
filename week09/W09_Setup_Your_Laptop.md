@@ -9,9 +9,9 @@ Download and install **Docker Desktop** from <https://www.docker.com/products/do
 
 Open Docker Desktop, accept the prompts, and wait until it says it is running. Keep it running whenever you use Docker.
 
-**Linux users:** do not use Docker Desktop. Install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal.
+**Linux users:** For linux users, you can choose to install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal.
 
-### Check
+### How to Check
 
 In a terminal run:
 
@@ -20,13 +20,3 @@ docker run --rm hello-world
 ```
 
 You must see `Hello from Docker!`.
-
-## If something goes wrong
-
-| Message | Cause and fix |
-|---|---|
-| `WSL 2 requires an update to its kernel component` | Run `wsl --update` in PowerShell, then retry. |
-| `Please enable the Virtual Machine Platform` or `virtualization is disabled` | Restart, open the BIOS or UEFI settings, and switch on **Virtualization** (Intel VT-x or AMD-V, often called SVM). |
-| `docker: command not found` in Ubuntu on Windows | Docker Desktop is not running, or WSL integration is off for Ubuntu (Settings > Resources > WSL integration). |
-| `permission denied` on `/var/run/docker.sock` | Run `sudo usermod -aG docker $USER`, then close and reopen the terminal. |
-| Nothing works and you are stuck for more than 30 minutes | Stop. Write down the command and the full error message and bring them to class. |
