@@ -25,6 +25,8 @@ Your Python script runs on your laptop. It fails on the server: wrong Python ver
 | Starts in | Minutes | Seconds or less |
 | Isolation | Strong | Good, but weaker than a VM |
 
+![Containers vs virtual machines: each VM carries its own guest OS on a hypervisor; containers share the host OS through Docker Engine](images/container-vs-vm.svg)
+
 A container is not a small VM. It is a normal process that the kernel isolates, so it sees its own files, its own network and its own process list.
 
 ### Container Terminologies
