@@ -1,5 +1,4 @@
 # Week 9 Lecture: Containers with Docker
-**NET2008 DevOps · Algonquin College**
 
 Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop**. You need nothing else: no server, no lab machine, no cloud account. Install Docker first (see "How to install Docker" below).
 
