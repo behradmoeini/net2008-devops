@@ -80,9 +80,9 @@ Set-Location ~/container-practice  # Create the practice folder and move into it
 ```
 
 ---
-## Step 2. See the problem first
+## Step 2. Run a script in a container
 
-You will run one small Python script twice: on your laptop and in a container. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
+You will run one small Python script in a container. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
 
 ```bash
 mkdir -p ~/container-practice/demo && cd ~/container-practice/demo
@@ -115,21 +115,7 @@ cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}"
 '@ | Set-Content demo.py -Encoding ascii
 ```
 
-Run it on your laptop first:
-
-```bash
-python3 demo.py  # Run the script with the Python installed on your laptop.
-```
-
-**PowerShell:**
-
-```powershell
-python demo.py  # Run the script with the Python installed on your laptop.
-```
-
-**You should see** `ModuleNotFoundError: No module named 'cowsay'`. This is the "works on my machine" problem: the script needs a library that your laptop does not have, and on a server it would be another missing library or another Python version.
-
-Now run the same file in a container that has Python 3.11:
+Run the file in a container that has Python 3.11:
 
 ```bash
 docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
