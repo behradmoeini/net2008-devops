@@ -3,8 +3,6 @@
 
 Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop**. You need nothing else: no server, no lab machine, no cloud account. Set up your laptop first with [W09_Setup_Your_Laptop.md](W09_Setup_Your_Laptop.md) (about 30 minutes, done once for the rest of the course).
 
-**Windows students:** from this week on, work in the **Ubuntu (WSL 2) terminal**, not in PowerShell or Git Bash. The commands are then identical to Linux and macOS. The setup guide shows how.
-
 ## How to follow this guide
 
 - Every grey box is **one command** (or one file you create). Everything after the `#` on the first line is a comment that says what the command does. Copy the whole box, paste it into the terminal, press Enter, then go to the next box.
@@ -13,7 +11,6 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - Steps and subsections marked **REFERENCE** are not presented in class. The full detail stays here for you to read on your own, and the lab practises it.
 - All practice work happens in one folder, `~/container-practice`.
 
----
 ## The big picture
 
 ### The problem
