@@ -7,9 +7,6 @@ From Week 9 to Week 15 you do everything on **your own laptop**. You do not need
 
 Download and install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/>. It includes Docker Engine, the `docker` command and Docker Compose.
 
-- **Windows:** run the installer and keep **Use WSL 2** switched on. Restart if it asks.
-- **macOS:** choose **Apple chip** or **Intel chip** to match your Mac (Apple menu > About This Mac). Drag Docker to Applications.
-
 Open Docker Desktop, accept the prompts, and wait until it says it is running. Keep it running whenever you use Docker.
 
 **Linux users:** do not use Docker Desktop. Install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal.
