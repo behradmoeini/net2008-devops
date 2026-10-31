@@ -13,8 +13,6 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 
 ## The big picture
 
-### The problem
-
 Your Python script runs on your laptop. It fails on the server: wrong Python version, a missing library, a different operating system. "It works on my machine" is the oldest problem in operations. A **container** solves it: you ship the program **together with everything it needs**, and it runs the same everywhere.
 
 ### Container or virtual machine?
@@ -77,7 +75,7 @@ mkdir -p ~/container-practice && cd ~/container-practice  # Create the practice 
 You will run one small Python script twice: on your laptop and in a container. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
 
 ```bash
-mkdir -p ~/container-practice/demo && cd ~/container-practice/demo  # Create the folder for this demo and move into it.
+mkdir -p ~/container-practice/demo && cd ~/container-practice/demo
 ```
 
 ```bash
