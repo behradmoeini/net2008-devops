@@ -9,7 +9,7 @@ You can choose whether to install only on your terminal or use Docker desktop. I
 
 **Note:** You can install **Docker Desktop**(a gui version of Docker) from <https://www.docker.com/products/docker-desktop/>. During setup keep on. Start Docker Desktop. 
 
-### Prepare to install Docker
+### Envronment
 
 **Windows.** Open **PowerShell as administrator** (right-click Start, "Terminal (Admin)") and run:
 
@@ -27,7 +27,7 @@ Restart the laptop when it asks. Ubuntu opens and asks you to create a Linux use
 
 **Linux.** Use your terminal. The commands below assume Ubuntu or Debian. On another distribution use its package manager.
 
-### Docker
+### Docker Engine
 
 **macOS:**
 
