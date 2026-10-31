@@ -1,47 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 440" font-family="Helvetica, Arial, sans-serif">
-  <rect width="860" height="440" fill="#f7fbff" stroke="#d6e4ee"/>
-  <text x="430" y="36" text-anchor="middle" font-size="24" font-weight="700" fill="#33475b">Container vs. VMs</text>
-
-  <!-- VM side -->
-  <g font-size="15" font-weight="700" text-anchor="middle">
-    <rect x="90" y="75" width="90" height="42" fill="#cfeaf8" stroke="#4db8e8"/><text x="135" y="101" fill="#33475b">App A</text>
-    <rect x="185" y="75" width="90" height="42" fill="#cfeaf8" stroke="#4db8e8"/><text x="230" y="101" fill="#33475b">App A'</text>
-    <rect x="280" y="75" width="90" height="42" fill="#cfeaf8" stroke="#4db8e8"/><text x="325" y="101" fill="#33475b">App B</text>
-
-    <rect x="90" y="117" width="90" height="38" fill="#f26522"/><text x="135" y="141" fill="#fff">Bins/Libs</text>
-    <rect x="185" y="117" width="90" height="38" fill="#f26522"/><text x="230" y="141" fill="#fff">Bins/Libs</text>
-    <rect x="280" y="117" width="90" height="38" fill="#f7941d"/><text x="325" y="141" fill="#fff">Bins/Libs</text>
-
-    <rect x="90" y="155" width="90" height="122" fill="#4db8e8"/><text x="135" y="221" fill="#33475b">Guest OS</text>
-    <rect x="185" y="155" width="90" height="122" fill="#4db8e8"/><text x="230" y="221" fill="#33475b">Guest OS</text>
-    <rect x="280" y="155" width="90" height="122" fill="#4db8e8"/><text x="325" y="221" fill="#33475b">Guest OS</text>
-
-    <rect x="90" y="277" width="280" height="40" fill="#7a7f85"/><text x="230" y="302" fill="#fff">Hypervisor (Type 2)</text>
-    <rect x="90" y="317" width="280" height="40" fill="#4db8e8"/><text x="230" y="342" fill="#33475b">Host OS</text>
-    <rect x="90" y="357" width="280" height="40" fill="#2f5470"/><text x="230" y="382" fill="#fff">Server</text>
-  </g>
-  <path d="M78 75 H70 V277 H78" fill="none" stroke="#33475b" stroke-width="1.5"/>
-  <text x="58" y="180" text-anchor="end" font-size="15" font-weight="700" fill="#33475b">VM</text>
-
-  <!-- Container side -->
-  <text x="640" y="68" text-anchor="middle" font-size="14" font-style="italic" fill="#4a6178">Containers are isolated, but share OS and,</text>
-  <text x="640" y="86" text-anchor="middle" font-size="14" font-style="italic" fill="#4a6178">where appropriate, bins/libraries</text>
-  <g font-size="14" font-weight="700" text-anchor="middle" fill="#33475b">
-    <rect x="500" y="140" width="36" height="96" fill="#cfeaf8" stroke="#4db8e8"/><text transform="translate(522 188) rotate(-90)">App A</text>
-    <rect x="540" y="140" width="36" height="96" fill="#cfeaf8" stroke="#4db8e8"/><text transform="translate(562 188) rotate(-90)">App A'</text>
-    <rect x="590" y="140" width="36" height="96" fill="#cfeaf8" stroke="#4db8e8"/><text transform="translate(612 188) rotate(-90)">App B</text>
-    <rect x="630" y="140" width="36" height="96" fill="#cfeaf8" stroke="#4db8e8"/><text transform="translate(652 188) rotate(-90)">App B'</text>
-    <rect x="670" y="140" width="36" height="96" fill="#cfeaf8" stroke="#4db8e8"/><text transform="translate(692 188) rotate(-90)">App B'</text>
-    <rect x="710" y="140" width="36" height="96" fill="#cfeaf8" stroke="#4db8e8"/><text transform="translate(732 188) rotate(-90)">App B'</text>
-    <rect x="750" y="140" width="36" height="96" fill="#cfeaf8" stroke="#4db8e8"/><text transform="translate(772 188) rotate(-90)">App B'</text>
-  </g>
-  <g font-size="15" font-weight="700" text-anchor="middle">
-    <rect x="500" y="238" width="76" height="40" fill="#f26522"/><text x="538" y="263" fill="#fff">Bins/Libs</text>
-    <rect x="590" y="238" width="196" height="40" fill="#f7941d"/><text x="688" y="263" fill="#fff">Bins/Libs</text>
-    <rect x="500" y="278" width="286" height="40" fill="#78b83e"/><text x="643" y="303" fill="#fff">Docker Engine</text>
-    <rect x="500" y="318" width="286" height="40" fill="#4db8e8"/><text x="643" y="343" fill="#33475b">Host OS</text>
-    <rect x="500" y="358" width="286" height="40" fill="#2f5470"/><text x="643" y="383" fill="#fff">Server</text>
-  </g>
-  <path d="M488 140 H480 V236 H488" fill="none" stroke="#33475b" stroke-width="1.5"/>
-  <text x="470" y="194" text-anchor="end" font-size="15" font-weight="700" fill="#33475b">Container</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 430" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<rect x="1" y="1" width="848" height="428" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="48" font-size="23" fill="#33475b">Container vs. VMs</text>
+<rect x="90" y="72" width="90" height="40" fill="#cdeaf8" stroke="#4ab8e8"/><text x="135" y="98" font-size="15" fill="#33475b">App A</text>
+<rect x="90" y="112" width="90" height="40" fill="#f05a28"/><text x="135" y="137" font-size="15" fill="#fff">Bins/Libs</text>
+<rect x="90" y="152" width="90" height="123" fill="#4ab8e8"/><text x="135" y="217" font-size="15" fill="#fff">Guest OS</text>
+<rect x="185" y="72" width="90" height="40" fill="#cdeaf8" stroke="#4ab8e8"/><text x="230" y="98" font-size="15" fill="#33475b">App A'</text>
+<rect x="185" y="112" width="90" height="40" fill="#f05a28"/><text x="230" y="137" font-size="15" fill="#fff">Bins/Libs</text>
+<rect x="185" y="152" width="90" height="123" fill="#4ab8e8"/><text x="230" y="217" font-size="15" fill="#fff">Guest OS</text>
+<rect x="280" y="72" width="90" height="40" fill="#cdeaf8" stroke="#4ab8e8"/><text x="325" y="98" font-size="15" fill="#33475b">App B</text>
+<rect x="280" y="112" width="90" height="40" fill="#f7941d"/><text x="325" y="137" font-size="15" fill="#fff">Bins/Libs</text>
+<rect x="280" y="152" width="90" height="123" fill="#4ab8e8"/><text x="325" y="217" font-size="15" fill="#fff">Guest OS</text>
+<rect x="90" y="275" width="280" height="41" fill="#6d7176"/><text x="230" y="301" font-size="15" fill="#fff">Hypervisor (Type 2)</text>
+<rect x="90" y="316" width="280" height="41" fill="#4ab8e8"/><text x="230" y="342" font-size="15" fill="#fff">Host OS</text>
+<rect x="90" y="357" width="280" height="40" fill="#2d526e"/><text x="230" y="383" font-size="15" fill="#fff">Server</text>
+<path d="M78 72 H67 V275 H78 M67 173 H58" fill="none" stroke="#33475b" stroke-width="1.5"/>
+<text x="44" y="179" font-size="14" fill="#33475b">VM</text>
+<text x="655" y="97" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">Containers are isolated, but share OS and,</text>
+<text x="655" y="116" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">where appropriate, bins/libraries</text>
+<rect x="495.0" y="141" width="36" height="95" fill="#cdeaf8" stroke="#4ab8e8"/><text transform="translate(513.0 188) rotate(-90)" font-size="14" fill="#33475b">App A</text>
+<rect x="540.5" y="141" width="36" height="95" fill="#cdeaf8" stroke="#4ab8e8"/><text transform="translate(558.5 188) rotate(-90)" font-size="14" fill="#33475b">App A'</text>
+<rect x="586.0" y="141" width="36" height="95" fill="#cdeaf8" stroke="#4ab8e8"/><text transform="translate(604.0 188) rotate(-90)" font-size="14" fill="#33475b">App B</text>
+<rect x="631.5" y="141" width="36" height="95" fill="#cdeaf8" stroke="#4ab8e8"/><text transform="translate(649.5 188) rotate(-90)" font-size="14" fill="#33475b">App B'</text>
+<rect x="677.0" y="141" width="36" height="95" fill="#cdeaf8" stroke="#4ab8e8"/><text transform="translate(695.0 188) rotate(-90)" font-size="14" fill="#33475b">App B'</text>
+<rect x="722.5" y="141" width="36" height="95" fill="#cdeaf8" stroke="#4ab8e8"/><text transform="translate(740.5 188) rotate(-90)" font-size="14" fill="#33475b">App B'</text>
+<rect x="768.0" y="141" width="36" height="95" fill="#cdeaf8" stroke="#4ab8e8"/><text transform="translate(786.0 188) rotate(-90)" font-size="14" fill="#33475b">App B'</text>
+<rect x="495" y="236" width="82" height="40" fill="#f05a28"/><text x="536" y="261" font-size="15" fill="#fff">Bins/Libs</text>
+<rect x="587" y="236" width="218" height="40" fill="#f7941d"/><text x="696" y="261" font-size="15" fill="#fff">Bins/Libs</text>
+<rect x="495" y="276" width="310" height="40" fill="#78b83e"/><text x="650" y="302" font-size="15" fill="#fff">Docker Engine</text>
+<rect x="495" y="316" width="310" height="41" fill="#4ab8e8"/><text x="650" y="342" font-size="15" fill="#fff">Host OS</text>
+<rect x="495" y="357" width="310" height="40" fill="#2d526e"/><text x="650" y="383" font-size="15" fill="#fff">Server</text>
+<path d="M484 141 H473 V276 H484 M473 208 H462" fill="none" stroke="#33475b" stroke-width="1.5"/>
+<text x="425" y="213" font-size="14" fill="#33475b">Container</text>
 </svg>
