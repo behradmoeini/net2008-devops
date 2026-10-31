@@ -359,12 +359,6 @@ Show the details of an image: its layers, environment variables, the command it 
 docker inspect python:3.11-slim
 ```
 
-Show the layers that make up an image. Each Dockerfile line becomes a layer:
-
-```bash
-docker history python:3.11-slim
-```
-
 ### Remove an image
 
 Remove an image by name and tag:
@@ -416,7 +410,6 @@ docker push YOUR_USERNAME/python:3.11-slim
 | `docker image ls` / `docker images` | List the images on your computer |
 | `docker pull NAME:TAG` | Download an image without running it |
 | `docker inspect NAME:TAG` | Show the details of an image (or of a container) |
-| `docker history NAME:TAG` | Show the layers of an image |
 | `docker rmi NAME:TAG` or `docker rmi IMAGE_ID` | Remove an image (same as `docker image rm`) |
 | `docker image tag SOURCE[:TAG] TARGET[:TAG]` | Give an image another name |
 | `docker login` | Authenticate with Docker Hub |
@@ -569,6 +562,14 @@ docker run -d --name site1 -p 8082:80 site:1.0  # Start a container from your im
 ```
 
 Open <http://localhost:8082> in your browser. **You should see** your own page: "Bytown NetOps".
+
+Each instruction in the Dockerfile became a **layer** of the image. Show the layers:
+
+```bash
+docker history site:1.0
+```
+
+**You should see** one line per layer. The `COPY index.html` layer is yours, and the layers below it come from `nginx:alpine`. Docker reuses layers that did not change, which makes rebuilds fast.
 
 Change the page and build version 1.1. Docker reuses unchanged layers, so this is fast:
 
