@@ -110,7 +110,6 @@ docker ps -a
 
 **You should see** a message that starts with `Hello from Docker!`. Then `docker ps` shows nothing: the program printed its message and ended, so the container stopped. `docker ps -a` still lists it, with the status `Exited`.
 
----
 ## Run an environment
 
 Start a container from an Ubuntu image and work inside it:
@@ -141,7 +140,6 @@ exit
 
 The container stops when you leave, because `bash` was its only process.
 
----
 ## Running applications
 
 Start the nginx web server:
@@ -201,7 +199,6 @@ exit
 
 This time the container keeps running, because `exit` ended only the shell you started with `exec`, not the database.
 
----
 ## Stop and start a container
 
 ```bash
@@ -233,7 +230,6 @@ Also useful: `docker logs NAME` shows what a container printed (`-f` follows it 
 docker rm -f web1
 ```
 
----
 ## Try it yourself
 
 Run this and explain what happens:
@@ -257,7 +253,6 @@ Type `exit` to leave.
 
 </details>
 
----
 ## Images and tags
 
 ```bash
@@ -349,7 +344,6 @@ docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3
 
 The cow now reports Python 3.12. One file, two Python versions, no installation on your laptop.
 
----
 ## Build your own image with a Dockerfile
 
 Create a small website and a Dockerfile in a new folder:
@@ -460,7 +454,6 @@ docker rm -f site1  # Delete the old container.
 | `RUN command` | Run a command **while building** (install packages) |
 | `CMD ["cmd", "arg"]` | The command that runs **when the container starts** |
 
----
 ## Package a Python web app
 
 Now you package a real program: a small Python web service that reports which container answered and counts the visits.
@@ -676,7 +669,6 @@ docker rm -f py1 py2  # Delete both containers. The images stay.
 
 The built-in Flask server is fine for learning. A production service would use a server such as gunicorn.
 
----
 ## Environment variables
 
 > **REFERENCE** Read it on your own; the lab practises it.
@@ -687,7 +679,6 @@ docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('si
 
 **You should see** `site = ott-dc1`. Environment variables are how you configure a container without rebuilding the image. **Never put passwords in a Dockerfile**: anyone with the image can read them.
 
----
 ## Volumes: keep data after the container is gone
 
 A container's files disappear with the container. A **volume** is a folder that Docker keeps outside the container. You mount it at a path inside the container, and whatever the program writes there survives. The Python web app above writes its visit counter to `/data`, so mount the volume there:
@@ -812,7 +803,6 @@ docker volume rm demo  # Clean up.
 
 A **bind mount** (`-v /path/on/your/computer:/path/in/container`) mounts one of your own folders. Use it in development. Use named volumes for data that the container owns.
 
----
 ## Networks: containers talk by name
 
 By default a container can reach the internet but not find other containers by name. A **user-defined network** adds name lookup: containers on it use each other's names as host names.
@@ -853,7 +843,6 @@ This is how you keep a database private and expose only the web server: put both
 | `docker network inspect NAME` | Show the containers on a network and their addresses |
 | `docker run --network NAME ...` | Start a container on that network |
 
----
 ## Docker Compose: many containers, one file
 
 Typing five long `docker run` commands is slow and easy to get wrong. **Compose** describes the whole system in one YAML file.
@@ -958,7 +947,6 @@ docker compose down -v  # Stop and delete the containers, the network and (with 
 | `docker compose down` | Stop and delete (add `-v` to delete volumes) |
 | `docker compose config` | Check the file and print it. Run it when Compose complains. |
 
----
 ## Clean up
 
 > **REFERENCE** Read it on your own; the lab practises it.
@@ -975,7 +963,6 @@ docker system df  # Show how much disk space images, containers and volumes use.
 docker image prune -f  # Delete unused dangling images (-f skips the confirmation).
 ```
 
----
 ## If something goes wrong
 
 | Message | Cause and fix |
