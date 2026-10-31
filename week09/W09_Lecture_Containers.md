@@ -956,43 +956,164 @@ A **bind mount** (`-v /path/on/your/computer:/path/in/container`) mounts one of 
 
 ## Networks: containers talk by name
 
-By default a container can reach the internet but not find other containers by name. A **user-defined network** adds name lookup: containers on it use each other's names as host names.
+- Docker networks let containers talk to each other, to the Docker host and to the outside world.
+- Each container is connected to one or more **virtual networks** that Docker manages.
+- A network gives connectivity, isolation and automatic IP addresses. Docker has several network types: `bridge`, `host`, `none` and `overlay`.
+- Containers on the same network can reach each other directly, often by **container name** instead of an IP address.
+- **User-defined bridge networks** are the usual choice for multi-container applications: better isolation and built-in DNS (name lookup).
+- By default a container is isolated. Networks let it talk to other containers, reach the Internet, expose a service to your laptop, and stay hidden from other applications.
+
+### Publish a port
+
+Start nginx with a custom name and a published port (`--publish` is the long form of `-p`):
 
 ```bash
-docker network create labnet  # Create a user-defined network.
-```
-
-### Network details
-
-> **REFERENCE** Read it on your own; the lab uses it in Part 4 (Compose).
-
-**Reach a container by name.** Start a web server on the network, then call it by name from a second container:
-
-```bash
-docker run -d --name backend --network labnet nginx:alpine  # Start a web server on that network. It has no published port.
-```
-
-```bash
-docker run --rm --network labnet curlimages/curl curl -s http://backend  # A second container on the same network reaches the first one by its NAME.
-```
-
-**You should see** the nginx welcome page. Nothing outside the network can reach `backend`, because you did not publish a port.
-
-```bash
-docker rm -f backend  # Clean up the container.
+docker run --publish 8080:80 --name mynginx -d nginx:alpine
 ```
 
 ```bash
-docker network rm labnet  # Clean up the network.
+docker port mynginx
 ```
 
-This is how you keep a database private and expose only the web server: put both on one network and publish a port (`-p`) only for the web server. Compose does this for you, which is why the Compose section needs no `docker network` command.
+**You should see** `80/tcp -> 0.0.0.0:8080`: port 8080 of your laptop goes to port 80 in the container. Open <http://localhost:8080> to see the nginx page.
+
+### Inspect a container's network
+
+```bash
+docker inspect mynginx
+```
+
+The output is long (JSON). The `NetworkSettings` part shows the network, the gateway, the IP address and the connected networks. Pick out the IP address:
+
+**macOS / Linux (Terminal):**
+
+```bash
+docker inspect mynginx | grep IPAddress
+```
+
+**Windows (PowerShell):**
+
+```powershell
+docker inspect mynginx | Select-String IPAddress
+```
+
+Or ask Docker for just that value with a format template (the same on every system):
+
+```bash
+docker inspect --format '{{ .NetworkSettings.IPAddress }}' mynginx
+```
+
+### Create and inspect a network
+
+```bash
+docker network create my_docker_network
+```
+
+```bash
+docker network ls
+```
+
+```bash
+docker network inspect my_docker_network
+```
+
+`docker network ls` lists the networks. You see Docker's built-in `bridge`, `host` and `none`, and yours. `docker network inspect` shows the subnet, the gateway, the driver and the connected containers (none yet).
+
+### Connect and disconnect a container
+
+```bash
+docker network connect my_docker_network mynginx
+```
+
+```bash
+docker network inspect my_docker_network
+```
+
+`mynginx` now appears under `Containers`, with an IP address on the new network. A container can be on several networks at once. Disconnect it again:
+
+```bash
+docker network disconnect my_docker_network mynginx
+```
+
+### Start a container on a network
+
+A container started without `--network` joins the default `bridge` network. To start it on your network:
+
+```bash
+docker run --network my_docker_network --name backend -d nginx:alpine
+```
+
+Containers on a user-defined network reach each other **by name**. A second container calls `backend` by its name:
+
+```bash
+docker run --rm --network my_docker_network curlimages/curl curl -s http://backend
+```
+
+**You should see** the nginx welcome page (HTML). Nothing outside the network can reach `backend`, because it has no published port. This is how you keep a database private and expose only the web server: put both on one network and publish a port (`-p`) only for the web server.
+
+### Remove containers and the network
+
+```bash
+docker rm -f mynginx backend
+```
+
+```bash
+docker network rm my_docker_network
+```
+
+### Network types
+
+| Type | What it does |
+|---|---|
+| `bridge` | The default. Connects containers on a single Docker host. |
+| `host` | The container shares your laptop's network directly: no separate IP, no isolation. |
+| `none` | No networking at all. Useful for security or special setups. |
+| `overlay` | Connects containers across several Docker hosts (Docker Swarm). |
+
+Try `none`. The container has only a loopback interface and no way out:
+
+```bash
+docker run --rm --network none alpine ip addr
+```
+
+**You should see** only `lo`. With the default `bridge` network the same command also shows `eth0`.
+
+The `host` type is used like this (it works on Linux; Docker Desktop on Windows and macOS needs "Enable host networking" in Settings > Resources > Network):
+
+```bash
+docker run --rm --network host nginx:alpine
+```
+
+Press **Ctrl+C** to stop it.
+
+> **REFERENCE** Overlay networks need Docker Swarm and several computers, so you only read this part.
+
+An overlay network lets containers on different hosts talk by name, as if on one network:
+
+```bash
+docker network create --driver overlay company_net
+```
+
+```bash
+docker service create --name frontend --network company_net -p 80:80 nginx
+```
+
+```bash
+docker service create --name api --network company_net my-api-image
+```
+
+Here `frontend` could run on Host A (192.168.1.10) and `api` on Host B (192.168.1.20). The frontend calls the API with `curl http://api:5000`: it uses `api` as the host name. Docker's overlay network routes the traffic to Host B and delivers the request to the container.
 
 | Command | What it does |
 |---|---|
+| `docker network create NAME` | Create a user-defined network |
 | `docker network ls` | List networks |
-| `docker network inspect NAME` | Show the containers on a network and their addresses |
+| `docker network inspect NAME` | Show subnet, gateway, driver and connected containers |
+| `docker network connect NAME CONTAINER` | Connect a running container to a network |
+| `docker network disconnect NAME CONTAINER` | Disconnect it |
+| `docker network rm NAME` | Remove a network (disconnect or delete its containers first) |
 | `docker run --network NAME ...` | Start a container on that network |
+| `docker port CONTAINER` | Show the published ports of a container |
 
 ## Docker Compose: many containers, one file
 
