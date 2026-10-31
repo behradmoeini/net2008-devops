@@ -1305,5 +1305,3 @@ docker image prune -f  # Delete unused dangling images (-f skips the confirmatio
 - `docker run -d --name N -p HOST:CONTAINER IMAGE:TAG` starts a service. `docker ps`, `logs`, `exec`, `stop`, `rm` manage it.
 - A Dockerfile builds an image. Use tags, put changing lines last, never store secrets in it.
 - Volumes keep data. User-defined networks give containers name lookup. Compose describes a whole stack in one YAML file.
-
-**Next:** the Week 9 lab (graded) builds, runs, stores and composes a small web service with your own seed.
