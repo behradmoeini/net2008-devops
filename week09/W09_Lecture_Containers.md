@@ -181,7 +181,15 @@ docker run -d --name web1 -p 8081:80 nginx:alpine
 
 Open <http://localhost:8081> in your browser. **You should see** a page that says `Welcome to nginx!`.
 
-Now a database. The image is large, so the first download takes a minute:
+Delete the web server:
+
+```bash
+docker rm -f web1
+```
+
+## Stop and start a container
+
+Start a database. The image is large, so the first download takes a minute:
 
 ```bash
 docker run --name my_mongo -d mongo:noble
@@ -201,7 +209,7 @@ exit
 
 This time the container keeps running, because `exit` ended only the shell you started with `exec`, not the database.
 
-## Stop and start a container
+Now stop and start it:
 
 ```bash
 docker stop my_mongo
@@ -226,11 +234,7 @@ docker rm -f my_mongo
 | `docker restart NAME` | Stop and start in one command. |
 | `docker rm -f NAME` | Stop (`-f`) and delete a container. The image stays on your disk. |
 
-Also useful: `docker logs NAME` shows what a container printed (`-f` follows it live), and `docker rm NAME` deletes a container that is already stopped. Clean up the web server too:
-
-```bash
-docker rm -f web1
-```
+Also useful: `docker logs NAME` shows what a container printed (`-f` follows it live), and `docker rm NAME` deletes a container that is already stopped.
 
 ## Try it yourself
 
