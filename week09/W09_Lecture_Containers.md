@@ -10,6 +10,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - Do the steps in order. Each step builds on the one before.
 - Steps and subsections marked **REFERENCE** are not presented in class. The full detail stays here for you to read on your own, and the lab practises it.
 - All practice work happens in one folder, `~/container-practice`.
+- **Windows users:** use **PowerShell**. Where a command differs from Linux and macOS, a **PowerShell** box follows the grey box: run that one instead. `docker` commands are the same everywhere, so they get no second box. Linux and macOS users ignore the PowerShell boxes.
 
 ## The big picture
 
@@ -71,6 +72,13 @@ Create the practice folder:
 mkdir -p ~/container-practice && cd ~/container-practice  # Create the practice folder and move into it.
 ```
 
+**PowerShell:**
+
+```powershell
+New-Item -ItemType Directory -Force ~/container-practice | Out-Null
+Set-Location ~/container-practice  # Create the practice folder and move into it.
+```
+
 ---
 ## Step 2. See the problem first
 
@@ -78,6 +86,13 @@ You will run one small Python script twice: on your laptop and in a container. T
 
 ```bash
 mkdir -p ~/container-practice/demo && cd ~/container-practice/demo
+```
+
+**PowerShell:**
+
+```powershell
+New-Item -ItemType Directory -Force ~/container-practice/demo | Out-Null
+Set-Location ~/container-practice/demo
 ```
 
 ```bash
@@ -89,10 +104,27 @@ cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}"
 EOF
 ```
 
+**PowerShell:**
+
+```powershell
+@'
+import platform
+import cowsay
+
+cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
+'@ | Set-Content demo.py -Encoding ascii
+```
+
 Run it on your laptop first:
 
 ```bash
 python3 demo.py  # Run the script with the Python installed on your laptop.
+```
+
+**PowerShell:**
+
+```powershell
+python demo.py  # Run the script with the Python installed on your laptop.
 ```
 
 **You should see** `ModuleNotFoundError: No module named 'cowsay'`. This is the "works on my machine" problem: the script needs a library that your laptop does not have, and on a server it would be another missing library or another Python version.
@@ -103,12 +135,24 @@ Now run the same file in a container that has Python 3.11:
 docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
 ```
 
+**PowerShell:**
+
+```powershell
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
+```
+
 **You should see** a cow that says `I run on Python 3.11.x on Linux`. Your laptop is untouched: the library exists only inside that container, and the container is deleted when the script ends (`--rm`).
 
 Run it again with a different Python version. Only the image tag changes:
 
 ```bash
 docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
+```
+
+**PowerShell:**
+
+```powershell
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
 ```
 
 The cow now reports Python 3.12. One file, two Python versions, no installation on your laptop. The rest of this guide shows how to package, store and connect programs like this one.
@@ -136,6 +180,12 @@ The first time, Docker downloads the image. Then test it:
 curl http://localhost:8081  # Ask the web server for its page.
 ```
 
+**PowerShell:**
+
+```powershell
+curl.exe http://localhost:8081  # Ask the web server for its page.
+```
+
 **You should see** HTML that contains `Welcome to nginx!`.
 
 ---
@@ -145,6 +195,12 @@ nginx is boring to watch. Start a container that runs a small Python program: a 
 
 ```bash
 cd ~/container-practice/demo  # Go back to the demo folder from Step 2.
+```
+
+**PowerShell:**
+
+```powershell
+Set-Location ~/container-practice/demo  # Go back to the demo folder from Step 2.
 ```
 
 ```bash
@@ -165,8 +221,34 @@ while True:
 EOF
 ```
 
+**PowerShell:**
+
+```powershell
+@'
+import random
+import time
+
+import cowsay
+import pyfiglet
+import pyjokes
+
+print(pyfiglet.figlet_format("DOCKER ZOO", font="slant"), flush=True)
+
+while True:
+    animal = random.choice(cowsay.char_names)
+    print(cowsay.get_output_string(animal, pyjokes.get_joke()), flush=True)
+    time.sleep(3)
+'@ | Set-Content zoo.py -Encoding ascii
+```
+
 ```bash
 docker run -d --name zoo -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay pyfiglet pyjokes && python zoo.py"  # Start the zoo in the background. The container installs three libraries, then runs the script from your folder.
+```
+
+**PowerShell:**
+
+```powershell
+docker run -d --name zoo -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.11-slim sh -c "pip install -q cowsay pyfiglet pyjokes && python zoo.py"  # Start the zoo in the background. The container installs three libraries, then runs the script from your folder.
 ```
 
 Wait about 20 seconds for the libraries to install. Now inspect the zoo:
@@ -272,11 +354,27 @@ Create a small website and a Dockerfile in a new folder:
 mkdir -p ~/container-practice/site && cd ~/container-practice/site  # Create the folder for this image and move into it.
 ```
 
+**PowerShell:**
+
+```powershell
+New-Item -ItemType Directory -Force ~/container-practice/site | Out-Null
+Set-Location ~/container-practice/site  # Create the folder for this image and move into it.
+```
+
 ```bash
 cat > index.html <<'EOF'
 <h1>Bytown NetOps</h1>
 <p>Built by me, served from a container.</p>
 EOF
+```
+
+**PowerShell:**
+
+```powershell
+@'
+<h1>Bytown NetOps</h1>
+<p>Built by me, served from a container.</p>
+'@ | Set-Content index.html -Encoding ascii
 ```
 
 ```bash
@@ -285,6 +383,16 @@ FROM nginx:alpine
 COPY index.html /usr/share/nginx/html/index.html
 EXPOSE 80
 EOF
+```
+
+**PowerShell:**
+
+```powershell
+@'
+FROM nginx:alpine
+COPY index.html /usr/share/nginx/html/index.html
+EXPOSE 80
+'@ | Set-Content Dockerfile -Encoding ascii
 ```
 
 The three lines of the Dockerfile:
@@ -309,10 +417,22 @@ docker run -d --name site1 -p 8082:80 site:1.0  # Start a container from your im
 curl http://localhost:8082  # You should see your own HTML.
 ```
 
+**PowerShell:**
+
+```powershell
+curl.exe http://localhost:8082  # You should see your own HTML.
+```
+
 Change the page and build version 1.1. Docker reuses unchanged layers, so this is fast:
 
 ```bash
 echo "<p>Version 1.1</p>" >> index.html  # Add a line to the page.
+```
+
+**PowerShell:**
+
+```powershell
+Add-Content index.html "<p>Version 1.1</p>"  # Add a line to the page.
 ```
 
 ```bash
@@ -343,6 +463,13 @@ Now you package a real program: a small Python web service that reports which co
 
 ```bash
 mkdir -p ~/container-practice/pyapp && cd ~/container-practice/pyapp  # Create the folder for the app and move into it.
+```
+
+**PowerShell:**
+
+```powershell
+New-Item -ItemType Directory -Force ~/container-practice/pyapp | Out-Null
+Set-Location ~/container-practice/pyapp  # Create the folder for the app and move into it.
 ```
 
 ```bash
@@ -386,8 +513,57 @@ if __name__ == "__main__":
 EOF
 ```
 
+**PowerShell:**
+
+```powershell
+@'
+import os
+import platform
+import socket
+
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+COUNT_FILE = os.environ.get("COUNT_FILE", "/data/count.txt")
+GREETING = os.environ.get("GREETING", "Hello from Bytown NetOps")
+
+
+def next_count():
+    os.makedirs(os.path.dirname(COUNT_FILE), exist_ok=True)
+    try:
+        with open(COUNT_FILE) as f:
+            count = int(f.read())
+    except (FileNotFoundError, ValueError):
+        count = 0
+    count += 1
+    with open(COUNT_FILE, "w") as f:
+        f.write(str(count))
+    return count
+
+
+@app.get("/")
+def index():
+    return jsonify(
+        message=GREETING,
+        container=socket.gethostname(),
+        python=platform.python_version(),
+        visits=next_count(),
+    )
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
+'@ | Set-Content app.py -Encoding ascii
+```
+
 ```bash
 echo "flask==3.0.3" > requirements.txt  # List the libraries the app needs, with fixed versions.
+```
+
+**PowerShell:**
+
+```powershell
+Set-Content requirements.txt "flask==3.0.3" -Encoding ascii  # List the libraries the app needs, with fixed versions.
 ```
 
 ```bash
@@ -401,6 +577,21 @@ ENV GREETING="Hello from Bytown NetOps"
 EXPOSE 8000
 CMD ["python", "app.py"]
 EOF
+```
+
+**PowerShell:**
+
+```powershell
+@'
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
+ENV GREETING="Hello from Bytown NetOps"
+EXPOSE 8000
+CMD ["python", "app.py"]
+'@ | Set-Content Dockerfile -Encoding ascii
 ```
 
 Read the Dockerfile from the top: start from Python 3.11, work in `/app`, copy the library list, install the libraries, copy the program, set a default greeting, and start the program when a container starts. The library list is copied **before** the program on purpose: Docker caches each layer, so the slow `pip install` runs again only when `requirements.txt` changes.
@@ -417,6 +608,12 @@ docker run -d --name py1 -p 8090:8000 bytown-py:1.0  # Start a container from th
 curl -s http://localhost:8090  # Call the app.
 ```
 
+**PowerShell:**
+
+```powershell
+curl.exe -s http://localhost:8090  # Call the app.
+```
+
 **You should see** JSON with `"message": "Hello from Bytown NetOps"`, the Python version, a `container` value (a short hex ID) and `"visits": 1`. Run the `curl` again: the visits go up.
 
 One image starts many containers. Start a second one with a different greeting:
@@ -429,6 +626,12 @@ docker run -d --name py2 -p 8091:8000 -e GREETING="Hello from container two" byt
 curl -s http://localhost:8091  # The container ID and the greeting differ from py1, and the visits start at 1.
 ```
 
+**PowerShell:**
+
+```powershell
+curl.exe -s http://localhost:8091  # The container ID and the greeting differ from py1, and the visits start at 1.
+```
+
 Each container has its own ID, its own environment and its own counter file. Now look at the logs and prove the build cache:
 
 ```bash
@@ -437,6 +640,12 @@ docker logs py1  # The app prints one line per request it received.
 
 ```bash
 echo "# changed" >> app.py  # Change the program but not the library list.
+```
+
+**PowerShell:**
+
+```powershell
+Add-Content app.py "# changed"  # Change the program but not the library list.
 ```
 
 ```bash
@@ -479,6 +688,12 @@ docker run -d --name count1 -p 8090:8000 -v counter:/data bytown-py:1.0  # Start
 curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits.
 ```
 
+**PowerShell:**
+
+```powershell
+curl.exe -s http://localhost:8090; curl.exe -s http://localhost:8090; curl.exe -s http://localhost:8090  # Three visits.
+```
+
 ```bash
 docker rm -f count1  # Delete the container. The volume stays.
 ```
@@ -489,6 +704,12 @@ docker run -d --name count2 -p 8090:8000 -v counter:/data bytown-py:1.0  # A bra
 
 ```bash
 curl -s http://localhost:8090  # The counter continues.
+```
+
+**PowerShell:**
+
+```powershell
+curl.exe -s http://localhost:8090  # The counter continues.
 ```
 
 **You should see** `"visits": 4`. The container is new, the data is not.
@@ -511,12 +732,30 @@ docker run -d --name count3 -p 8090:8000 bytown-py:1.0  # Start the app with no 
 curl -s http://localhost:8090 && curl -s http://localhost:8090 && curl -s http://localhost:8090  # Three visits.
 ```
 
+**PowerShell:**
+
+```powershell
+curl.exe -s http://localhost:8090; curl.exe -s http://localhost:8090; curl.exe -s http://localhost:8090  # Three visits.
+```
+
 ```bash
 docker rm -f count3 && docker run -d --name count4 -p 8090:8000 bytown-py:1.0  # Delete the container and start a fresh one.
 ```
 
+**PowerShell:**
+
+```powershell
+docker rm -f count3; docker run -d --name count4 -p 8090:8000 bytown-py:1.0  # Delete the container and start a fresh one.
+```
+
 ```bash
 curl -s http://localhost:8090  # The counter is back at 1.
+```
+
+**PowerShell:**
+
+```powershell
+curl.exe -s http://localhost:8090  # The counter is back at 1.
 ```
 
 ```bash
@@ -595,6 +834,13 @@ Typing five long `docker run` commands is slow and easy to get wrong. **Compose*
 mkdir -p ~/container-practice/stack && cd ~/container-practice/stack  # Create a folder for the stack and move into it.
 ```
 
+**PowerShell:**
+
+```powershell
+New-Item -ItemType Directory -Force ~/container-practice/stack | Out-Null
+Set-Location ~/container-practice/stack  # Create a folder for the stack and move into it.
+```
+
 ```bash
 cat > compose.yaml <<'EOF'
 services:
@@ -615,6 +861,28 @@ volumes:
 EOF
 ```
 
+**PowerShell:**
+
+```powershell
+@'
+services:
+  app:
+    build: ../pyapp
+    image: bytown-py:compose
+    ports:
+      - "8083:8000"
+    environment:
+      GREETING: "Hello from Compose"
+    volumes:
+      - counter:/data
+  tools:
+    image: alpine:3.20
+    command: ["sleep", "3600"]
+volumes:
+  counter:
+'@ | Set-Content compose.yaml -Encoding ascii
+```
+
 YAML uses **spaces** for indentation (never tabs). Compose creates a network for the stack, so `tools` can reach `app` by the name `app`. The `build` line tells Compose to build the image from the Python app folder of Step 7.
 
 ```bash
@@ -627,6 +895,12 @@ docker compose ps  # List the containers of this stack.
 
 ```bash
 curl -s http://localhost:8083  # Call the app from your laptop through the published port.
+```
+
+**PowerShell:**
+
+```powershell
+curl.exe -s http://localhost:8083  # Call the app from your laptop through the published port.
 ```
 
 ```bash
