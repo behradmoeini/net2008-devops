@@ -27,9 +27,9 @@ Restart the laptop when it asks. Ubuntu opens and asks you to create a Linux use
 
 ## 2. Docker
 
-**Windows.** Install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/>. During setup keep **Use WSL 2** on. Start Docker Desktop. Then open Settings > Resources > WSL integration and switch on **Ubuntu**. Close and reopen the Ubuntu terminal.
+**Windows:** Install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/>. During setup keep **Use WSL 2** on. Start Docker Desktop. Then open Settings > Resources > WSL integration and switch on **Ubuntu**. Close and reopen the Ubuntu terminal.
 
-**macOS.**
+**macOS:**
 
 ```bash
 brew install --cask docker
@@ -37,7 +37,7 @@ brew install --cask docker
 
 Open **Docker** from Applications once and accept the prompts.
 
-**Linux (Ubuntu or Debian).**
+**Linux (Ubuntu or Debian):**
 
 ```bash
 curl -fsSL https://get.docker.com | sudo sh
