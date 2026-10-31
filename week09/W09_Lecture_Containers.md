@@ -424,7 +424,9 @@ docker push YOUR_USERNAME/nginx:alpine
 | `docker login` | Authenticate with Docker Hub |
 | `docker push NAME:TAG` | Upload an image to Docker Hub |
 
-### Same script, different Python version
+### Try it yourself: same script, different Python version
+
+> **REFERENCE** Not presented in class. Try it on your own.
 
 An image is a ready-made environment. To see that, run one small Python script in two different Python images. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
 
