@@ -9,7 +9,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - Do the steps in order. Each step builds on the one before.
 - Steps and subsections marked **REFERENCE** are not presented in class. The full detail stays here for you to read on your own, and the lab practises it.
 - All practice work happens in one folder, `~/container-practice`.
-- **Which box to use:** where a command differs by system, you get two boxes: **macOS / Linux (Terminal)** and **Windows (PowerShell)**. Run the one for your system. Most `docker` commands are identical on every system, so they get one box. The exceptions are commands that mount your current folder (`-v "$PWD":/app`): the folder variable is written differently in PowerShell.
+- **Which box to use:** where a command differs by system, you get two boxes: **Windows (PowerShell)**, open by default, and **macOS / Linux (Terminal)**, collapsed. Click a title to open or close its box. Most `docker` commands are identical on every system, so they get one box. The exceptions are commands that mount your current folder (`-v "$PWD":/app`): the folder variable is written differently in PowerShell.
 
 ### How to install Docker
 
@@ -421,20 +421,27 @@ docker push YOUR_USERNAME/python:3.11-slim
 
 An image is a ready-made environment. To see that, run one small Python script in two different Python images. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 mkdir -p ~/container-practice/demo && cd ~/container-practice/demo
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 New-Item -ItemType Directory -Force ~/container-practice/demo | Out-Null
 Set-Location ~/container-practice/demo
 ```
 
-**macOS / Linux (Terminal):**
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > demo.py <<'EOF'
@@ -445,7 +452,10 @@ cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}"
 EOF
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 @'
@@ -456,35 +466,49 @@ cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}"
 '@ | Set-Content demo.py -Encoding ascii
 ```
 
+</details>
+
 Run the file in a container with Python 3.11. `-v` shares the current folder with the container and `-w` sets the folder to work in:
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
 ```
 
+</details>
+
 **You should see** a cow that says `I run on Python 3.11.x on Linux`. Your laptop is untouched: the library exists only inside that container, and the container is deleted when the script ends (`--rm`).
 
 Run it again with a different Python version. Only the image tag changes:
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
 ```
+
+</details>
 
 The cow now reports Python 3.12. One file, two Python versions, no installation on your laptop.
 
@@ -492,20 +516,27 @@ The cow now reports Python 3.12. One file, two Python versions, no installation 
 
 Create a small website and a Dockerfile in a new folder:
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 mkdir -p ~/container-practice/site && cd ~/container-practice/site  # Create the folder for this image and move into it.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 New-Item -ItemType Directory -Force ~/container-practice/site | Out-Null
 Set-Location ~/container-practice/site  # Create the folder for this image and move into it.
 ```
 
-**macOS / Linux (Terminal):**
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > index.html <<'EOF'
@@ -514,7 +545,10 @@ cat > index.html <<'EOF'
 EOF
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 @'
@@ -523,7 +557,10 @@ EOF
 '@ | Set-Content index.html -Encoding ascii
 ```
 
-**macOS / Linux (Terminal):**
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > Dockerfile <<'EOF'
@@ -533,7 +570,10 @@ EXPOSE 80
 EOF
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 @'
@@ -542,6 +582,8 @@ COPY index.html /usr/share/nginx/html/index.html
 EXPOSE 80
 '@ | Set-Content Dockerfile -Encoding ascii
 ```
+
+</details>
 
 The three lines of the Dockerfile:
 
@@ -573,13 +615,17 @@ docker history site:1.0
 
 Change the page and build version 1.1. Docker reuses unchanged layers, so this is fast:
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 echo "<p>Version 1.1</p>" >> index.html  # Add a line to the page.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 Add-Content index.html "<p>Version 1.1</p>"  # Add a line to the page.
@@ -592,6 +638,8 @@ docker build -t site:1.1 .  # Build again. Lines that did not change say CACHED.
 ```bash
 docker rm -f site1  # Delete the old container.
 ```
+
+</details>
 
 ### More Dockerfile instructions
 
@@ -608,22 +656,31 @@ docker rm -f site1  # Delete the old container.
 
 ## Package a Python web app
 
+> **REFERENCE** Not presented in class. Read it on your own; the lab practises it.
+
 Now you package a real program: a small Python web service that reports which container answered and counts the visits.
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 mkdir -p ~/container-practice/pyapp && cd ~/container-practice/pyapp  # Create the folder for the app and move into it.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 New-Item -ItemType Directory -Force ~/container-practice/pyapp | Out-Null
 Set-Location ~/container-practice/pyapp  # Create the folder for the app and move into it.
 ```
 
-**macOS / Linux (Terminal):**
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > app.py <<'EOF'
@@ -666,7 +723,10 @@ if __name__ == "__main__":
 EOF
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 @'
@@ -709,19 +769,28 @@ if __name__ == "__main__":
 '@ | Set-Content app.py -Encoding ascii
 ```
 
-**macOS / Linux (Terminal):**
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 echo "flask==3.0.3" > requirements.txt  # List the libraries the app needs, with fixed versions.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 Set-Content requirements.txt "flask==3.0.3" -Encoding ascii  # List the libraries the app needs, with fixed versions.
 ```
 
-**macOS / Linux (Terminal):**
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > Dockerfile <<'EOF'
@@ -736,7 +805,10 @@ CMD ["python", "app.py"]
 EOF
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 @'
@@ -751,6 +823,8 @@ CMD ["python", "app.py"]
 '@ | Set-Content Dockerfile -Encoding ascii
 ```
 
+</details>
+
 Read the Dockerfile from the top: start from Python 3.11, work in `/app`, copy the library list, install the libraries, copy the program, set a default greeting, and start the program when a container starts. The library list is copied **before** the program on purpose: Docker caches each layer, so the slow `pip install` runs again only when `requirements.txt` changes.
 
 ```bash
@@ -761,17 +835,23 @@ docker build -t bytown-py:1.0 .  # Build the image. The first build downloads Fl
 docker run -d --name py1 -p 8090:8000 bytown-py:1.0  # Start a container from the image on host port 8090.
 ```
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 curl -s http://localhost:8090  # Call the app.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 curl.exe -s http://localhost:8090  # Call the app.
 ```
+
+</details>
 
 **You should see** JSON with `"message": "Hello from Bytown NetOps"`, the Python version, a `container` value (a short hex ID) and `"visits": 1`. Run the `curl` again: the visits go up.
 
@@ -781,17 +861,23 @@ One image starts many containers. Start a second one with a different greeting:
 docker run -d --name py2 -p 8091:8000 -e GREETING="Hello from container two" bytown-py:1.0  # A second container from the same image. -e overrides the greeting.
 ```
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 curl -s http://localhost:8091  # The container ID and the greeting differ from py1, and the visits start at 1.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 curl.exe -s http://localhost:8091  # The container ID and the greeting differ from py1, and the visits start at 1.
 ```
+
+</details>
 
 Each container has its own ID, its own environment and its own counter file. Now look at the logs and prove the build cache:
 
@@ -799,13 +885,17 @@ Each container has its own ID, its own environment and its own counter file. Now
 docker logs py1  # The app prints one line per request it received.
 ```
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 echo "# changed" >> app.py  # Change the program but not the library list.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 Add-Content app.py "# changed"  # Change the program but not the library list.
@@ -819,25 +909,15 @@ docker build -t bytown-py:1.1 .  # Rebuild. The pip install step says CACHED, so
 docker rm -f py1 py2  # Delete both containers. The images stay.
 ```
 
+</details>
+
 The built-in Flask server is fine for learning. A production service would use a server such as gunicorn.
-
-## Environment variables
-
-> **REFERENCE** Read it on your own; the lab practises it.
-
-```bash
-docker run --rm -e SITE=ott-dc1 python:3.11-slim python -c "import os; print('site =', os.environ['SITE'])"  # Pass a variable with -e and read it inside the container.
-```
-
-**You should see** `site = ott-dc1`. Environment variables are how you configure a container without rebuilding the image. **Never put passwords in a Dockerfile**: anyone with the image can read them.
 
 ## Volumes: keep data after the container is gone
 
 A container's files disappear with the container. A **volume** is storage that Docker keeps outside the container, so the data survives. There are two kinds: a **named volume** (Docker owns the storage) and a **bind mount** (a folder from your own computer).
 
-### The problem: data dies with the container
-
-Write a file inside a container, delete the container, then look for the file in a new one:
+**The problem: data dies with the container.** Write a file inside a container, delete the container, then look for the file in a new one:
 
 ```bash
 docker run --name box1 alpine sh -c "echo saved > /note.txt && cat /note.txt"
@@ -889,7 +969,8 @@ docker volume rm mydata
 
 A bind mount connects a folder on **your computer** to a path inside the container. Both see the same files. Create a folder with one file:
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 mkdir -p ~/container-practice/shared && cd ~/container-practice/shared
@@ -899,7 +980,10 @@ mkdir -p ~/container-practice/shared && cd ~/container-practice/shared
 echo "hello from my computer" > hello.txt
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 New-Item -ItemType Directory -Force ~/container-practice/shared | Out-Null
@@ -910,19 +994,27 @@ Set-Location ~/container-practice/shared
 Set-Content hello.txt "hello from my computer"
 ```
 
+</details>
+
 Start a container in the background with this folder mounted at `/data`. `sleep 3600` keeps it running for an hour:
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 docker run -d --name synced -v "$PWD":/data alpine sleep 3600
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 docker run -d --name synced -v "${PWD}:/data" alpine sleep 3600
 ```
+
+</details>
 
 Go inside and look at your file:
 
@@ -938,13 +1030,17 @@ docker exec synced cat /data/hello.txt
 
 **Change it on your computer.** Add a line, then read the file from inside the container again:
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 echo "second line" >> hello.txt
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 Add-Content hello.txt "second line"
@@ -954,6 +1050,8 @@ Add-Content hello.txt "second line"
 docker exec synced cat /data/hello.txt
 ```
 
+</details>
+
 **You should see** both lines. The container sees your change at once, with no copy and no restart.
 
 **Change it from inside the container.** Create a file there, then look for it on your computer:
@@ -962,7 +1060,8 @@ docker exec synced cat /data/hello.txt
 docker exec synced sh -c "echo from the container > /data/from_container.txt"
 ```
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 ls
@@ -972,7 +1071,10 @@ ls
 cat from_container.txt
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 dir
@@ -981,6 +1083,8 @@ dir
 ```powershell
 Get-Content from_container.txt
 ```
+
+</details>
 
 **You should see** `from_container.txt` in your folder. It works in both directions: it is the same folder, seen from two places.
 
@@ -1034,17 +1138,23 @@ docker inspect mynginx
 
 The output is long (JSON). The `NetworkSettings` part shows the network, the gateway, the IP address and the connected networks. Pick out the IP address:
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 docker inspect mynginx | grep IPAddress
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 docker inspect mynginx | Select-String IPAddress
 ```
+
+</details>
 
 Or ask Docker for just that value with a format template (the same on every system):
 
@@ -1168,20 +1278,27 @@ Here `frontend` could run on Host A (192.168.1.10) and `api` on Host B (192.168.
 
 Typing five long `docker run` commands is slow and easy to get wrong. **Compose** describes the whole system in one YAML file.
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 mkdir -p ~/container-practice/stack && cd ~/container-practice/stack  # Create a folder for the stack and move into it.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 New-Item -ItemType Directory -Force ~/container-practice/stack | Out-Null
 Set-Location ~/container-practice/stack  # Create a folder for the stack and move into it.
 ```
 
-**macOS / Linux (Terminal):**
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > compose.yaml <<'EOF'
@@ -1203,7 +1320,10 @@ volumes:
 EOF
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 @'
@@ -1225,6 +1345,8 @@ volumes:
 '@ | Set-Content compose.yaml -Encoding ascii
 ```
 
+</details>
+
 YAML uses **spaces** for indentation (never tabs). Compose creates a network for the stack, so `tools` can reach `app` by the name `app`. The `build` line tells Compose to build the image from the Python web app folder from "Package a Python web app".
 
 ```bash
@@ -1235,13 +1357,17 @@ docker compose up -d --build  # Build the app image, create the network and the 
 docker compose ps  # List the containers of this stack.
 ```
 
-**macOS / Linux (Terminal):**
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 curl -s http://localhost:8083  # Call the app from your laptop through the published port.
 ```
 
-**Windows (PowerShell):**
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
 
 ```powershell
 curl.exe -s http://localhost:8083  # Call the app from your laptop through the published port.
@@ -1258,6 +1384,8 @@ docker compose logs app  # Show the logs of one service: you see both requests.
 ```bash
 docker compose down -v  # Stop and delete the containers, the network and (with -v) the volumes.
 ```
+
+</details>
 
 | Command | What it does |
 |---|---|
