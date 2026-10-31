@@ -3,12 +3,9 @@
 
 From Week 9 to Week 15 you do everything on **your own laptop**. You do not need a server, a lab machine, a cloud account or a Codespace. Do this setup **once**, before the Week 9 lecture. Install only what each week needs, in the order below. Weeks 10, 11 and 12 each have their own setup guide in their week folder. If you already have a tool, skip its step.
 
-## What you install and when
+## How to install?
 
-| Tool | Needed in | What it is for |
-|---|---|---|
-| Terminal (Ubuntu on WSL 2 for Windows) | Week 9 | Where you type every command |
-| Docker | Weeks 9 to 14 | Containers |
+You can choose whether to install only on your terminal or use Docker desktop.
 
 ## 1. Terminal
 
@@ -62,7 +59,7 @@ You must see `Hello from Docker!`.
 
 **Docker Desktop memory.** In Docker Desktop open Settings > Resources and give Docker **4 GB** of memory (6 GB on a 16 GB laptop). Kubernetes and the monitoring stack in later weeks need it.
 
-## 3. Check everything with one command
+### Check everything with one command
 
 Download [check_tools.py](check_tools.py) from the course repository (it is next to this file) and run it from the terminal you use for the course:
 
