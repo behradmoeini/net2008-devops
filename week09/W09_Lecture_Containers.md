@@ -101,135 +101,66 @@ Open <http://localhost:8081> in your browser.
 ---
 ## Look inside a running container
 
-nginx is boring to watch. Start a container that runs a small Python program: a zoo where a random animal (cow, dragon, penguin, ghostbuster, T-Rex and more) tells a random programmer joke every three seconds, under a big banner.
-
-**macOS / Linux (Terminal):**
+nginx is quiet. Start a second container that prints one line every second, so there is something to watch:
 
 ```bash
-mkdir -p ~/container-practice/zoo && cd ~/container-practice/zoo  # Create a folder for the zoo and move into it.
+docker run -d --name pinger alpine ping 127.0.0.1  # Start a tiny Linux container (alpine) in the background. It pings itself once per second.
 ```
 
-**Windows (PowerShell):**
-
-```powershell
-New-Item -ItemType Directory -Force ~/container-practice/zoo | Out-Null
-Set-Location ~/container-practice/zoo  # Create a folder for the zoo and move into it.
-```
-
-**macOS / Linux (Terminal):**
+Now inspect it:
 
 ```bash
-cat > zoo.py <<'EOF'
-import random
-import time
-
-import cowsay
-import pyfiglet
-import pyjokes
-
-print(pyfiglet.figlet_format("DOCKER ZOO", font="slant"), flush=True)
-
-while True:
-    animal = random.choice(cowsay.char_names)
-    print(cowsay.get_output_string(animal, pyjokes.get_joke()), flush=True)
-    time.sleep(3)
-EOF
-```
-
-**Windows (PowerShell):**
-
-```powershell
-@'
-import random
-import time
-
-import cowsay
-import pyfiglet
-import pyjokes
-
-print(pyfiglet.figlet_format("DOCKER ZOO", font="slant"), flush=True)
-
-while True:
-    animal = random.choice(cowsay.char_names)
-    print(cowsay.get_output_string(animal, pyjokes.get_joke()), flush=True)
-    time.sleep(3)
-'@ | Set-Content zoo.py -Encoding ascii
-```
-
-**macOS / Linux (Terminal):**
-
-```bash
-docker run -d --name zoo -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay pyfiglet pyjokes && python zoo.py"  # Start the zoo in the background. The container installs three libraries, then runs the script from your folder.
-```
-
-**Windows (PowerShell):**
-
-```powershell
-docker run -d --name zoo -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.11-slim sh -c "pip install -q cowsay pyfiglet pyjokes && python zoo.py"  # Start the zoo in the background. The container installs three libraries, then runs the script from your folder.
-```
-
-Wait about 20 seconds for the libraries to install. Now inspect the zoo:
-
-```bash
-docker ps  # List running containers. You see web1 (nginx) and zoo (Python).
+docker ps  # List running containers. You see web1 (nginx) and pinger.
 ```
 
 ```bash
-docker logs zoo  # Print everything the zoo said so far. Whatever a program prints becomes the container log.
+docker logs pinger  # Print everything the container said so far. Whatever a program prints becomes the container log.
 ```
 
 ```bash
-docker logs -f --tail 20 zoo  # Follow the log live, starting with the last 20 lines. Press Ctrl+C to stop following. The zoo keeps running.
+docker logs -f --tail 5 pinger  # Follow the log live, starting with the last 5 lines. Press Ctrl+C to stop following. The container keeps running.
 ```
 
-**You should see** the DOCKER ZOO banner and animals telling jokes, a new one every few seconds.
+**You should see** a new `64 bytes from 127.0.0.1` line every second.
+
+Run commands **inside** the container with `docker exec`:
 
 ```bash
-docker exec zoo python --version  # Run one command inside the container. It is the Python from the image, not the one on your laptop.
-```
-
-```bash
-docker exec zoo cat /etc/os-release  # The zoo lives on Debian Linux, whatever your laptop runs.
-```
-
-```bash
-docker exec zoo pip list  # The libraries installed inside the container. Your laptop has none of them.
+docker exec pinger cat /etc/os-release  # The container runs Alpine Linux, whatever your laptop runs.
 ```
 
 ```bash
-docker exec zoo cat /proc/1/cmdline  # Show the command of process number 1 inside the container.
+docker exec pinger ps  # List the processes inside the container.
 ```
 
-**You should see** `sh`, `-c` and the install and run command glued together. The container is not a machine. It is this one process, and the container ends when the process ends.
+**You should see** one main process, number 1: `ping 127.0.0.1`. The container is not a machine. It is this one process, and the container ends when the process ends.
 
 ```bash
-docker exec -it zoo bash  # Open an interactive shell inside the container. Type exit to leave.
+docker exec -it pinger sh  # Open an interactive shell inside the container. Type exit to leave.
 ```
 
-Inside that shell try `ls /app`, `hostname` and `whoami`, then type `exit`. You see only the container's own files, and you are `root` there. The animals have no idea that your laptop, your photos or your other containers exist.
+Inside that shell try `ls /`, `hostname` and `whoami`, then type `exit`. You see only the container's own files, and you are `root` there. The container has no idea that your laptop, your photos or your other containers exist.
 
-Now manage the zoo:
-
-```bash
-docker stop zoo  # Stop the container. It still exists. The animals go to sleep.
-```
+Now manage the container:
 
 ```bash
-docker ps -a  # List all containers, including stopped ones. zoo shows "Exited".
+docker stop pinger  # Stop the container. It still exists.
 ```
 
 ```bash
-docker start zoo  # Start the same container again. It installs the libraries again, then the show restarts.
+docker ps -a  # List all containers, including stopped ones. pinger shows "Exited".
 ```
 
 ```bash
-docker logs --tail 20 zoo  # The old show is still in the log, followed by the new one.
+docker start pinger  # Start the same container again.
 ```
 
-Installing libraries every time the container starts is slow. The image sections below fix this: you bake the libraries into an image once.
+```bash
+docker logs --tail 5 pinger  # The old lines are still in the log, followed by the new ones.
+```
 
 ```bash
-docker rm -f zoo web1  # Delete both containers (-f stops them first). The images stay on disk. The zoo closes.
+docker rm -f pinger web1  # Delete both containers (-f stops them first). The images stay on disk.
 ```
 
 | Command | What it does |
@@ -237,7 +168,7 @@ docker rm -f zoo web1  # Delete both containers (-f stops them first). The image
 | `docker ps` / `docker ps -a` | Running / all containers |
 | `docker logs NAME` | Show the output of a container (`-f` follows it live) |
 | `docker exec NAME CMD` | Run a command inside a running container |
-| `docker exec -it NAME bash` | Open a shell inside a running container |
+| `docker exec -it NAME sh` | Open a shell inside a running container |
 | `docker stop NAME` / `docker start NAME` | Stop / start |
 | `docker rm NAME` | Delete a stopped container (`-f` forces) |
 
