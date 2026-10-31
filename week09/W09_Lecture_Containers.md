@@ -11,9 +11,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - All practice work happens in one folder, `~/container-practice`.
 - **Which box to use:** where a command differs by system, you get two boxes: **Windows (PowerShell)**, open by default, and **macOS / Linux (Terminal)**, collapsed. Click a title to open or close its box. Most `docker` commands are identical on every system, so they get one box. The exceptions are commands that mount your current folder (`-v "$PWD":/app`): the folder variable is written differently in PowerShell.
 
-### How to install Docker
-
-Download and install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/>. It includes Docker Engine, the `docker` command and Docker Compose.
+**How to install Docker.** Download and install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/>. It includes Docker Engine, the `docker` command and Docker Compose.
 
 - **Windows:** run the installer and keep **Use WSL 2** switched on. Restart if it asks.
 - **macOS:** choose **Apple chip** or **Intel chip** to match your Mac (Apple menu > About This Mac). Drag Docker to Applications.
@@ -42,7 +40,7 @@ docker run --rm hello-world
 
 Your Python script runs on your laptop. It fails on the server: wrong Python version, a missing library, a different operating system. "It works on my machine" is the oldest problem in operations. A **container** solves it: you ship the program **together with everything it needs**, and it runs the same everywhere.
 
-### Container or virtual machine?
+**Container or virtual machine?**
 
 | | Virtual machine | Container |
 |---|---|---|
@@ -56,7 +54,7 @@ Your Python script runs on your laptop. It fails on the server: wrong Python ver
 
 A container is not a small VM. It is a normal process that the kernel isolates, so it sees its own files, its own network and its own process list.
 
-### Container Terminologies
+**Container Terminologies**
 
 | Word | Meaning |
 |---|---|
@@ -68,7 +66,7 @@ A container is not a small VM. It is a normal process that the kernel isolates, 
 | **Network** | A virtual network that containers join to talk to each other by name |
 | **Compose** | A YAML file that describes several containers and starts them together |
 
-### Image and container
+**Image and container**
 
 ```text
 Dockerfile  --docker build-->  image  --docker run-->  container
@@ -359,9 +357,7 @@ Show the details of an image: its layers, environment variables, the command it 
 docker inspect python:3.11-slim
 ```
 
-### Remove an image
-
-Remove an image by name and tag:
+**Remove an image.** Remove an image by name and tag:
 
 ```bash
 docker rmi python:3.12-slim
@@ -375,9 +371,7 @@ docker rmi IMAGE_ID
 
 `docker rmi` is the same as `docker image rm`. Run `docker images` again: the image is gone from your disk. Docker refuses to remove an image that a container still uses. Add `-f` to force it.
 
-### Tag an image
-
-A tag gives an image another name. Replace `YOUR_USERNAME` with your Docker Hub user name (create a free account at <https://hub.docker.com> first):
+**Tag an image.** A tag gives an image another name. Replace `YOUR_USERNAME` with your Docker Hub user name (create a free account at <https://hub.docker.com> first):
 
 ```bash
 docker image tag python:3.11-slim YOUR_USERNAME/python:3.11-slim
@@ -389,9 +383,7 @@ docker images
 
 **You should see** the same IMAGE ID under two names, `python:3.11-slim` and `YOUR_USERNAME/python:3.11-slim`. A tag is a label, not a copy: no extra disk space is used.
 
-### Push an image to Docker Hub
-
-Log in. Docker asks for your Docker Hub user name and password, or opens your browser to confirm:
+**Push an image to Docker Hub.** Log in. Docker asks for your Docker Hub user name and password, or opens your browser to confirm:
 
 ```bash
 docker login
@@ -415,7 +407,7 @@ docker push YOUR_USERNAME/python:3.11-slim
 | `docker login` | Authenticate with Docker Hub |
 | `docker push NAME:TAG` | Upload an image to Docker Hub |
 
-### Try it yourself: same script, different Python version
+**Try it yourself: same script, different Python version**
 
 > **REFERENCE** Not presented in class. Try it on your own.
 
@@ -641,7 +633,7 @@ docker rm -f site1  # Delete the old container.
 
 </details>
 
-### More Dockerfile instructions
+**More Dockerfile instructions**
 
 > **REFERENCE** Read it on your own; the lab uses them.
 
@@ -933,9 +925,7 @@ docker run --rm alpine cat /note.txt
 
 **You should see** `saved` the first time and `No such file or directory` the second time. The new container starts from the clean image, so the file is gone.
 
-### Named volume: Docker keeps the data
-
-Create a volume and mount it at `/data` (`-v NAME:PATH`) in one container, then read it from a second, different container:
+**Named volume: Docker keeps the data.** Create a volume and mount it at `/data` (`-v NAME:PATH`) in one container, then read it from a second, different container:
 
 ```bash
 docker volume create mydata
@@ -965,9 +955,7 @@ docker volume inspect mydata
 docker volume rm mydata
 ```
 
-### Bind mount: share a folder from your computer
-
-A bind mount connects a folder on **your computer** to a path inside the container. Both see the same files. Create a folder with one file:
+**Bind mount: share a folder from your computer.** A bind mount connects a folder on **your computer** to a path inside the container. Both see the same files. Create a folder with one file:
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
@@ -1116,9 +1104,7 @@ docker rm -f synced
 - **User-defined bridge networks** are the usual choice for multi-container applications: better isolation and built-in DNS (name lookup).
 - By default a container is isolated. Networks let it talk to other containers, reach the Internet, expose a service to your laptop, and stay hidden from other applications.
 
-### Publish a port
-
-Start nginx with a custom name and a published port (`--publish` is the long form of `-p`):
+**Publish a port.** Start nginx with a custom name and a published port (`--publish` is the long form of `-p`):
 
 ```bash
 docker run --publish 8080:80 --name mynginx -d nginx:alpine
@@ -1130,7 +1116,7 @@ docker port mynginx
 
 **You should see** `80/tcp -> 0.0.0.0:8080`: port 8080 of your laptop goes to port 80 in the container. Open <http://localhost:8080> to see the nginx page.
 
-### Inspect a container's network
+**Inspect a container's network**
 
 ```bash
 docker inspect mynginx
@@ -1162,7 +1148,7 @@ Or ask Docker for just that value with a format template (the same on every syst
 docker inspect --format '{{ .NetworkSettings.IPAddress }}' mynginx
 ```
 
-### Create and inspect a network
+**Create and inspect a network**
 
 ```bash
 docker network create my_docker_network
@@ -1178,7 +1164,7 @@ docker network inspect my_docker_network
 
 `docker network ls` lists the networks. You see Docker's built-in `bridge`, `host` and `none`, and yours. `docker network inspect` shows the subnet, the gateway, the driver and the connected containers (none yet).
 
-### Connect and disconnect a container
+**Connect and disconnect a container**
 
 ```bash
 docker network connect my_docker_network mynginx
@@ -1194,9 +1180,7 @@ docker network inspect my_docker_network
 docker network disconnect my_docker_network mynginx
 ```
 
-### Start a container on a network
-
-A container started without `--network` joins the default `bridge` network. To start it on your network:
+**Start a container on a network.** A container started without `--network` joins the default `bridge` network. To start it on your network:
 
 ```bash
 docker run --network my_docker_network --name backend -d nginx:alpine
@@ -1210,7 +1194,7 @@ docker run --rm --network my_docker_network curlimages/curl curl -s http://backe
 
 **You should see** the nginx welcome page (HTML). Nothing outside the network can reach `backend`, because it has no published port. This is how you keep a database private and expose only the web server: put both on one network and publish a port (`-p`) only for the web server.
 
-### Remove containers and the network
+**Remove containers and the network**
 
 ```bash
 docker rm -f mynginx backend
@@ -1220,7 +1204,7 @@ docker rm -f mynginx backend
 docker network rm my_docker_network
 ```
 
-### Network types
+**Network types**
 
 | Type | What it does |
 |---|---|
