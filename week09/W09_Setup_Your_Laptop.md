@@ -7,6 +7,8 @@ From Week 9 to Week 15 you do everything on **your own laptop**. You do not need
 
 You can choose whether to install only on your terminal or use Docker desktop.
 
+**Note:** You can install **Docker Desktop**(a gui version of Docker) from <https://www.docker.com/products/docker-desktop/>. During setup keep on. Start Docker Desktop. In the following, and in the lecture, we will work with docker on terminal.
+
 ## Prepare to install Docker
 
 **Windows.** Open **PowerShell as administrator** (right-click Start, "Terminal (Admin)") and run:
@@ -26,8 +28,6 @@ Restart the laptop when it asks. Ubuntu opens and asks you to create a Linux use
 **Linux.** Use your terminal. The commands below assume Ubuntu or Debian. On another distribution use its package manager.
 
 ## Docker
-
-**Windows:** Install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/>. During setup keep **Use WSL 2** on. Start Docker Desktop. Then open Settings > Resources > WSL integration and switch on **Ubuntu**. Close and reopen the Ubuntu terminal.
 
 **macOS:**
 
@@ -56,8 +56,6 @@ docker run --rm hello-world
 ```
 
 You must see `Hello from Docker!`.
-
-**Docker Desktop memory.** In Docker Desktop open Settings > Resources and give Docker **4 GB** of memory (6 GB on a 16 GB laptop). Kubernetes and the monitoring stack in later weeks need it.
 
 ### Check everything with one command
 
