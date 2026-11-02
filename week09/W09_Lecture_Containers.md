@@ -1007,6 +1007,10 @@ docker rm -f synced
 - **User-defined bridge networks** are the usual choice for multi-container applications: better isolation and built-in DNS (name lookup).
 - By default a container is isolated. Networks let it talk to other containers, reach the Internet, expose a service to your laptop, and stay hidden from other applications.
 
+![A Docker host with two containers: each container's eth0 connects through a veth pair to the virtual switch docker0, which reaches the external network through the host's eth0](images/docker-bridge-network.svg)
+
+On the default `bridge` network each container has its own `eth0`. Docker connects it through a virtual cable (`veth`) to **docker0**, a virtual switch inside the host. `docker0` reaches the outside world through the host's own `eth0`.
+
 **Publish a port.** Start nginx with a custom name and a published port (`--publish` is the long form of `-p`):
 
 ```bash
@@ -1273,6 +1277,18 @@ docker compose down
 | `docker compose down` | Stop and delete (add `-v` to delete volumes) |
 | `docker compose config` | Check the file and print it. Run it when Compose complains. |
 
+## Podman
+
+> **REFERENCE** Not presented in class. Read it on your own.
+
+Podman is a container engine used to create, run, and manage containers and images.
+
+- It is largely Docker-compatible, so many familiar Docker commands and concepts work with Podman.
+- Unlike Docker, Podman uses a daemonless architecture: there is no central Docker daemon that must remain running.
+- Podman supports pods, allowing multiple containers to share networking and other resources. This concept is inspired by Kubernetes.
+- Podman supports Dockerfiles and can build images using familiar commands.
+- Podman also supports Compose-based applications through `podman compose`.
+
 ## Clean up
 
 > **REFERENCE** Read it on your own; the lab practises it.
@@ -1305,22 +1321,3 @@ docker image prune -f  # Delete unused dangling images (-f skips the confirmatio
 | `yaml: line N: found character that cannot start any token` | A tab in a YAML file. Use spaces. |
 | Everything is very slow or containers get killed | Docker Desktop has too little memory. Settings > Resources: give it 4 GB. |
 | Nothing at `http://localhost:PORT` | Check `docker ps` shows the port mapping and that you used the **host** port (left side). |
-
-## Summary
-
-- A container is a normal process with its own files and network. An image is the package it starts from.
-- `docker run -d --name N -p HOST:CONTAINER IMAGE:TAG` starts a service. `docker ps`, `logs`, `exec`, `stop`, `rm` manage it.
-- A Dockerfile builds an image. Use tags, put changing lines last, never store secrets in it.
-- Volumes keep data. User-defined networks give containers name lookup. Compose describes a whole stack in one YAML file.
-
-## Podman
-
-> **REFERENCE** Not presented in class. Read it on your own.
-
-Podman is a container engine used to create, run, and manage containers and images.
-
-- It is largely Docker-compatible, so many familiar Docker commands and concepts work with Podman.
-- Unlike Docker, Podman uses a daemonless architecture: there is no central Docker daemon that must remain running.
-- Podman supports pods, allowing multiple containers to share networking and other resources. This concept is inspired by Kubernetes.
-- Podman supports Dockerfiles and can build images using familiar commands.
-- Podman also supports Compose-based applications through `podman compose`.
