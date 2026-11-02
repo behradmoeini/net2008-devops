@@ -297,12 +297,12 @@ Run this and explain what happens:
 docker run -it alpine bash
 ```
 
-Alpine has no `bash`. What can you do instead?
+What is the problem and how can you fix it?
 
 <details>
 <summary>Answer</summary>
 
-Docker prints an error like `exec: "bash": executable file not found`, and the container exits at once. Alpine is a very small Linux and ships only the simpler shell `sh`. A container contains only what its image contains, so run:
+Docker prints an error like `exec: "bash": executable file not found`, and the container exits at once. Alpine has no `bash` since it's a very small Linux and ships only the simpler shell `sh`. A container contains only what its image contains, so run:
 
 ```bash
 docker run -it alpine sh
