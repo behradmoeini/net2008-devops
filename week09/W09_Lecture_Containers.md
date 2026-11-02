@@ -1045,12 +1045,6 @@ docker inspect mynginx | Select-String IPAddress
 
 </details>
 
-Or ask Docker for just that value with a format template (the same on every system):
-
-```bash
-docker inspect --format '{{ .NetworkSettings.IPAddress }}' mynginx
-```
-
 **Create and inspect a network**
 
 ```bash
@@ -1061,11 +1055,13 @@ docker network create my_docker_network
 docker network ls
 ```
 
+`docker network ls` lists the networks. You see Docker's built-in `bridge`, `host` and `none`, and yours.
+
 ```bash
 docker network inspect my_docker_network
 ```
 
-`docker network ls` lists the networks. You see Docker's built-in `bridge`, `host` and `none`, and yours. `docker network inspect` shows the subnet, the gateway, the driver and the connected containers (none yet).
+`docker network inspect` shows the subnet, the gateway, the driver and the connected containers (none yet).
 
 **Connect and disconnect a container**
 
