@@ -182,6 +182,103 @@ Delete the web server:
 docker rm -f web1
 ```
 
+**Run a Python script**
+
+> **REFERENCE** Not presented in class. Try it on your own.
+
+An image is a ready-made environment. To see that, run one small Python script in two different Python images. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
+```bash
+mkdir -p ~/container-practice/demo && cd ~/container-practice/demo
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+New-Item -ItemType Directory -Force ~/container-practice/demo | Out-Null
+Set-Location ~/container-practice/demo
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
+```bash
+cat > demo.py <<'EOF'
+import platform
+import cowsay
+
+cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
+EOF
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@'
+import platform
+import cowsay
+
+cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
+'@ | Set-Content demo.py -Encoding ascii
+```
+
+</details>
+
+Run the file in a container with Python 3.11. `-v` shares the current folder with the container and `-w` sets the folder to work in:
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
+```bash
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
+```
+
+</details>
+
+**You should see** a cow that says `I run on Python 3.11.x on Linux`. Your laptop is untouched: the library exists only inside that container, and the container is deleted when the script ends (`--rm`).
+
+Run it again with a different Python version. Only the image tag changes:
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
+```bash
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
+```
+
+</details>
+
+The cow now reports Python 3.12. One file, two Python versions, no installation on your laptop.
+
 ## Stop and start a container
 
 Start a database. The image is large, so the first download takes a minute:
@@ -376,10 +473,15 @@ docker images
 
 **You should see** the same IMAGE ID under two names, `python:3.11-slim` and `YOUR_USERNAME/python:3.11-slim`. A tag is a label, not a copy: no extra disk space is used.
 
-**Push an image to Docker Hub.** Log in. Docker asks for your Docker Hub user name and password, or opens your browser to confirm:
+**Try it yourself: Push an image to Docker Hub**
+
+Log in, Docker asks for your Docker Hub user name and password, or opens your browser to confirm then push your image.
+
+<details>
+<summary>Answer</summary>
 
 ```bash
-docker login
+docker login -u YOUR_USERNAME
 ```
 
 Upload the image to your profile:
@@ -388,7 +490,9 @@ Upload the image to your profile:
 docker push YOUR_USERNAME/python:3.11-slim
 ```
 
-**You should see** the layers upload. Open <https://hub.docker.com> and find `python` in your repositories. Anyone can now run `docker pull YOUR_USERNAME/python:3.11-slim`. The name must start with your user name, which is why you tagged the image first.
+You should see the layers upload. Open <https://hub.docker.com> and find `python` in your repositories. Anyone can now run `docker pull YOUR_USERNAME/python:3.11-slim`. The name must start with your user name, which is why you tagged the image first.
+
+</details>
 
 | Command | What it does |
 |---|---|
@@ -399,103 +503,6 @@ docker push YOUR_USERNAME/python:3.11-slim
 | `docker image tag SOURCE[:TAG] TARGET[:TAG]` | Give an image another name |
 | `docker login` | Authenticate with Docker Hub |
 | `docker push NAME:TAG` | Upload an image to Docker Hub |
-
-**Try it yourself: same script, different Python version**
-
-> **REFERENCE** Not presented in class. Try it on your own.
-
-An image is a ready-made environment. To see that, run one small Python script in two different Python images. The script prints a cow that says which Python and which operating system it runs on. It uses a third-party library, `cowsay`.
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-mkdir -p ~/container-practice/demo && cd ~/container-practice/demo
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-New-Item -ItemType Directory -Force ~/container-practice/demo | Out-Null
-Set-Location ~/container-practice/demo
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-cat > demo.py <<'EOF'
-import platform
-import cowsay
-
-cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
-EOF
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-@'
-import platform
-import cowsay
-
-cowsay.cow(f"I run on Python {platform.python_version()} on {platform.system()}")
-'@ | Set-Content demo.py -Encoding ascii
-```
-
-</details>
-
-Run the file in a container with Python 3.11. `-v` shares the current folder with the container and `-w` sets the folder to work in:
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.11-slim sh -c "pip install -q cowsay && python demo.py"  # Start a Python 3.11 container, mount this folder as /app, install the library inside the container, and run the script.
-```
-
-</details>
-
-**You should see** a cow that says `I run on Python 3.11.x on Linux`. Your laptop is untouched: the library exists only inside that container, and the container is deleted when the script ends (`--rm`).
-
-Run it again with a different Python version. Only the image tag changes:
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "$PWD":/app -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-docker run --rm -e PIP_ROOT_USER_ACTION=ignore -v "${PWD}:/app" -w /app python:3.12-slim sh -c "pip install -q cowsay && python demo.py"  # Same script, Python 3.12.
-```
-
-</details>
-
-The cow now reports Python 3.12. One file, two Python versions, no installation on your laptop.
 
 ## Build your own image with a Dockerfile
 
