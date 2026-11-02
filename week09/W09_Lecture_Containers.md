@@ -1297,14 +1297,16 @@ docker image prune -f  # Delete unused dangling images (-f skips the confirmatio
 
 | Message | Cause and fix |
 |---|---|
-| `Cannot connect to the Docker daemon` | Docker is not running. Start Docker Desktop, or `sudo systemctl start docker`. |
+| `Cannot connect to the Docker daemon` | Docker is not running. Start Docker Desktop and wait until it says it is running. On Linux: `sudo systemctl start docker`. |
+| `docker: command not found` | Docker is not installed, or the terminal was open during the install. Close and reopen the terminal. If it still fails, install Docker Desktop again (see "How to install Docker"). |
+| `WSL 2 requires an update to its kernel component` (Windows) | Run `wsl --update` in PowerShell, then restart Docker Desktop. |
+| `Please enable the Virtual Machine Platform` or `virtualization is disabled` (Windows) | Restart, open the BIOS or UEFI settings, and switch on **Virtualization** (Intel VT-x or AMD-V, often called SVM). |
+| `permission denied ... docker.sock` (Linux) | Add yourself to the group: `sudo usermod -aG docker $USER`, then close and reopen the terminal. |
 | `port is already allocated` | Another container or program uses that host port. Run `docker ps`, remove the old container, or choose another port. |
-| `The container name "/web1" is already in use` | An old container has that name. `docker rm -f web1`. |
+| `The container name "/NAME" is already in use` | An old container has that name. Run `docker rm -f NAME`. |
 | `pull access denied` or `not found` | Typo in the image name or tag. Check it on <https://hub.docker.com>. |
-| `permission denied ... docker.sock` (Linux, WSL) | Add yourself to the group: `sudo usermod -aG docker $USER`, then close and reopen the terminal. |
-| `yaml: line N: found character that cannot start any token` | A tab in a YAML file. Use spaces. |
-| Windows: `docker: command not found` in Ubuntu | Docker Desktop > Settings > Resources > WSL integration: switch on your Ubuntu distribution. |
 | `no matching manifest for linux/arm64` (Apple silicon) | The image has no ARM build. Add `--platform linux/amd64` to `docker run` or `docker pull`. |
+| `yaml: line N: found character that cannot start any token` | A tab in a YAML file. Use spaces. |
 | Everything is very slow or containers get killed | Docker Desktop has too little memory. Settings > Resources: give it 4 GB. |
 | Nothing at `http://localhost:PORT` | Check `docker ps` shows the port mapping and that you used the **host** port (left side). |
 
