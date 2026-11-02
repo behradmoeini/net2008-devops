@@ -289,7 +289,7 @@ Delete the container:
 docker rm -f my_mongo
 ```
 
-## Try it yourself
+**Try it yourself**
 
 Run this and explain what happens:
 
@@ -329,14 +329,10 @@ docker pull python:3.12-slim
 List the images on your computer:
 
 ```bash
-docker image ls
+docker image ls # alternatively `docker images`
 ```
 
-```bash
-docker images
-```
-
-Both commands do the same. You see the repository name, the tag, the **IMAGE ID**, when it was created and its size.
+You see the repository name, the tag, the **IMAGE ID**, when it was created and its size.
 
 Run the same program, `python`, in each image. Only the tag differs. `--rm` deletes the container when the command ends:
 
