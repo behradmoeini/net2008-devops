@@ -646,7 +646,7 @@ docker rm -f site1  # Delete the old container.
 | `RUN command` | Run a command **while building** (install packages) |
 | `CMD ["cmd", "arg"]` | The command that runs **when the container starts** |
 
-## Package a Python web app
+**Package a Python web app**
 
 > **REFERENCE** Not presented in class. Read it on your own; the lab practises it.
 
