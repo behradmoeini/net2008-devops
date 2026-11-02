@@ -11,30 +11,27 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - All practice work happens in one folder, `~/container-practice`.
 - **Which box to use:** where a command differs by system, you get two boxes: **Windows (PowerShell)**, open by default, and **macOS / Linux (Terminal)**, collapsed. Click a title to open or close its box. Most `docker` commands are identical on every system, so they get one box. The exceptions are commands that mount your current folder (`-v "$PWD":/app`): the folder variable is written differently in PowerShell.
 
-**How to install Docker.** Download and install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/>. It includes Docker Engine, the `docker` command and Docker Compose.
+## How to install Docker.
+Download and install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/>. It includes Docker Engine, the `docker` command and Docker Compose.
 
 - **Windows:** run the installer and keep **Use WSL 2** switched on. Restart if it asks.
 - **macOS:** choose **Apple chip** or **Intel chip** to match your Mac (Apple menu > About This Mac). Drag Docker to Applications.
 
 Open Docker Desktop, accept the prompts, and wait until it says it is running. Keep it running whenever you use Docker.
 
-**Linux users:** do not use Docker Desktop. Install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal.
+**Linux users:** You can install Docker Engine by following <https://docs.docker.com/engine/install>, then run `sudo usermod -aG docker $USER` and reopen the terminal. if a `docker` command says `permission denied`, you skipped `sudo usermod -aG docker $USER` in the install step. Run it and open a new terminal. You never need `sudo` in this guide.
 
 Check that Docker works. Docker Desktop must be open. In a terminal run:
 
 ```bash
-docker --version
+docker --version #prints the Docker version (any recent version is fine).
 ```
 
 ```bash
 docker run --rm hello-world
 ```
 
-`docker --version` prints the Docker version (any recent version is fine). `docker run --rm hello-world` downloads a tiny test image, runs it once, and deletes the container afterwards (`--rm`).
-
 **You should see** a message that starts with `Hello from Docker!`. If you see `Cannot connect to the Docker daemon`, Docker is not running: start Docker Desktop.
-
-**Linux:** if a `docker` command says `permission denied`, you skipped `sudo usermod -aG docker $USER` in the install step. Run it and open a new terminal. You never need `sudo` in this guide.
 
 ## The big picture
 
