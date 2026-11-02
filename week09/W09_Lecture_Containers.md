@@ -605,13 +605,13 @@ docker history site:1.0
 
 **You should see** one line per layer. The `COPY index.html` layer is yours, and the layers below it come from `nginx:alpine`. Docker reuses layers that did not change, which makes rebuilds fast.
 
-Change the page and build version 1.1. Docker reuses unchanged layers, so this is fast:
+**Rebuild.** Change the page and build version 1.1. Docker reuses the unchanged layers, so this is fast:
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
 
 ```bash
-echo "<p>Version 1.1</p>" >> index.html  # Add a line to the page.
+echo "<p>Version 1.1</p>" >> index.html
 ```
 
 </details>
@@ -620,43 +620,28 @@ echo "<p>Version 1.1</p>" >> index.html  # Add a line to the page.
 <summary>Windows (PowerShell)</summary>
 
 ```powershell
-Add-Content index.html "<p>Version 1.1</p>"  # Add a line to the page.
-```
-
-```bash
-docker build -t site:1.1 .  # Build again. Lines that did not change say CACHED.
-```
-
-```bash
-docker rm -f site1  # Delete the old container.
+Add-Content index.html "<p>Version 1.1</p>"
 ```
 
 </details>
 
-**More Dockerfile instructions**
+```bash
+docker build -t site:1.1 .
+```
 
-> **REFERENCE** Read it on your own; the lab uses them.
+**You should see** lines that did not change marked `CACHED`. Delete the old container:
 
-| Instruction | Meaning |
-|---|---|
-| `ARG NAME` | A value you pass at build time with `--build-arg NAME=value` |
-| `ENV NAME=value` | An environment variable inside the container |
-| `LABEL key=value` | Metadata stored on the image |
-| `WORKDIR /app` | Set the working folder for the next instructions |
-| `RUN command` | Run a command **while building** (install packages) |
-| `CMD ["cmd", "arg"]` | The command that runs **when the container starts** |
+```bash
+docker rm -f site1
+```
 
-**Package a Python web app**
-
-> **REFERENCE** Not presented in class. Read it on your own; the lab practises it.
-
-Now you package a real program: a small Python web service that reports which container answered and counts the visits.
+**Install libraries in an image.** A real program needs libraries. Create a new folder with a small Python program, a list of libraries, and a Dockerfile that installs them:
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
 
 ```bash
-mkdir -p ~/container-practice/pyapp && cd ~/container-practice/pyapp  # Create the folder for the app and move into it.
+mkdir -p ~/container-practice/cow && cd ~/container-practice/cow
 ```
 
 </details>
@@ -665,8 +650,8 @@ mkdir -p ~/container-practice/pyapp && cd ~/container-practice/pyapp  # Create t
 <summary>Windows (PowerShell)</summary>
 
 ```powershell
-New-Item -ItemType Directory -Force ~/container-practice/pyapp | Out-Null
-Set-Location ~/container-practice/pyapp  # Create the folder for the app and move into it.
+New-Item -ItemType Directory -Force ~/container-practice/cow | Out-Null
+Set-Location ~/container-practice/cow
 ```
 
 </details>
@@ -675,43 +660,14 @@ Set-Location ~/container-practice/pyapp  # Create the folder for the app and mov
 <summary>macOS / Linux (Terminal)</summary>
 
 ```bash
-cat > app.py <<'EOF'
+cat > hello.py <<'EOF'
 import os
 import platform
-import socket
 
-from flask import Flask, jsonify
+import cowsay
 
-app = Flask(__name__)
-COUNT_FILE = os.environ.get("COUNT_FILE", "/data/count.txt")
-GREETING = os.environ.get("GREETING", "Hello from Bytown NetOps")
-
-
-def next_count():
-    os.makedirs(os.path.dirname(COUNT_FILE), exist_ok=True)
-    try:
-        with open(COUNT_FILE) as f:
-            count = int(f.read())
-    except (FileNotFoundError, ValueError):
-        count = 0
-    count += 1
-    with open(COUNT_FILE, "w") as f:
-        f.write(str(count))
-    return count
-
-
-@app.get("/")
-def index():
-    return jsonify(
-        message=GREETING,
-        container=socket.gethostname(),
-        python=platform.python_version(),
-        visits=next_count(),
-    )
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+greeting = os.environ.get("GREETING", "Hello from Bytown NetOps")
+cowsay.cow(f"{greeting}. I run Python {platform.python_version()}")
 EOF
 ```
 
@@ -724,41 +680,12 @@ EOF
 @'
 import os
 import platform
-import socket
 
-from flask import Flask, jsonify
+import cowsay
 
-app = Flask(__name__)
-COUNT_FILE = os.environ.get("COUNT_FILE", "/data/count.txt")
-GREETING = os.environ.get("GREETING", "Hello from Bytown NetOps")
-
-
-def next_count():
-    os.makedirs(os.path.dirname(COUNT_FILE), exist_ok=True)
-    try:
-        with open(COUNT_FILE) as f:
-            count = int(f.read())
-    except (FileNotFoundError, ValueError):
-        count = 0
-    count += 1
-    with open(COUNT_FILE, "w") as f:
-        f.write(str(count))
-    return count
-
-
-@app.get("/")
-def index():
-    return jsonify(
-        message=GREETING,
-        container=socket.gethostname(),
-        python=platform.python_version(),
-        visits=next_count(),
-    )
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
-'@ | Set-Content app.py -Encoding ascii
+greeting = os.environ.get("GREETING", "Hello from Bytown NetOps")
+cowsay.cow(f"{greeting}. I run Python {platform.python_version()}")
+'@ | Set-Content hello.py -Encoding ascii
 ```
 
 </details>
@@ -767,7 +694,7 @@ if __name__ == "__main__":
 <summary>macOS / Linux (Terminal)</summary>
 
 ```bash
-echo "flask==3.0.3" > requirements.txt  # List the libraries the app needs, with fixed versions.
+echo "cowsay==6.1" > requirements.txt
 ```
 
 </details>
@@ -776,7 +703,7 @@ echo "flask==3.0.3" > requirements.txt  # List the libraries the app needs, with
 <summary>Windows (PowerShell)</summary>
 
 ```powershell
-Set-Content requirements.txt "flask==3.0.3" -Encoding ascii  # List the libraries the app needs, with fixed versions.
+Set-Content requirements.txt "cowsay==6.1" -Encoding ascii
 ```
 
 </details>
@@ -790,10 +717,9 @@ FROM python:3.11-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY app.py .
+COPY hello.py .
 ENV GREETING="Hello from Bytown NetOps"
-EXPOSE 8000
-CMD ["python", "app.py"]
+CMD ["python", "hello.py"]
 EOF
 ```
 
@@ -808,30 +734,48 @@ FROM python:3.11-slim
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY app.py .
+COPY hello.py .
 ENV GREETING="Hello from Bytown NetOps"
-EXPOSE 8000
-CMD ["python", "app.py"]
+CMD ["python", "hello.py"]
 '@ | Set-Content Dockerfile -Encoding ascii
 ```
 
 </details>
 
-Read the Dockerfile from the top: start from Python 3.11, work in `/app`, copy the library list, install the libraries, copy the program, set a default greeting, and start the program when a container starts. The library list is copied **before** the program on purpose: Docker caches each layer, so the slow `pip install` runs again only when `requirements.txt` changes.
+The Dockerfile from the top: start from Python 3.11, work in `/app`, copy the library list, **install the libraries**, copy the program, set a default greeting, and start the program when the container starts.
+
+| Instruction | Meaning |
+|---|---|
+| `WORKDIR /app` | Set the working folder for the next instructions |
+| `RUN pip install ...` | Run a command **while building** the image |
+| `ENV GREETING=...` | An environment variable inside the container |
+| `CMD ["python", "hello.py"]` | The command that runs **when the container starts** |
+
+Build the image and run a container from it. The container prints a cow and ends (`--rm` deletes it):
 
 ```bash
-docker build -t bytown-py:1.0 .  # Build the image. The first build downloads Flask and takes a minute.
+docker build -t cow:1.0 .
 ```
 
 ```bash
-docker run -d --name py1 -p 8090:8000 bytown-py:1.0  # Start a container from the image on host port 8090.
+docker run --rm cow:1.0
 ```
+
+Run it again with a different greeting. `-e` overrides the `ENV` value, and the image stays the same:
+
+```bash
+docker run --rm -e GREETING="Hello from container two" cow:1.0
+```
+
+**You should see** a cow that says the greeting and the Python version. The libraries exist only inside the image: your laptop is untouched.
+
+**Why the order matters.** The library list is copied and installed **before** the program. Change the program and rebuild:
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
 
 ```bash
-curl -s http://localhost:8090  # Call the app.
+echo "# changed" >> hello.py
 ```
 
 </details>
@@ -840,70 +784,29 @@ curl -s http://localhost:8090  # Call the app.
 <summary>Windows (PowerShell)</summary>
 
 ```powershell
-curl.exe -s http://localhost:8090  # Call the app.
+Add-Content hello.py "# changed"
 ```
 
 </details>
 
-**You should see** JSON with `"message": "Hello from Bytown NetOps"`, the Python version, a `container` value (a short hex ID) and `"visits": 1`. Run the `curl` again: the visits go up.
-
-One image starts many containers. Start a second one with a different greeting:
-
 ```bash
-docker run -d --name py2 -p 8091:8000 -e GREETING="Hello from container two" bytown-py:1.0  # A second container from the same image. -e overrides the greeting.
+docker build -t cow:1.1 .
 ```
 
-<details>
-<summary>macOS / Linux (Terminal)</summary>
+**You should see** the `pip install` step marked `CACHED`, so the rebuild takes a second. Docker only repeats the steps from the first changed line downwards, so put the lines that change most (your code) **last**.
 
-```bash
-curl -s http://localhost:8091  # The container ID and the greeting differ from py1, and the visits start at 1.
-```
+**More Dockerfile instructions**
 
-</details>
+> **REFERENCE** Read it on your own; the lab uses them.
 
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-curl.exe -s http://localhost:8091  # The container ID and the greeting differ from py1, and the visits start at 1.
-```
-
-</details>
-
-Each container has its own ID, its own environment and its own counter file. Now look at the logs and prove the build cache:
-
-```bash
-docker logs py1  # The app prints one line per request it received.
-```
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-echo "# changed" >> app.py  # Change the program but not the library list.
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-Add-Content app.py "# changed"  # Change the program but not the library list.
-```
-
-```bash
-docker build -t bytown-py:1.1 .  # Rebuild. The pip install step says CACHED, so this takes a second.
-```
-
-```bash
-docker rm -f py1 py2  # Delete both containers. The images stay.
-```
-
-</details>
-
-The built-in Flask server is fine for learning. A production service would use a server such as gunicorn.
+| Instruction | Meaning |
+|---|---|
+| `ARG NAME` | A value you pass at build time with `--build-arg NAME=value` |
+| `ENV NAME=value` | An environment variable inside the container |
+| `LABEL key=value` | Metadata stored on the image |
+| `WORKDIR /app` | Set the working folder for the next instructions |
+| `RUN command` | Run a command **while building** (install packages) |
+| `CMD ["cmd", "arg"]` | The command that runs **when the container starts** |
 
 ## Volumes: keep data after the container is gone
 
@@ -1034,11 +937,11 @@ echo "second line" >> hello.txt
 Add-Content hello.txt "second line"
 ```
 
+</details>
+
 ```bash
 docker exec synced cat /data/hello.txt
 ```
-
-</details>
 
 **You should see** both lines. The container sees your change at once, with no copy and no restart.
 
@@ -1260,13 +1163,13 @@ Here `frontend` could run on Host A (192.168.1.10) and `api` on Host B (192.168.
 
 ## Docker Compose: many containers, one file
 
-Typing five long `docker run` commands is slow and easy to get wrong. **Compose** describes the whole system in one YAML file.
+Typing several long `docker run` commands is slow and easy to get wrong. **Compose** describes the whole system in one YAML file. Create a folder with a web page and a Compose file:
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
 
 ```bash
-mkdir -p ~/container-practice/stack && cd ~/container-practice/stack  # Create a folder for the stack and move into it.
+mkdir -p ~/container-practice/stack && cd ~/container-practice/stack
 ```
 
 </details>
@@ -1276,7 +1179,25 @@ mkdir -p ~/container-practice/stack && cd ~/container-practice/stack  # Create a
 
 ```powershell
 New-Item -ItemType Directory -Force ~/container-practice/stack | Out-Null
-Set-Location ~/container-practice/stack  # Create a folder for the stack and move into it.
+Set-Location ~/container-practice/stack
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
+```bash
+echo "<h1>Hello from Compose</h1>" > index.html
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+Set-Content index.html "<h1>Hello from Compose</h1>" -Encoding ascii
 ```
 
 </details>
@@ -1287,20 +1208,15 @@ Set-Location ~/container-practice/stack  # Create a folder for the stack and mov
 ```bash
 cat > compose.yaml <<'EOF'
 services:
-  app:
-    build: ../pyapp
-    image: bytown-py:compose
+  web:
+    image: nginx:alpine
     ports:
-      - "8083:8000"
-    environment:
-      GREETING: "Hello from Compose"
+      - "8083:80"
     volumes:
-      - counter:/data
+      - ./index.html:/usr/share/nginx/html/index.html:ro
   tools:
     image: alpine:3.20
     command: ["sleep", "3600"]
-volumes:
-  counter:
 EOF
 ```
 
@@ -1312,68 +1228,49 @@ EOF
 ```powershell
 @'
 services:
-  app:
-    build: ../pyapp
-    image: bytown-py:compose
+  web:
+    image: nginx:alpine
     ports:
-      - "8083:8000"
-    environment:
-      GREETING: "Hello from Compose"
+      - "8083:80"
     volumes:
-      - counter:/data
+      - ./index.html:/usr/share/nginx/html/index.html:ro
   tools:
     image: alpine:3.20
     command: ["sleep", "3600"]
-volumes:
-  counter:
 '@ | Set-Content compose.yaml -Encoding ascii
 ```
 
 </details>
 
-YAML uses **spaces** for indentation (never tabs). Compose creates a network for the stack, so `tools` can reach `app` by the name `app`. The `build` line tells Compose to build the image from the Python web app folder from "Package a Python web app".
+YAML uses **spaces** for indentation (never tabs). The file describes two services: `web` (nginx, with your `index.html` mounted into it and port 8083 published) and `tools` (a small Alpine container that stays running). Compose creates a network for the stack, so `tools` can reach `web` by the name `web`.
 
 ```bash
-docker compose up -d --build  # Build the app image, create the network and the volume, and start both containers.
-```
-
-```bash
-docker compose ps  # List the containers of this stack.
-```
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-curl -s http://localhost:8083  # Call the app from your laptop through the published port.
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-curl.exe -s http://localhost:8083  # Call the app from your laptop through the published port.
+docker compose up -d
 ```
 
 ```bash
-docker compose exec tools wget -qO- http://app:8000  # From the tools container, call the app by its service name. Visits go up, because both calls reach the same app.
+docker compose ps
+```
+
+Open <http://localhost:8083> in your browser. **You should see** `Hello from Compose`. Now call the web server by its service name from inside the `tools` container:
+
+```bash
+docker compose exec tools wget -qO- http://web
 ```
 
 ```bash
-docker compose logs app  # Show the logs of one service: you see both requests.
+docker compose logs web
 ```
+
+**You should see** the same HTML from `wget`, and the logs of `web` show both requests. Stop and delete the stack:
 
 ```bash
-docker compose down -v  # Stop and delete the containers, the network and (with -v) the volumes.
+docker compose down
 ```
-
-</details>
 
 | Command | What it does |
 |---|---|
-| `docker compose up -d --build` | Build if needed, then create and start everything |
+| `docker compose up -d` | Create and start everything (add `--build` to build images first) |
 | `docker compose ps` | Show the containers |
 | `docker compose logs SERVICE` | Show logs |
 | `docker compose exec SERVICE CMD` | Run a command in a service |
