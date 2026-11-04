@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 500" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="498" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Kubernetes architecture</text>
+<rect x="40" y="132" width="120" height="50" fill="#f05a28"/>
+<text x="100" y="163" font-size="17" fill="#fff">kubectl</text>
+<path d="M160 157 H201" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="190" y="72" width="620" height="150" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<text x="206" y="97" font-size="16" fill="#2d526e" text-anchor="start">Control plane</text>
+<rect x="205" y="112" width="140" height="90" fill="#2d526e"/>
+<text x="275" y="150" font-size="15" fill="#fff">API server</text>
+<text x="275" y="182" font-size="12" font-weight="400" fill="#fff">the front door</text>
+<rect x="355" y="112" width="140" height="90" fill="#2d526e"/>
+<text x="425" y="150" font-size="15" fill="#fff">Scheduler</text>
+<text x="425" y="182" font-size="12" font-weight="400" fill="#fff">picks a node</text>
+<rect x="505" y="112" width="140" height="90" fill="#2d526e"/>
+<text x="575" y="140" font-size="15" fill="#fff">Controller</text>
+<text x="575" y="158" font-size="15" fill="#fff">manager</text>
+<text x="575" y="182" font-size="12" font-weight="400" fill="#fff">fixes differences</text>
+<rect x="655" y="112" width="140" height="90" fill="#6d7176"/>
+<text x="725" y="150" font-size="15" fill="#fff">etcd</text>
+<text x="725" y="182" font-size="12" font-weight="400" fill="#fff">stores the state</text>
+<path d="M500 222 V246 M340 246 H660 M340 246 V270 M660 246 V270" stroke="#33475b" stroke-width="2" fill="none"/>
+<g>
+<rect x="190" y="270" width="300" height="200" fill="#fff" stroke="#4ab8e8"/>
+<rect x="190" y="270" width="300" height="34" fill="#4ab8e8"/>
+<text x="340" y="293" font-size="16" fill="#fff">Worker node 1</text>
+<rect x="205" y="318" width="127" height="34" fill="#78b83e"/>
+<text x="268" y="340" font-size="14" fill="#fff">kubelet</text>
+<rect x="348" y="318" width="127" height="34" fill="#78b83e"/>
+<text x="411" y="340" font-size="14" fill="#fff">kube-proxy</text>
+<rect x="205" y="364" width="127" height="56" rx="8" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="268" y="384" font-size="14" fill="#33475b">Pod</text>
+<rect x="227" y="393" width="83" height="20" fill="#4ab8e8"/>
+<text x="268" y="407" font-size="11" fill="#fff">container</text>
+<rect x="348" y="364" width="127" height="56" rx="8" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="411" y="384" font-size="14" fill="#33475b">Pod</text>
+<rect x="370" y="393" width="83" height="20" fill="#4ab8e8"/>
+<text x="411" y="407" font-size="11" fill="#fff">container</text>
+<rect x="205" y="430" width="270" height="28" fill="#f7941d"/>
+<text x="340" y="449" font-size="14" fill="#fff">Container runtime (containerd)</text>
+</g>
+<g>
+<rect x="510" y="270" width="300" height="200" fill="#fff" stroke="#4ab8e8"/>
+<rect x="510" y="270" width="300" height="34" fill="#4ab8e8"/>
+<text x="660" y="293" font-size="16" fill="#fff">Worker node 2</text>
+<rect x="525" y="318" width="127" height="34" fill="#78b83e"/>
+<text x="588" y="340" font-size="14" fill="#fff">kubelet</text>
+<rect x="668" y="318" width="127" height="34" fill="#78b83e"/>
+<text x="731" y="340" font-size="14" fill="#fff">kube-proxy</text>
+<rect x="525" y="364" width="127" height="56" rx="8" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="588" y="384" font-size="14" fill="#33475b">Pod</text>
+<rect x="547" y="393" width="83" height="20" fill="#4ab8e8"/>
+<text x="588" y="407" font-size="11" fill="#fff">container</text>
+<rect x="668" y="364" width="127" height="56" rx="8" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="731" y="384" font-size="14" fill="#33475b">Pod</text>
+<rect x="690" y="393" width="83" height="20" fill="#4ab8e8"/>
+<text x="731" y="407" font-size="11" fill="#fff">container</text>
+<rect x="525" y="430" width="270" height="28" fill="#f7941d"/>
+<text x="660" y="449" font-size="14" fill="#fff">Container runtime (containerd)</text>
+</g>
+<g font-size="14" font-style="italic" font-weight="400" fill="#4a6178">
+<text x="100" y="336">The control plane</text>
+<text x="100" y="356">decides.</text>
+<text x="100" y="404">The worker nodes</text>
+<text x="100" y="424">run the pods.</text>
+</g>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 370" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="368" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="46" font-size="23" fill="#33475b">Desired state vs. actual state</text>
+<rect x="40" y="90" width="200" height="170" fill="#cdeaf8" stroke="#4ab8e8"/>
+<rect x="40" y="90" width="200" height="38" fill="#4ab8e8"/>
+<text x="140" y="115" font-size="17" fill="#fff">Desired state</text>
+<g font-family="Consolas, Menlo, monospace" font-weight="400" font-size="15" fill="#33475b" text-anchor="start">
+<text x="62" y="165">name: web</text>
+<text x="62" y="195">image: nginx</text>
+<text x="62" y="225">replicas: 3</text>
+</g>
+<text x="140" y="288" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">What you write in a file</text>
+<path d="M240 175 H306" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="273" y="164" font-size="13" fill="#33475b">apply</text>
+<rect x="310" y="105" width="190" height="140" rx="4" fill="#78b83e"/>
+<text x="405" y="140" font-size="18" fill="#fff">Orchestrator</text>
+<g font-size="15" font-weight="400" fill="#fff">
+<text x="405" y="172">1. Watch</text>
+<text x="405" y="196">2. Compare</text>
+<text x="405" y="220">3. Fix the difference</text>
+</g>
+<path d="M500 150 H606" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="555" y="140" font-size="13" fill="#33475b">start 1 new</text>
+<path d="M610 205 H504" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="555" y="228" font-size="13" fill="#33475b">sees 2 of 3</text>
+<rect x="610" y="90" width="200" height="170" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="610" y="90" width="200" height="38" fill="#2d526e"/>
+<text x="710" y="115" font-size="17" fill="#fff">Actual state</text>
+<rect x="627" y="146" width="50" height="80" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="652" y="191" font-size="15" fill="#33475b">web</text>
+<rect x="685" y="146" width="50" height="80" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="710" y="191" font-size="15" fill="#33475b">web</text>
+<rect x="743" y="146" width="50" height="80" fill="#f6fbff" stroke="#f21d1d" stroke-width="2" stroke-dasharray="5 4"/>
+<path d="M754 160 L782 212 M782 160 L754 212" stroke="#f21d1d" stroke-width="3"/>
+<g font-size="12" font-weight="400">
+<text x="652" y="246" fill="#33475b">running</text>
+<text x="710" y="246" fill="#33475b">running</text>
+<text x="768" y="246" fill="#f21d1d">crashed</text>
+</g>
+<text x="710" y="288" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">What really runs</text>
+<text x="425" y="338" font-size="15" font-style="italic" font-weight="400" fill="#4a6178">The loop never stops. If a container crashes or a server dies, the orchestrator starts a new copy.</text>
+</svg>

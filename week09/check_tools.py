@@ -21,7 +21,7 @@ TOOLS = [
     ("Docker engine running", ["docker", "info", "--format", "{{.ServerVersion}}"], 9, True),
     ("Docker Compose", ["docker", "compose", "version", "--short"], 9, True),
     ("kubectl", ["kubectl", "version", "--client"], 10, True),
-    ("minikube", ["minikube", "version", "--short"], 10, True),
+    ("k3d", ["k3d", "version"], 10, True),
     ("Terraform", ["terraform", "version"], 11, True),
     ("Vagrant (optional)", ["vagrant", "--version"], 11, False),
     ("VirtualBox (optional)", ["VBoxManage", "--version"], 11, False),

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 520" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="518" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="46" font-size="23" fill="#33475b">Docker Swarm</text>
+<rect x="245" y="68" width="360" height="40" fill="#1b2630"/>
+<text x="425" y="93" font-size="14" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">docker service create --replicas 3 web</text>
+<path d="M425 108 V136" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="275" y="140" width="300" height="74" fill="#2d526e"/>
+<text x="425" y="172" font-size="18" fill="#fff">Manager node</text>
+<text x="425" y="198" font-size="13" font-weight="400" fill="#fff">keeps the desired state, assigns tasks</text>
+<path d="M425 214 V240 M165 240 H685 M165 240 V270 M425 240 V270 M685 240 V270" stroke="#33475b" stroke-width="2" fill="none"/>
+<g>
+<rect x="60" y="270" width="210" height="110" fill="#fff" stroke="#4ab8e8"/>
+<rect x="60" y="270" width="210" height="32" fill="#4ab8e8"/>
+<text x="165" y="292" font-size="16" fill="#fff">Worker 1</text>
+<rect x="110" y="318" width="110" height="44" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="165" y="346" font-size="16" fill="#33475b">web.1</text>
+</g>
+<g>
+<rect x="320" y="270" width="210" height="110" fill="#fff" stroke="#4ab8e8"/>
+<rect x="320" y="270" width="210" height="32" fill="#4ab8e8"/>
+<text x="425" y="292" font-size="16" fill="#fff">Worker 2</text>
+<rect x="370" y="318" width="110" height="44" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="425" y="346" font-size="16" fill="#33475b">web.2</text>
+</g>
+<g>
+<rect x="580" y="270" width="210" height="110" fill="#fff" stroke="#4ab8e8"/>
+<rect x="580" y="270" width="210" height="32" fill="#4ab8e8"/>
+<text x="685" y="292" font-size="16" fill="#fff">Worker 3</text>
+<rect x="630" y="318" width="110" height="44" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="685" y="346" font-size="16" fill="#33475b">web.3</text>
+</g>
+<path d="M165 380 V404 M425 380 V404 M685 380 V404" stroke="#fbb900" stroke-width="4" fill="none"/>
+<rect x="60" y="404" width="730" height="34" fill="#fbb900"/>
+<text x="425" y="427" font-size="15" fill="#1b2630">Routing mesh: port 8085 answers on every node</text>
+<path d="M425 466 V444" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="330" y="466" width="190" height="36" fill="#1b2630"/>
+<text x="425" y="489" font-size="14" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">localhost:8085</text>
+</svg>

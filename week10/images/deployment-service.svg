@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 400" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="398" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="42" font-size="23" fill="#33475b">Deployment, pods and Service</text>
+<rect x="30" y="180" width="130" height="50" fill="#1b2630"/>
+<text x="95" y="210" font-size="14" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">localhost:8090</text>
+<path d="M160 205 H191" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="195" y="150" width="170" height="110" fill="#f7941d"/>
+<text x="280" y="184" font-size="16" fill="#fff">Service hello</text>
+<text x="280" y="211" font-size="13" font-weight="400" fill="#fff">selector:</text>
+<text x="280" y="234" font-size="14" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">app=hello</text>
+<g stroke="#33475b" stroke-width="2" fill="none">
+<path d="M365 205 L416 109" marker-end="url(#arrow)"/>
+<path d="M365 205 H416" marker-end="url(#arrow)"/>
+<path d="M365 205 L416 301" marker-end="url(#arrow)"/>
+</g>
+<g>
+<rect x="420" y="70" width="150" height="70" rx="8" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="495" y="99" font-size="16" fill="#33475b">Pod</text>
+<rect x="450" y="111" width="90" height="20" fill="#fbb900"/>
+<text x="495" y="126" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#1b2630">app=hello</text>
+</g>
+<g>
+<rect x="420" y="170" width="150" height="70" rx="8" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="495" y="199" font-size="16" fill="#33475b">Pod</text>
+<rect x="450" y="211" width="90" height="20" fill="#fbb900"/>
+<text x="495" y="226" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#1b2630">app=hello</text>
+</g>
+<g>
+<rect x="420" y="270" width="150" height="70" rx="8" fill="#cdeaf8" stroke="#4ab8e8"/>
+<text x="495" y="299" font-size="16" fill="#33475b">Pod</text>
+<rect x="450" y="311" width="90" height="20" fill="#fbb900"/>
+<text x="495" y="326" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#1b2630">app=hello</text>
+</g>
+<rect x="640" y="60" width="180" height="70" fill="#2d526e"/>
+<text x="730" y="90" font-size="16" fill="#fff">Deployment hello</text>
+<text x="730" y="115" font-size="13" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">replicas: 3</text>
+<path d="M730 130 V166" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="770" y="153" font-size="13" fill="#33475b">creates</text>
+<rect x="640" y="170" width="180" height="70" fill="#4ab8e8"/>
+<text x="730" y="200" font-size="16" fill="#fff">ReplicaSet</text>
+<text x="730" y="224" font-size="13" font-weight="400" fill="#fff">keeps 3 pods running</text>
+<g stroke="#33475b" stroke-width="2" fill="none">
+<path d="M640 205 L574 109" marker-end="url(#arrow)"/>
+<path d="M640 205 H574" marker-end="url(#arrow)"/>
+<path d="M640 205 L574 301" marker-end="url(#arrow)"/>
+</g>
+<text x="425" y="376" font-size="15" font-style="italic" font-weight="400" fill="#4a6178">Labels connect everything: the Service and the ReplicaSet both find their pods by the label app=hello.</text>
+</svg>
