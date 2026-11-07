@@ -83,7 +83,7 @@ This is the most important idea of the week. You write the **desired state** in 
 | **Self-healing** | The orchestrator creates replacement instances when replicas fail. |
 | **Load Balancig** | Incoming requests can be distributed across replicas. |
 | **Scalability** | Increase replicas to handle more traffic. |
-| **Rolling update** | A deployment strategy in container orchestration to gradually replaces old application instances with new ones, rather than updating all instances simultaneously., so the service stays up |
+| **Rolling update** | A deployment strategy in container orchestration to gradually replaces old application instances with new ones, rather than updating all instances simultaneously., so the service stays up | 
 
 **Three orchestrators**
 
