@@ -317,7 +317,7 @@ You never talk to the nodes directly. You send every request to the **API server
 | **etcd** | Control plane | The database that stores the desired state |
 | **Scheduler** | Control plane | Picks a node for each new pod |
 | **Controller manager** | Control plane | Runs the loops that compare desired and actual state and fix the difference |
-| **kubelet** | Every node | Starts the pods on its node and reports how they are doing |
+| **kubelet** | Every node | Starts the pods on its node and reports how they are doing to ensures assigned Pods are running. |
 | **kube-proxy** | Every node | Sends the traffic for a Service to the right pods |
 | **Container runtime** | Every node | Runs the containers (containerd, the same runtime Docker uses inside) |
 
