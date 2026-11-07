@@ -423,7 +423,7 @@ kubectl cluster-info
 
 `kubectl cluster-info` shows the address of the control plane (the API server) that `kubectl` talks to.
 
-## Pods
+**Pods**
 
 A **pod** is the smallest thing Kubernetes runs. Start one the quick way, as you did with `docker run`:
 
