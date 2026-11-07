@@ -75,7 +75,7 @@ This is the most important idea of the week. You write the **desired state** in 
 | Word | Meaning |
 |---|---|
 | **Cluster** | A group of machines that the orchestrator manages as one |
-| **Node** | One machine in the cluster that provides computing resources: a server, a VM, or (on your laptop) a container |
+| **Node** | One machine in the cluster that provides computing resources: a physical server or a VM|
 | **Manager / control plane** | A node that stores the desired state and makes the decisions to maintain it |
 | **Worker** | A component that performs actual work and runs on a node: a process, service, or execution component |
 | **Replica** | An instance of an application or service running in a container. "3 replicas" means 3 identical copies. Replicas are needed for High availability, Self-healing, Load Balancing, and Scalibility |
