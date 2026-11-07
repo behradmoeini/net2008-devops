@@ -75,15 +75,19 @@ This is the most important idea of the week. You write the **desired state** in 
 | Word | Meaning |
 |---|---|
 | **Cluster** | A group of machines that the orchestrator manages as one |
-| **Node** | One machine in the cluster that provides computing resources: a physical server or a VM|
+| **Node** | One machine in the cluster that provides computing resources: a physical server or a VM |
 | **Manager / control plane** | A node that stores the desired state and makes the decisions to maintain it |
-| **Worker** | A component that performs actual work and runs on a node: a process, service, or execution component |
-| **Replica** | An instance of an application or service running in a container. "3 replicas" means 3 identical copies. Replicas are needed for High availability, Self-healing, Load Balancing, and Scalibility |
+| **Worker** | A node that runs the application containers (the replicas) |
+| **Replica** | An instance of an application or service running in a container. "3 replicas" means 3 identical copies. Replicas are needed for high availability, self-healing, load balancing and scalability |
 | **High Availability** | If one replica fails, others can continue serving requests. |
 | **Self-healing** | The orchestrator creates replacement instances when replicas fail. |
-| **Load Balancig** | Incoming requests can be distributed across replicas. |
+| **Load Balancing** | Incoming requests can be distributed across replicas. |
 | **Scalability** | Increase replicas to handle more traffic. |
-| **Rolling update** | A deployment strategy in container orchestration to gradually replaces old application instances with new ones, rather than updating all instances simultaneously., so the service stays up | 
+| **Rolling update** | A deployment strategy that gradually replaces old instances with new ones, instead of updating all of them at once, so the service stays up |
+
+The figure puts the words together. One cluster has three nodes: a manager and two workers. The manager runs one service, `web`, with 3 replicas and spreads them over the workers: two on Worker node 1, one on Worker node 2. If Worker node 2 dies, the manager starts Replica 3 again on Worker node 1.
+
+![Cluster, nodes, service and replicas: a cluster holds a manager node and two worker nodes; the manager schedules one service, web, whose 3 replicas run as containers spread over the workers, two on worker node 1 and one on worker node 2; the hierarchy is cluster, nodes, service, replicas](images/cluster-terms.svg)
 
 ## Three orchestrators
 
