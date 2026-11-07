@@ -380,7 +380,7 @@ K3s itself runs on Linux. On a laptop, **k3d** ("K3s in Docker") runs each K3s n
 
 ![K3s in Docker with k3d: on your laptop, Docker Engine runs four containers: a load balancer that kubectl talks to, a K3s server and two K3s agents; the agents run pods, and port 30080 of the first agent is published to localhost:8090](images/k3d-cluster.svg)
 
-## Create a K3s cluster with k3d
+**Create a K3s cluster with k3d**
 
 ```bash
 k3d cluster create demo --agents 2 -p "8090:30080@agent:0"
