@@ -90,7 +90,7 @@ This is the most important idea of the week. You write the **desired state** in 
 | | Docker Swarm | Kubernetes (K8s) | K3s |
 |---|---|---|---|
 | What it is | The orchestrator built into Docker | The most widely used orchestrator | A small Kubernetes, packed into one program |
-| Setup | Nothing: `docker swarm init` | Several parts, often rented as a cloud service (AKS, EKS, GKE) | One command on Linux, or k3d on a laptop |
+| Setup | Nothing: `docker swarm init` | Several parts, often rented as a cloud service (AKS, EKS, GKE) | One command on Linux (or using k3d on a laptop) |
 | You describe apps with | Compose files | Kubernetes YAML files | The same YAML files as Kubernetes |
 | Command line | `docker` | `kubectl` | `kubectl` |
 | Good for | Small setups, teams that already know Compose | Large production systems | Small servers, edge devices, labs and tests |
