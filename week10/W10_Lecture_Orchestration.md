@@ -195,7 +195,7 @@ docker service rm web
 
 **Stacks: a Compose file on a swarm**
 
-A stack runs a Compose file on a swarm. The new part is `deploy:`, which holds the swarm settings, here the number of replicas. Create a folder and a Compose file:
+A stack runs a Compose file on a swarm. The new part is `deploy:`, which holds the swarm settings, here the number of replicas. This stack has two services: `web`, the nginx page, and `whoami`, a tiny web server that answers with the name of the container that handled the request. Create a folder and a Compose file:
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
@@ -228,6 +228,12 @@ services:
       - "8086:80"
     deploy:
       replicas: 3
+  whoami:
+    image: traefik/whoami
+    ports:
+      - "8087:80"
+    deploy:
+      replicas: 2
 EOF
 ```
 
@@ -245,6 +251,12 @@ services:
       - "8086:80"
     deploy:
       replicas: 3
+  whoami:
+    image: traefik/whoami
+    ports:
+      - "8087:80"
+    deploy:
+      replicas: 2
 '@ | Set-Content compose.yaml -Encoding ascii
 ```
 
@@ -258,7 +270,29 @@ docker stack deploy -c compose.yaml demo  # Run the Compose file as a stack name
 docker stack services demo
 ```
 
-**You should see** one service, `demo_web`, with `3/3` under `REPLICAS`. Swarm puts the stack name in front of each service name. Open <http://localhost:8086>: the nginx page again.
+**You should see** two services: `demo_web` with `3/3` and `demo_whoami` with `2/2` under `REPLICAS`. Swarm puts the stack name in front of each service name. Open <http://localhost:8086>: the nginx page again.
+
+Now ask `whoami` four times. Each request is a new connection, and the routing mesh hands it to one of the two replicas:
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
+```bash
+for i in 1 2 3 4; do curl -s http://localhost:8087 | head -1; done  # Print the first line of four answers.
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+1..4 | ForEach-Object { (curl.exe -s http://localhost:8087)[0] }  # Print the first line of four answers.
+```
+
+</details>
+
+**You should see** four `Hostname:` lines with two different container IDs: two replicas sharing the work. A browser often keeps one connection open and shows the same name on every refresh, which is why the terminal is used here.
 
 **Try it yourself**
 
@@ -267,7 +301,7 @@ Open `compose.yaml`, change `replicas: 3` to `replicas: 5`, save, and run the sa
 <details>
 <summary>Answer</summary>
 
-`docker stack services demo` shows `5/5`. The same command creates a stack or updates it: Swarm compares the file (the desired state) with what runs (the actual state) and starts two more copies.
+`docker stack services demo` shows `5/5` for `demo_web`. `demo_whoami` stays at `2/2`, because its part of the file did not change. The same command creates a stack or updates it: Swarm compares the file (the desired state) with what runs (the actual state) and starts two more copies of `web` only.
 
 </details>
 
