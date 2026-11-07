@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 600" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker><marker id="ao" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#f7941d"/></marker><marker id="ad" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#2d526e"/></marker></defs>
+<rect x="1" y="1" width="848" height="598" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="38" font-size="21" fill="#33475b">Step 1: the Deployment runs 3 pods, nobody can reach them yet</text>
+<rect x="18" y="74" width="160" height="78" fill="#1b2630"/>
+<text x="98" y="100" font-size="15" fill="#fff">Your laptop</text>
+<text x="98" y="128" font-size="15" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">localhost:8090</text>
+<rect x="200" y="60" width="630" height="440" fill="#fff" stroke="#33475b" stroke-width="2"/>
+<rect x="200" y="60" width="190" height="28" fill="#33475b"/>
+<text x="295" y="80" font-size="14" fill="#fff">k3d cluster demo</text>
+<rect x="225" y="100" width="580" height="62" fill="none" stroke="#b9c7d3" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="515" y="137" font-size="15" font-weight="400" fill="#8a99a8">no Service yet</text>
+<rect x="230" y="186" width="180" height="230" fill="#f2f9fd" stroke="#4ab8e8" stroke-width="2"/>
+<rect x="230" y="186" width="180" height="28" fill="#4ab8e8"/>
+<text x="320" y="205" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">k3d-demo-agent-0</text>
+<rect x="245" y="258" width="150" height="142" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="320" y="278" font-size="14" fill="#33475b">Pod</text>
+<text x="320" y="296" font-size="11" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#33475b">hello-…-x2k9q</text>
+<text x="320" y="313" font-size="11" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#33475b">IP 10.42.1.4</text>
+<rect x="260" y="322" width="120" height="44" fill="#fff" stroke="#2d526e" stroke-width="1.5"/>
+<text x="320" y="340" font-size="12" fill="#2d526e">container web</text>
+<text x="320" y="357" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#2d526e">nginx · port 80</text>
+<rect x="275" y="372" width="90" height="20" fill="#fbb900"/>
+<text x="320" y="386" font-size="11" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#1b2630">app=hello</text>
+<rect x="425" y="186" width="180" height="230" fill="#f2f9fd" stroke="#4ab8e8" stroke-width="2"/>
+<rect x="425" y="186" width="180" height="28" fill="#4ab8e8"/>
+<text x="515" y="205" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">k3d-demo-agent-1</text>
+<rect x="440" y="258" width="150" height="142" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="515" y="278" font-size="14" fill="#33475b">Pod</text>
+<text x="515" y="296" font-size="11" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#33475b">hello-…-p7m3d</text>
+<text x="515" y="313" font-size="11" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#33475b">IP 10.42.2.6</text>
+<rect x="455" y="322" width="120" height="44" fill="#fff" stroke="#2d526e" stroke-width="1.5"/>
+<text x="515" y="340" font-size="12" fill="#2d526e">container web</text>
+<text x="515" y="357" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#2d526e">nginx · port 80</text>
+<rect x="470" y="372" width="90" height="20" fill="#fbb900"/>
+<text x="515" y="386" font-size="11" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#1b2630">app=hello</text>
+<rect x="620" y="186" width="180" height="230" fill="#f2f9fd" stroke="#4ab8e8" stroke-width="2"/>
+<rect x="620" y="186" width="180" height="28" fill="#4ab8e8"/>
+<text x="710" y="205" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">k3d-demo-server-0</text>
+<rect x="635" y="258" width="150" height="142" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="710" y="278" font-size="14" fill="#33475b">Pod</text>
+<text x="710" y="296" font-size="11" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#33475b">hello-…-b4n8r</text>
+<text x="710" y="313" font-size="11" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#33475b">IP 10.42.0.9</text>
+<rect x="650" y="322" width="120" height="44" fill="#fff" stroke="#2d526e" stroke-width="1.5"/>
+<text x="710" y="340" font-size="12" fill="#2d526e">container web</text>
+<text x="710" y="357" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#2d526e">nginx · port 80</text>
+<rect x="665" y="372" width="90" height="20" fill="#fbb900"/>
+<text x="710" y="386" font-size="11" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#1b2630">app=hello</text>
+<rect x="225" y="438" width="580" height="50" fill="#2d526e"/>
+<text x="515" y="460" font-size="16" fill="#fff">Deployment hello</text>
+<text x="515" y="480" font-size="12" font-family="Consolas, Menlo, monospace" font-weight="400" fill="#fff">replicas: 3 · creates and replaces the pods</text>
+<path d="M320 438 V404" stroke="#2d526e" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#ad)"/>
+<path d="M515 438 V404" stroke="#2d526e" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#ad)"/>
+<path d="M710 438 V404" stroke="#2d526e" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#ad)"/>
+<path d="M178 132 C205 132 205 233 232 233" stroke="#f21d1d" stroke-width="2.5" stroke-dasharray="6 4" fill="none"/>
+<path d="M220 223 L240 243 M240 223 L220 243" stroke="#f21d1d" stroke-width="3"/>
+<text x="98" y="176" font-size="12" font-weight="400" fill="#c0392b">nothing listens</text>
+<text x="98" y="191" font-size="12" font-weight="400" fill="#c0392b">on 30080 yet</text>
+<text x="425" y="532" font-size="14" font-weight="400" fill="#33475b">Each container listens on port 80, at its own pod IP. The scheduler spread the pods over the nodes.</text>
+<text x="425" y="556" font-size="14" font-weight="400" fill="#33475b">Pod IPs change whenever a pod is replaced, and nothing outside the cluster can reach them.</text>
+<text x="425" y="580" font-size="14" font-weight="400" fill="#33475b">Port 8090 of your laptop already points at port 30080 of agent-0 (k3d -p), but nothing listens there.</text>
+</svg>

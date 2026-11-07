@@ -602,7 +602,7 @@ YAML uses **spaces** for indentation (never tabs), as in Week 9.
 
 **Labels connect everything.** The Deployment finds its pods by the label `app: hello`, and so does the Service you create next. If the labels do not match, nothing is connected. Most Kubernetes mistakes are label mistakes.
 
-![Deployment, pods and Service: the Deployment hello creates a ReplicaSet that keeps 3 pods running; each pod carries the label app=hello; the Service hello selects app=hello and receives requests from localhost:8090](images/deployment-service.svg)
+![Step 1, the Deployment alone: the Deployment hello keeps 3 pods running, one on each node of the cluster demo; each pod has its own IP, a container web listening on port 80 and the label app=hello; there is no Service yet, so port 8090 of the laptop leads to port 30080 of agent-0 where nothing listens](images/deployment-pods.svg)
 
 ```bash
 kubectl apply -f deploy.yaml  # Create (or update) what the file describes. apply is the command you use all week.
@@ -747,6 +747,8 @@ Look at `Selector` and `Endpoints`. **Endpoints** lists one address per pod behi
 
 Open <http://localhost:8090> in your browser. **You should see** `Welcome to nginx!`. The request went from port 8090 of your laptop to port 30080 of `k3d-demo-agent-0`, then to the Service, then to one of the pods, on whichever node it runs.
 
+![Step 2, with the Service: the same cluster and pods, now with the Service hello on port 80; the nodePort 30080 is open on every node; a request goes from localhost:8090 through the k3d load balancer to port 30080 of agent-0, to the Service on port 80, then to port 80 of one of the containers](images/service-ports.svg)
+
 **Try it yourself**
 
 Open `service.yaml` in an editor, change the selector from `app: hello` to `app: wrong`, save, and apply it again. What do `kubectl describe service hello` and the browser show? Then put `app: hello` back and apply again.
@@ -764,6 +766,8 @@ Open `service.yaml` in an editor, change the selector from `app: hello` to `app:
 | `kubectl describe service NAME` | Show the selector and the endpoints (the pods behind it) |
 
 ## Rolling updates and rollbacks
+
+> **REFERENCE** Not presented in class. Read it on your own; the lab practises it (Part 5).
 
 Change the image of a Deployment, and Kubernetes replaces the pods **gradually**: it starts a new pod, waits until it is ready, then stops an old one. The service never goes down.
 
@@ -813,6 +817,8 @@ kubectl rollout status deployment/hello
 | `kubectl rollout undo deployment/NAME` | Go back to the previous revision |
 
 ## Run your own image
+
+> **REFERENCE** Not presented in class. Read it on your own; the lab practises it.
 
 A cluster cannot see the images on your laptop: each node has its own image store. Real clusters download images from a registry such as Docker Hub. With k3d you can also copy a local image into every node. Use the `site:1.0` image from the Week 9 lecture ("Build your own image with a Dockerfile"):
 
