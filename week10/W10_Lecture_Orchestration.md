@@ -361,12 +361,9 @@ You never talk to the nodes directly. You send every request to the **API server
 |---|---|
 | **Pod** | The smallest unit Kubernetes runs: one container (sometimes a few that work together) with its own IP address |
 | **Deployment** | Keeps N identical pods running, and update them safely |
-| **ReplicaSet** | What a Deployment creates to keep the count right. You rarely touch it. |
-| **Service** | One stable name and address in front of a changing group of pods |
-| **Label** | A `key=value` tag on an object, such as `app=hello` |
-| **Selector** | A rule that picks objects by label, such as "all pods with `app=hello`" |
+| **Service** | One stable name and address in front of the dynamic group of pods |
 | **Manifest** | A YAML file that describes an object: the desired state |
-| **Namespace** | A folder inside the cluster that keeps projects apart |
+| **Namespace** | A logical grouping within a Kubernetes cluster used to organize and isolate resources belonging to different projects. |
 
 ## K3s: a lightweight Kubernetes
 
