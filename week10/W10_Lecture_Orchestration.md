@@ -304,7 +304,7 @@ docker swarm leave --force  # Turn swarm mode off. --force is needed because thi
 
 A Kubernetes cluster has two halves:
 
-- The **control plane** decides. It stores the desired state and works out what has to change.
+- The **control plane** decides which stores the desired state and works out what has to change. It is similar to the **Manager node** in Swarm.
 - The **worker nodes** run the containers, inside **pods**.
 
 You never talk to the nodes directly. You send every request to the **API server**, with `kubectl`.
