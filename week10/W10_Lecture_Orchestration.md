@@ -66,10 +66,6 @@ Doing this by hand with `docker run` does not scale. An **orchestrator** does it
 
 **Desired state**
 
-| Imperative (Week 9) | Declarative (this week) |
-|---|---|
-| "Start a container. Start another one. One died, start a new one." | "I want 3 copies." The orchestrator starts, counts and replaces them by itself. |
-
 This is the most important idea of the week. You write the **desired state** in a file. The orchestrator compares it with the **actual state** and fixes the difference, again and again.
 
 ![Desired state vs actual state: you apply a file that asks for 3 replicas, the orchestrator sees that only 2 of 3 run and starts 1 new copy](images/desired-state.svg)
