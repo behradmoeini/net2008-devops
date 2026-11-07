@@ -85,7 +85,7 @@ This is the most important idea of the week. You write the **desired state** in 
 | **Scalability** | Increase replicas to handle more traffic. |
 | **Rolling update** | A deployment strategy in container orchestration to gradually replaces old application instances with new ones, rather than updating all instances simultaneously., so the service stays up | 
 
-**Three orchestrators**
+## Three orchestrators
 
 | | Docker Swarm | Kubernetes (K8s) | K3s |
 |---|---|---|---|
@@ -97,7 +97,7 @@ This is the most important idea of the week. You write the **desired state** in 
 
 You try all of them this week: Swarm first, because it builds on Week 9, then Kubernetes, which you run on your laptop as K3s.
 
-## Docker Swarm
+### Docker Swarm
 
 **Docker Swarm** (swarm mode) is the orchestrator built into Docker. One command switches it on.
 
