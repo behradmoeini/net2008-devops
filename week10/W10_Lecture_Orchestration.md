@@ -116,7 +116,7 @@ You try all of them this week: Swarm first, because it builds on Week 9, then Ku
 
 ![Docker Swarm: a manager node receives docker service create --replicas 3 and places tasks web.1, web.2 and web.3 on three worker nodes; the routing mesh answers on port 8085 on every node](images/swarm-cluster.svg)
 
-On your laptop the swarm has one node, which means it should be both manager and worker.
+On your laptop the swarm has one node, which means it is both manager and worker.
 
 **Turn on swarm mode**
 
@@ -125,10 +125,6 @@ docker swarm init
 ```
 
 **You should see** `Swarm initialized: current node (...) is now a manager`, followed by a `docker swarm join` command. Other computers would run that command to join as workers. You do not need it.
-
-```bash
-docker swarm join --token <token> <IP>:<port>
-```
 
 ```bash
 docker node ls
