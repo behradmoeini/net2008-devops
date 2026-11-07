@@ -87,7 +87,7 @@ This is the most important idea of the week. You write the **desired state** in 
 
 **Three orchestrators**
 
-| | Docker Swarm | Kubernetes | K3s |
+| | Docker Swarm | Kubernetes (K8s) | K3s |
 |---|---|---|---|
 | What it is | The orchestrator built into Docker | The most widely used orchestrator | A small Kubernetes, packed into one program |
 | Install | Nothing: `docker swarm init` | Several parts, often rented as a cloud service (AKS, EKS, GKE) | One command on Linux, or k3d on a laptop |
