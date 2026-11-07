@@ -380,6 +380,17 @@ K3s itself runs on Linux. On a laptop, **k3d** ("K3s in Docker") runs each K3s n
 
 ![K3s in Docker with k3d: on your laptop, Docker Engine runs four containers: a load balancer that kubectl talks to, a K3s server and two K3s agents; the agents run pods, and port 30080 of the first agent is published to localhost:8090](images/k3d-cluster.svg)
 
+The parts of a k3d cluster, with the container names of the cluster `demo` that you create next:
+
+| Part | Container in `docker ps` | Job |
+|---|---|---|
+| **Docker Engine** | none, it runs the containers | Runs every node of the cluster as a container on your laptop |
+| **Load balancer** | `k3d-demo-serverlb` | The front door, added by k3d (not part of Kubernetes). It forwards `kubectl` requests to the API server, and the port you publish with `-p` (8090) to port 30080 of `agent-0`. |
+| **K3s server** | `k3d-demo-server-0` | The control plane: API server, scheduler, controller manager and the database. With one server, K3s keeps the desired state in SQLite instead of etcd. It can run pods too. |
+| **K3s agent** | `k3d-demo-agent-0`, `k3d-demo-agent-1` | A worker node: kubelet, kube-proxy and containerd. Your pods run here. |
+| **Tools** | `k3d-demo-tools` | A helper that k3d uses for jobs such as `k3d image import`. It is not in the figure and does nothing most of the time. |
+| **kubectl** | none, it runs on your laptop | Talks to the load balancer. k3d saves the address as the context `k3d-demo` in `~/.kube/config`. |
+
 **Create a K3s cluster with k3d**
 
 ```bash
