@@ -415,7 +415,7 @@ kubectl get nodes
 docker ps
 ```
 
-Each node is a container on your laptop. One more container, `k3d-demo-serverlb`, is a small load balancer in front of the server.
+**You should see** five containers: the three nodes `k3d-demo-server-0`, `k3d-demo-agent-0` and `k3d-demo-agent-1` (image `rancher/k3s`), the load balancer `k3d-demo-serverlb` with `0.0.0.0:8090->30080/tcp` under `PORTS`, and the helper `k3d-demo-tools`. Each node is a container on your laptop. Your pods do not appear here: they run inside the node containers.
 
 ```bash
 kubectl cluster-info
