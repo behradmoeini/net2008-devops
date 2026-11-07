@@ -367,10 +367,10 @@ You never talk to the nodes directly. You send every request to the **API server
 
 ## K3s: a lightweight Kubernetes
 
-**K3s** is a full Kubernetes in one small program. Rancher (now part of SUSE) created it, and it is a CNCF project. The name is a joke on K8s: half the size, so "K3s".
+**K3s** is a full Kubernetes in one small program. Rancher (now part of SUSE) created it, and it is a CNCF project. The name is a joke on K8s: half the size, so "K3s". K3s has the following features:
 
 - **The same Kubernetes:** K3s passes the official Kubernetes tests, so you use the same `kubectl` commands and the same YAML files. What you learn on K3s works on AKS, EKS or GKE.
-- **Small:** one file of well under 100 MB holds the control plane, the kubelet and containerd. It runs on a Raspberry Pi.
+- **Small:** one file of well under 100 MB holds the control plane, the kubelet and containerd.
 - **Ready to use:** networking, DNS, a load balancer and storage are already set up.
 - **Server and agent:** a K3s **server** runs the control plane (and can run pods too). A K3s **agent** is a worker node.
 
