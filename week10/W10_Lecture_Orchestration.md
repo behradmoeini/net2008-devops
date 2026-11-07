@@ -478,7 +478,7 @@ kubectl get pods
 | `kubectl exec NAME -- COMMAND` | `docker exec` | Run a command inside |
 | `kubectl delete pod NAME` | `docker rm -f` | Delete it |
 
-## Deployments: keep N copies alive
+**Deployments: keep N copies alive**
 
 From now on you write the desired state in **manifests**: YAML files that describe an object. Every manifest has four top-level keys: `apiVersion`, `kind`, `metadata` and `spec`. Create a folder for them:
 
