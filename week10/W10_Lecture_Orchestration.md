@@ -76,9 +76,9 @@ This is the most important idea of the week. You write the **desired state** in 
 |---|---|
 | **Cluster** | A group of machines that the orchestrator manages as one |
 | **Node** | One machine in the cluster that provides computing resources: a server, a VM, or (on your laptop) a container |
-| **Manager / control plane** | The part that stores the desired state and makes the decisions |
+| **Manager / control plane** | A node that stores the desired state and makes the decisions to maintain it |
 | **Worker** | A component that performs actual work and runs on a node: a process, service, or execution component |
-| **Replica** | One copy of your container. "3 replicas" means 3 identical copies. |
+| **Replica** | An instance of an application or service running in a container. "3 replicas" means 3 identical copies. |
 | **Self-healing** | The orchestrator replaces a copy that crashes |
 | **Scaling** | Changing the number of replicas |
 | **Rolling update** | Replacing old copies with a new version a few at a time, so the service stays up |
