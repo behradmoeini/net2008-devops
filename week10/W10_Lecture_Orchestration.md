@@ -105,7 +105,7 @@ You try all of them this week: Swarm first, because it builds on Week 9, then Ku
 
 **Docker Swarm** (swarm mode) is the orchestrator built into Docker. One command switches it on.
 
-- A swarm has **manager** nodes, which keep the desired state and hand out the work, and **worker** nodes, which run the containers.
+- A Docker Swarm consists of manager nodes, which maintain the cluster's desired state and schedule tasks, and worker nodes, which execute those tasks by running containers.
 - You describe what you want as a **service**: an image, a number of replicas and the ports.
 - Each replica is a **task**: one container on one node. Swarm decides which node runs which task.
 - The **routing mesh** opens a published port on every node. A request to any node reaches one of the replicas, wherever it runs.
