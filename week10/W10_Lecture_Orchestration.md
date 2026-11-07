@@ -107,6 +107,7 @@ You try all of them this week: Swarm first, because it builds on Week 9, then Ku
 
 - A Docker Swarm consists of manager nodes, which maintain the cluster's desired state and schedule tasks, and worker nodes, which execute those tasks by running containers.
 - You describe what you want as a **service**: an image, a number of replicas and the ports.
+- Task: The unit of work Swarm schedules on a node. Each task runs one container.
 - A service defines the application and its desired number of replicas. Docker Swarm schedules each replica as a **task**, which runs a container on an available node. Swarm decides which node runs which task.
 - The **routing mesh** opens a published port on every node. A request to any node reaches one of the replicas, wherever it runs.
 - Containers on different nodes talk over an **overlay network** (Week 9, Networks).
