@@ -262,7 +262,7 @@ docker stack services demo
 
 **Try it yourself**
 
-Open `compose.yaml` in an editor (for example `notepad compose.yaml` on Windows or `nano compose.yaml` on macOS and Linux), change `replicas: 3` to `replicas: 5`, save, and run the same `docker stack deploy` command again. What happens?
+Open `compose.yaml`, change `replicas: 3` to `replicas: 5`, save, and run the same `docker stack deploy` command again. What happens?
 
 <details>
 <summary>Answer</summary>
