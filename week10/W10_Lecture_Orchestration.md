@@ -78,10 +78,12 @@ This is the most important idea of the week. You write the **desired state** in 
 | **Node** | One machine in the cluster that provides computing resources: a server, a VM, or (on your laptop) a container |
 | **Manager / control plane** | A node that stores the desired state and makes the decisions to maintain it |
 | **Worker** | A component that performs actual work and runs on a node: a process, service, or execution component |
-| **Replica** | An instance of an application or service running in a container. "3 replicas" means 3 identical copies. |
-| **Self-healing** | The orchestrator replaces a copy that crashes |
-| **Scaling** | Changing the number of replicas |
-| **Rolling update** | Replacing old copies with a new version a few at a time, so the service stays up |
+| **Replica** | An instance of an application or service running in a container. "3 replicas" means 3 identical copies. Replicas are needed for High availability, Self-healing, Load Balancing, and Scalibility |
+| **High Availability** | If one replica fails, others can continue serving requests. |
+| **Self-healing** | The orchestrator creates replacement instances when replicas fail. |
+| **Load Balancig** | Incoming requests can be distributed across replicas. |
+| **Scalability** | Increase replicas to handle more traffic. |
+| **Rolling update** | A deployment strategy in container orchestration to gradually replaces old application instances with new ones, rather than updating all instances simultaneously., so the service stays up |
 
 **Three orchestrators**
 
