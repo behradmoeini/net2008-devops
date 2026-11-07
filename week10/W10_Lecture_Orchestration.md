@@ -457,7 +457,24 @@ kubectl logs hello
 kubectl exec hello -- hostname
 ```
 
-`kubectl exec` runs a command inside the pod: everything after `--` is the command. **You should see** `hello`, the name of the pod. Now delete the pod:
+`kubectl exec` runs a command inside the pod: everything after `--` is the command. **You should see** `hello`, the name of the pod.
+
+To work inside the pod, open a shell in it, as with `docker exec -it` in Week 9:
+
+```bash
+kubectl exec -it hello -- sh  # -i keeps the input open, -t gives you a terminal. nginx:alpine has sh, not bash.
+```
+
+The prompt changes to `/ #`: you are inside the pod. Try a few commands, then leave:
+
+```bash
+hostname
+cat /etc/os-release
+ls /usr/share/nginx/html
+exit
+```
+
+**You should see** `hello`, then `Alpine Linux`, then `50x.html` and `index.html`: the files nginx serves. After `exit` you are back on your laptop. Now delete the pod:
 
 ```bash
 kubectl delete pod hello
@@ -476,6 +493,7 @@ kubectl get pods
 | `kubectl describe pod NAME` | `docker inspect` | Show the details and the Events |
 | `kubectl logs NAME` | `docker logs` | Show the output |
 | `kubectl exec NAME -- COMMAND` | `docker exec` | Run a command inside |
+| `kubectl exec -it NAME -- sh` | `docker exec -it NAME sh` | Open a shell inside (`exit` to leave) |
 | `kubectl delete pod NAME` | `docker rm -f` | Delete it |
 
 **Deployments: keep N copies alive**
@@ -561,13 +579,24 @@ spec:
 
 Read it from the top:
 
-| Lines | Meaning |
+| Line | Meaning |
 |---|---|
-| `kind: Deployment`, `name: hello` | A Deployment named `hello` |
-| `replicas: 3` | The desired state: 3 pods |
-| `selector`, `matchLabels` | Which pods belong to this Deployment: the ones with the label `app: hello` |
-| `template` | The pod to create. Its label `app: hello` matches the selector. |
-| `containers` | The container inside each pod: named `web`, image `nginx:alpine`, port 80 |
+| `apiVersion: apps/v1` | The version of the Kubernetes API that defines Deployments |
+| `kind: Deployment` | The type of object: a Deployment |
+| `metadata:` | Information about the Deployment |
+| `name: hello` | The name of the Deployment |
+| `spec:` | What the Deployment should do (its desired state) |
+| `replicas: 3` | Keep 3 pods running |
+| `selector:` | How the Deployment finds its pods |
+| `matchLabels:` / `app: hello` | Its pods are the ones with the label `app: hello` |
+| `template:` | The blueprint for every pod it creates |
+| `metadata:` / `labels:` | Information about each pod: its labels |
+| `app: hello` | Every pod gets this label. It must match the selector. |
+| `spec:` | What each pod contains |
+| `containers:` | The list of containers in the pod |
+| `- name: web` | One container, named `web` |
+| `image: nginx:alpine` | The image it runs, as in `docker run` |
+| `ports:` / `- containerPort: 80` | The container listens on port 80 |
 
 YAML uses **spaces** for indentation (never tabs), as in Week 9.
 
@@ -689,9 +718,14 @@ spec:
 
 | Line | Meaning |
 |---|---|
+| `apiVersion: v1` | The version of the Kubernetes API that defines Services |
+| `kind: Service` | The type of object: a Service |
+| `metadata:` / `name: hello` | The name of the Service |
+| `spec:` | What the Service should do |
 | `type: NodePort` | Open a port on every node |
-| `selector`, `app: hello` | Send the traffic to the pods with this label |
-| `port: 80` | The port of the Service inside the cluster |
+| `selector:` / `app: hello` | Send the traffic to the pods with this label |
+| `ports:` | The list of ports |
+| `- port: 80` | The port of the Service inside the cluster |
 | `targetPort: 80` | The port of the container |
 | `nodePort: 30080` | The port that opens on every node |
 
