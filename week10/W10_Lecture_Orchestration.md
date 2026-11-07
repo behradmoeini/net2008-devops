@@ -423,7 +423,7 @@ kubectl cluster-info
 
 `kubectl cluster-info` shows the address of the control plane (the API server) that `kubectl` talks to.
 
-**Pods**
+### Pods
 
 A **pod** is the smallest thing Kubernetes runs. Start one the quick way, as you did with `docker run`:
 
@@ -496,7 +496,7 @@ kubectl get pods
 | `kubectl exec -it NAME -- sh` | `docker exec -it NAME sh` | Open a shell inside (`exit` to leave) |
 | `kubectl delete pod NAME` | `docker rm -f` | Delete it |
 
-**Deployments: keep N copies alive**
+## Deployments: keep N copies alive
 
 From now on you write the desired state in **manifests**: YAML files that describe an object. Every manifest has four top-level keys: `apiVersion`, `kind`, `metadata` and `spec`. Create a folder for them:
 
@@ -660,7 +660,7 @@ Three. The file says `replicas: 3`, and `apply` makes the cluster match the file
 | `kubectl scale deployment NAME --replicas=N` | Change the number of pods |
 | `kubectl delete -f FILE` | Delete what the file describes |
 
-## Services: one stable address
+### Services: one stable address
 
 Pods come and go, and every new pod gets a new IP address. A **Service** gives a group of pods one stable name and address, and spreads the requests over them. Like the Deployment, it finds its pods by label.
 
