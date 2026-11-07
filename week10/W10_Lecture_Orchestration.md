@@ -360,7 +360,7 @@ You never talk to the nodes directly. You send every request to the **API server
 | Word | Meaning |
 |---|---|
 | **Pod** | The smallest unit Kubernetes runs: one container (sometimes a few that work together) with its own IP address |
-| **Deployment** | "Keep N identical pods running, and update them safely" |
+| **Deployment** | Keeps N identical pods running, and update them safely |
 | **ReplicaSet** | What a Deployment creates to keep the count right. You rarely touch it. |
 | **Service** | One stable name and address in front of a changing group of pods |
 | **Label** | A `key=value` tag on an object, such as `app=hello` |
