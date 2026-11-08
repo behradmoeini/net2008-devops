@@ -98,7 +98,7 @@ git init -b main  # Make the lab folder a Git repository, as in Week 6.
 **If you close the terminal**, the variables are lost. Open a new terminal, run the two variable boxes again, then `cd ~/bytown-cluster`.
 
 ---
-## Part 1. Docker Swarm (25 points)
+## Part 1. Docker Swarm (20 points)
 
 You run version 1.0 of your image as a Swarm stack, with your replica count, on your Swarm port.
 
@@ -201,7 +201,7 @@ docker swarm leave --force  # Turn swarm mode off.
 ```
 
 ---
-## Part 2. A K3s cluster (10 points)
+## Part 2. A K3s cluster (8 points)
 
 The cluster is named `bytown`: one server and two agents. Your Kubernetes port on your laptop goes to port 30080 of the first agent:
 
@@ -220,7 +220,7 @@ k3d image import bytown-web:1.0 bytown-web:1.1 -c bytown  # Copy both images int
 ```
 
 ---
-## Part 3. A Deployment (25 points)
+## Part 3. A Deployment (20 points)
 
 Create the manifest. The terminal fills in your replica count:
 
@@ -311,7 +311,7 @@ sleep 10; kubectl get pods | tee evidence/part3-healed.txt  # Wait 10 seconds, t
 **You should see** your replica count of pods, all `Running`, and one of them younger than the others (look at `AGE`). If one is not `Running` yet, run the last command again.
 
 ---
-## Part 4. A Service (15 points)
+## Part 4. A Service (12 points)
 
 The Service sends the traffic from port 30080 of every node to your pods. A request takes this path, as in the Step 2 figure of the lecture ([Services](../W10_Lecture_Orchestration.md#services-one-stable-address)): your Kubernetes port on your laptop, then port 30080 of `agent-0` (k3d published it in Part 2), then the Service on port 80, then port 80 of one of your containers.
 
@@ -388,7 +388,7 @@ curl.exe -s http://localhost:$K8S_PORT | tee evidence/part4-curl.txt  # Ask for 
 You can also open `http://localhost:` followed by your Kubernetes port in your browser.
 
 ---
-## Part 5. Rolling update and rollback (15 points)
+## Part 5. Rolling update and rollback (12 points)
 
 Rolling updates were not presented in class. Read [Rolling updates and rollbacks](../W10_Lecture_Orchestration.md#rolling-updates-and-rollbacks) (REFERENCE) in the lecture first.
 
@@ -477,7 +477,7 @@ kubectl rollout history deployment/bytown-web  # List the revisions of your Depl
 **Run the self-check now** (see "Check your work" below), while the cluster still runs.
 
 ---
-## Part 6. Answers (10 points)
+## Part 6. Answers (8 points)
 
 Answer these three questions in your own words in a file named `answers.txt`, one answer per line, in the form `Q1: your answer`:
 
@@ -538,7 +538,7 @@ python $HOME/net2008-devops/week10/lab/W10_Lab_selfcheck.py --seed $SEED  # Chec
 
 </details>
 
-Fix every `FAIL` line, then run it again. It checks that things exist and have the right shape. Your instructor also reads the files in your repository and `answers.txt`.
+Fix every `FAIL` line, then run it again. It checks that things exist and have the right shape, for 80 of the 100 points. The other 20 points come from your instructor's review of your work.
 
 ## Clean up
 
@@ -576,12 +576,13 @@ git push -u origin main  # Upload to GitHub.
 
 | Part | What | Points |
 |---|---|---|
-| 1 | Swarm stack with your replica count and port, page served, self-healing shown | 25 |
-| 2 | K3s cluster `bytown` with three `Ready` nodes | 10 |
-| 3 | Deployment `bytown-web` with your replica count, pods running, self-healing shown | 25 |
-| 4 | NodePort Service with a correct selector, page reached on your port | 15 |
-| 5 | Rolling update to 1.1 and rollback to 1.0 | 15 |
-| 6 | `answers.txt` (read by your instructor) | 10 |
+| 1 | Swarm stack with your replica count and port, page served, self-healing shown | 20 |
+| 2 | K3s cluster `bytown` with three `Ready` nodes | 8 |
+| 3 | Deployment `bytown-web` with your replica count, pods running, self-healing shown | 20 |
+| 4 | NodePort Service with a correct selector, page reached on your port | 12 |
+| 5 | Rolling update to 1.1 and rollback to 1.0 | 12 |
+| 6 | `answers.txt` (read by your instructor) | 8 |
+| | Instructor review: the overall quality of your work, your answers and your repository | 20 |
 | | **Total** | **100** |
 
 ## If something goes wrong
