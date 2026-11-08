@@ -213,7 +213,7 @@ k3d cluster create bytown --agents 2 -p "${K8S_PORT}:30080@agent:0"  # Create th
 kubectl get nodes | tee evidence/part2-nodes.txt  # Three nodes, all Ready, and save the list. If one is NotReady, wait 20 seconds and run it again.
 ```
 
-The cluster cannot see the images on your laptop. Copy both of your images into it:
+The cluster cannot see the images on your laptop: each node has its own image store. This step was not presented in class; read [Run your own image](../W10_Lecture_Orchestration.md#run-your-own-image) (REFERENCE) in the lecture first. Copy both of your images into the cluster:
 
 ```bash
 k3d image import bytown-web:1.0 bytown-web:1.1 -c bytown  # Copy both images into every node of the cluster bytown.
@@ -313,7 +313,7 @@ sleep 10; kubectl get pods | tee evidence/part3-healed.txt  # Wait 10 seconds, t
 ---
 ## Part 4. A Service (3 points)
 
-The Service sends the traffic from port 30080 of every node to your pods:
+The Service sends the traffic from port 30080 of every node to your pods. A request takes this path, as in the Step 2 figure of the lecture ([Services](../W10_Lecture_Orchestration.md#services-one-stable-address)): your Kubernetes port on your laptop, then port 30080 of `agent-0` (k3d published it in Part 2), then the Service on port 80, then port 80 of one of your containers.
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
@@ -389,6 +389,8 @@ You can also open `http://localhost:` followed by your Kubernetes port in your b
 
 ---
 ## Part 5. Rolling update and rollback (3 points)
+
+Rolling updates were not presented in class. Read [Rolling updates and rollbacks](../W10_Lecture_Orchestration.md#rolling-updates-and-rollbacks) (REFERENCE) in the lecture first.
 
 Update to version 1.1 by changing the **file**, so that Git records the change:
 
