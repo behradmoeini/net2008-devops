@@ -57,8 +57,7 @@ kubectl version --client
 In Week 9 you ran containers on one laptop with `docker run` and Compose. A real service needs more than that:
 
 - several copies of the same container, so one crash does not take the service down
-- several servers, so one dead server does not take it down either
-- a new copy, started automatically, when one dies
+- several servers, so a new copy starts automatically, when one dies
 - updates without downtime
 - one address for users, whichever copy answers
 
