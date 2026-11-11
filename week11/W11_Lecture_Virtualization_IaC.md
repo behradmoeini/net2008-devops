@@ -60,9 +60,9 @@ There are two kinds of hypervisor. The only difference is **where the manager si
 | **Host-only (private network)** | The VM can only talk to your laptop and other VMs. Not the internet. | Your laptop opens the VM's web page. A private lab. |
 | **Bridged** | The VM gets its own address on your real network, like a separate computer. | Your phone on the same Wi-Fi can open the VM's web page. |
 
-### Part A2. The cloud
+### Part B. The cloud
 
-**The cloud is renting.** Think of a car. You can **buy** a car (buy servers), or you can **rent** one by the day (the cloud). A **cloud provider** (AWS, Microsoft Azure, Google Cloud) owns huge buildings full of servers. You ask for a VM, a network or a database, and you pay for the hours you use. No hardware to buy, and you can ask for 1 server or 100 in a few minutes.
+**The cloud is renting.** A **cloud provider** (AWS, Microsoft Azure, Google Cloud) owns huge buildings full of servers. You ask for a VM, a network or a database, and you pay for the hours you use. No hardware to buy, and you can ask for 1 server or 100 in a few minutes.
 
 You ask through a web page, or through code. This is where today's topic comes in: code is faster and repeatable.
 
@@ -76,7 +76,7 @@ You ask through a web page, or through code. This is where today's topic comes i
 
 This course uses mostly IaaS: you get an empty server and you build it up.
 
-**Words you will meet in every cloud:**
+**Cloud terminology:**
 
 | Word | Plain meaning | Example |
 |---|---|---|
@@ -104,13 +104,13 @@ Most cloud break-ins are the customer's mistake, not the provider's. Examples: a
 
 **Why Terraform matters in the cloud.** You can click through the AWS website to create servers. But three weeks later, nobody remembers what was clicked. With Terraform the list of servers is written in a file. Azure and Google use different websites, but Terraform uses the same language and the same four commands for all of them. Today you practise with Docker. Later you only change the provider.
 
-### The problem with building servers by hand
+### Part C. The problem with building servers by hand
 
 You click through an installer, install packages, change settings. Three weeks later nobody can say exactly what is on the VM, and nobody can build the same one again. If it breaks, you cannot rebuild it.
 
 Such a server is called a **snowflake**: every one is different, and fragile. **Example:** your teammate fixed a bug by editing a file on the server, but forgot to tell anyone. Next month you build a new server and the bug is back.
 
-### Part B. Infrastructure as Code (IaC)
+### Part D. Infrastructure as Code (IaC)
 
 **The idea.** Instead of clicking, you **write** what you want in a text file. A tool reads the file and builds it. The file goes in Git, like your Python code.
 
@@ -145,7 +145,7 @@ You write the **desired state** in `.tf` files: what you want to exist. The lang
 terraform.tfstate (what Terraform believes exists) <------------ updated after every apply
 ```
 
-**Words you need today:**
+**Terraform terminology:**
 
 | Word | Plain meaning | Example |
 |---|---|---|
