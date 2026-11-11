@@ -490,16 +490,14 @@ az group list --output table  # The resource groups that exist. A new account ha
 ```
 
 ```bash
-az vm list-skus --location canadacentral --size Standard_B1s --resource-type virtualMachines --output table  # Is the VM size we will use (1 CPU, about 1 GB of memory) available in this region? Read the Restrictions column.
+az account list-locations --query "[].{Name:name, Region:displayName}" --output table  # The regions you can create things in. We will use canadacentral (Toronto).
 ```
-
-**Restrictions** must be empty. If it says `NotAvailableForSubscription`, your account may not use this region. Find the regions where the size is allowed (this can take a minute):
 
 ```bash
-az vm list-skus --size Standard_B1s --resource-type virtualMachines --query '[?length(restrictions)==`0`].locationInfo[0].location' --output tsv  # List the regions where the size is allowed for you.
+az vm image list --output table  # Popular VM images and their short names. Find Ubuntu2204: that is the image we will use.
 ```
 
-Pick one region from that list and use it instead of `canadacentral` in every command below.
+If a region or VM size is not allowed for your subscription, you will find out in the next step: the error message says so and tells you what to change.
 
 #### 4. Create a VM
 
