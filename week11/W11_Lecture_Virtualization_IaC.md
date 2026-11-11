@@ -160,11 +160,65 @@ Read it line by line:
 | `vb.memory`, `vb.cpus` | Give it 1 GB of memory and 1 CPU |
 | `config.vm.provision "shell"` | Run this one command inside the VM the first time it starts |
 
-**If you installed Vagrant and VirtualBox** (Intel or AMD laptop), try it:
+**Install VirtualBox and Vagrant (optional).** Do this only if you have an Intel or AMD laptop. Apple silicon (M1 to M4) cannot run these Intel VMs: skip this and read the file only. VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox.
+
+<details>
+<summary>macOS (Intel) / Linux (Terminal)</summary>
+
+macOS with Intel:
+
+```bash
+brew install --cask virtualbox vagrant  # Install both tools with Homebrew. macOS asks you to allow the VirtualBox system extension in System Settings > Privacy & Security, then restart.
+```
+
+Ubuntu or Debian Linux (this uses the HashiCorp repository from the [setup guide](W11_Setup_Terraform.md)):
+
+```bash
+sudo apt update && sudo apt install -y virtualbox vagrant  # Install both tools.
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+Vagrant must be installed in **Windows**, not in the Ubuntu terminal. Open **PowerShell as Administrator** (right-click the Start button, choose Terminal (Admin)):
+
+```powershell
+winget install --id Oracle.VirtualBox -e  # Install VirtualBox.
+```
+
+```powershell
+winget install --id Hashicorp.Vagrant -e  # Install Vagrant.
+```
+
+Close PowerShell and open a new one (not as Administrator), then check:
+
+```powershell
+vagrant --version  # Vagrant must answer with a version number.
+```
+
+</details>
+
+**If you installed Vagrant and VirtualBox**, try it. Windows students run these commands in PowerShell. The commands after the first one are the same on every system.
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 mkdir -p ~/iac-practice/vm && cd ~/iac-practice/vm  # Create a folder for the VM and move into it.
 ```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+New-Item -ItemType Directory -Force ~/iac-practice/vm | Out-Null; Set-Location ~/iac-practice/vm  # Create a folder for the VM and move into it.
+```
+
+</details>
 
 ```bash
 vagrant init ubuntu/jammy64  # Create a Vagrantfile for that box. Open it and compare with the one above.
