@@ -39,18 +39,33 @@ sudo apt update && sudo apt install -y terraform
 terraform version
 ```
 
-## 2. VirtualBox and Vagrant (optional)
+**macOS: if Terraform cannot find Docker.** If `terraform apply` later says it cannot connect to the Docker daemon at `/var/run/docker.sock` while `docker ps` works, run this in the same terminal:
 
-Virtual machines on a laptop depend on the processor. The Week 11 lab is written so that you finish **without** a virtual machine. Install these only if your laptop can run them, and only if you want to try `vagrant up`.
+```bash
+export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')
+```
 
-- **Windows 10 or 11, macOS with Intel, and Intel or AMD Linux:** use the commands below.
-- **macOS with Apple silicon (M1 to M4):** VirtualBox does not run Intel boxes. Skip this section. The lab has a path for you.
-- VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox.
+## 2. A hypervisor and Vagrant (optional)
+
+Virtual machines on a laptop depend on the processor. The Week 11 lab is written so that you finish **without** a virtual machine. Install these only if your laptop can run them.
+
+| Your computer | VM by hand | `vagrant up` |
+|---|---|---|
+| Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | VirtualBox | Yes |
+| Mac with Apple silicon (M1 to M4) | **UTM** (VirtualBox cannot run Intel Ubuntu there) | **No.** You can still install Vagrant and run `vagrant validate`. |
+
+VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox.
+
+First check your processor (macOS or Linux):
+
+```bash
+uname -m  # x86_64 means Intel or AMD. arm64 or aarch64 means Apple silicon or ARM.
+```
 
 <details>
-<summary>macOS (Intel) / Linux (Terminal)</summary>
+<summary>macOS / Linux (Terminal)</summary>
 
-macOS with Intel:
+Mac with an Intel chip:
 
 ```bash
 brew install --cask virtualbox vagrant
@@ -58,7 +73,13 @@ brew install --cask virtualbox vagrant
 
 macOS asks you to allow the VirtualBox system extension in System Settings > Privacy & Security. Allow it and restart.
 
-Ubuntu or Debian Linux (the HashiCorp repository from section 1 must be added first):
+Mac with Apple silicon:
+
+```bash
+brew install --cask utm vagrant
+```
+
+Ubuntu or Debian Linux on Intel or AMD (the HashiCorp repository from section 1 must be added first):
 
 ```bash
 sudo apt update && sudo apt install -y virtualbox vagrant
@@ -86,3 +107,9 @@ vagrant --version
 ```
 
 </details>
+
+You also need an Ubuntu Server ISO for the VM by hand. The lecture links to it.
+
+## 3. A free Azure student account (optional)
+
+The cloud hands-on in the lecture needs an Azure account. **Azure for Students** gives 100 US dollars of credit for 12 months and does not ask for a credit card. Go to <https://azure.microsoft.com/free/students> and sign in with your **school email**. If it refuses your email, skip the Azure parts. The graded lab does not need an account.

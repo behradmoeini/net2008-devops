@@ -1,7 +1,7 @@
 # Week 11 Lab: Bytown Infrastructure as Code
 **NET2008 DevOps · Algonquin College**
 
-This lab is graded (2% of final grade). You describe a virtual machine with Vagrant and build real infrastructure with Terraform: a network and web containers, changed through code, repaired after drift, and destroyed. You also write and validate AWS (cloud) code. Everything runs on **your own laptop**.
+This lab is graded (2% of final grade). You describe a virtual machine with Vagrant and build real infrastructure with Terraform: a network and web containers, changed through code, repaired after drift, and destroyed. You also write and validate Azure (cloud) code. Everything runs on **your own laptop**.
 
 **Rules**
 
@@ -73,15 +73,15 @@ EOF
 cat vagrant/Vagrantfile  # Check that your seed appears in the host name, the address and the provisioning line.
 ```
 
-**If Vagrant is installed in this terminal** (macOS with Intel, and Linux), validate the file:
+**If Vagrant is installed in this terminal** (macOS and Linux, including Apple silicon), validate the file. On Windows, Vagrant is installed in Windows: open PowerShell, go to the `vagrant` folder of this lab and run `vagrant validate` there.
 
 ```bash
 cd vagrant && vagrant validate | tee ../evidence/part1-validate.txt; cd ..  # Check the Vagrantfile and save the result. You must see "Vagrantfile validated successfully."
 ```
 
-Starting the VM (`vagrant up`) is **optional** and not graded. If you do it, run `vagrant destroy -f` afterwards.
+Starting the VM (`vagrant up`) is **optional** and not graded. It works on Windows, Intel Mac and Linux with VirtualBox, but not on a Mac with Apple silicon. If you do it, run `vagrant destroy -f` afterwards.
 
-**If you cannot run Vagrant here** (Windows with Ubuntu, Apple silicon, or no VirtualBox), skip the validate command. Your Vagrantfile is checked by reading it, and you lose no marks.
+**If you did not install Vagrant**, skip the validate command. Your Vagrantfile is checked by reading it, and you lose no marks.
 
 ```bash
 git add vagrant && git commit -m "Add Vagrantfile for the Bytown VM"  # Commit number 2.
@@ -283,7 +283,7 @@ cd .. && git add -A && git commit -m "Record the destroyed state"  # Commit numb
 ---
 ## Part 5. Terraform for the cloud (3 points)
 
-You write AWS code and let Terraform **check** it. Nothing is created and no account is needed. Use your seed in the names.
+You write Azure code and let Terraform **check** it. Nothing is created and no account is needed. Use your seed in the names.
 
 ```bash
 mkdir -p ~/bytown-iac/cloud && cd ~/bytown-iac/cloud  # Create the cloud folder and move into it.
@@ -293,46 +293,79 @@ mkdir -p ~/bytown-iac/cloud && cd ~/bytown-iac/cloud  # Create the cloud folder 
 cat > main.tf <<EOF
 terraform {
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
     }
   }
 }
 
-provider "aws" {
-  region = "ca-central-1"
+provider "azurerm" {
+  features {}
 }
 
-resource "aws_vpc" "bytown" {
-  cidr_block = "10.$SEED.0.0/16"
-  tags       = { Name = "bytown-vpc-$SEED", Owner = "student" }
+variable "ssh_public_key" {
+  type    = string
+  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLACEHOLDERKEYPLACEHOLDERKEYPLACEHOLDER student"
 }
 
-resource "aws_subnet" "public" {
-  vpc_id     = aws_vpc.bytown.id
-  cidr_block = "10.$SEED.1.0/24"
-  tags       = { Name = "bytown-public-$SEED" }
+resource "azurerm_resource_group" "bytown" {
+  name     = "bytown-rg-$SEED"
+  location = "canadacentral"
+  tags     = { Owner = "student" }
 }
 
-resource "aws_security_group" "web" {
-  name   = "bytown-web-$SEED"
-  vpc_id = aws_vpc.bytown.id
+resource "azurerm_virtual_network" "bytown" {
+  name                = "bytown-vnet-$SEED"
+  address_space       = ["10.$SEED.0.0/16"]
+  location            = azurerm_resource_group.bytown.location
+  resource_group_name = azurerm_resource_group.bytown.name
+}
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+resource "azurerm_subnet" "web" {
+  name                 = "web"
+  resource_group_name  = azurerm_resource_group.bytown.name
+  virtual_network_name = azurerm_virtual_network.bytown.name
+  address_prefixes     = ["10.$SEED.1.0/24"]
+}
+
+resource "azurerm_network_interface" "web" {
+  name                = "bytown-nic-$SEED"
+  location            = azurerm_resource_group.bytown.location
+  resource_group_name = azurerm_resource_group.bytown.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.web.id
+    private_ip_address_allocation = "Dynamic"
   }
 }
 
-resource "aws_instance" "web" {
-  ami                    = "ami-0123456789abcdef0"
-  instance_type          = "t3.micro"
-  subnet_id              = aws_subnet.public.id
-  vpc_security_group_ids = [aws_security_group.web.id]
-  tags                   = { Name = "bytown-web-$SEED", Owner = "student" }
+resource "azurerm_linux_virtual_machine" "web" {
+  name                  = "bytown-web-$SEED"
+  resource_group_name   = azurerm_resource_group.bytown.name
+  location              = azurerm_resource_group.bytown.location
+  size                  = "Standard_B1s"
+  admin_username        = "student"
+  network_interface_ids = [azurerm_network_interface.web.id]
+  tags                  = { Owner = "student" }
+
+  admin_ssh_key {
+    username   = "student"
+    public_key = var.ssh_public_key
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "ubuntu-24_04-lts"
+    sku       = "server"
+    version   = "latest"
+  }
 }
 EOF
 ```
@@ -342,17 +375,17 @@ grep -n "$SEED" main.tf  # Check that your seed appears in the network address a
 ```
 
 ```bash
-terraform init  # Download the AWS provider (about a minute).
+terraform init  # Download the Azure provider (about a minute).
 ```
 
 ```bash
 terraform fmt -check && terraform validate | tee ../evidence/part5-validate.txt  # You must see "Success! The configuration is valid."
 ```
 
-**Do not run `terraform apply` in this folder.** The AMI is a placeholder and you have no credentials.
+**Do not run `terraform apply` in this folder.** You have no credentials, and nothing here is meant to be created.
 
 ```bash
-cd .. && git add -A && git commit -m "Add AWS Terraform code, validated"  # Commit number 6. Check that no .terraform folder is listed.
+cd .. && git add -A && git commit -m "Add Azure Terraform code, validated"  # Commit number 6. Check that no .terraform folder is listed.
 ```
 
 ---
@@ -363,7 +396,7 @@ Answer in a file named `answers.txt`, one answer per line, in the form `Q1: your
 1. In Part 3a you deleted a container by hand. What did Terraform do, and why must you change infrastructure through the code?
 2. Why is `terraform.tfstate` not committed to Git?
 3. What is the difference between what Terraform does and what Ansible (Week 12) will do?
-4. In the shared responsibility model, name one thing the cloud provider secures and one thing you secure on an AWS VM.
+4. In the shared responsibility model, name one thing the cloud provider secures and one thing you secure on a cloud VM.
 
 ```bash
 cat > answers.txt <<'EOF'
@@ -411,7 +444,7 @@ git push -u origin main  # Upload to GitHub.
 | 2 | Terraform code formatted and valid, network and two containers created, both pages show your seed | 5 |
 | 3 | Drift shown in a plan and repaired, scaled to three by the values file | 3 |
 | 4 | State never committed, lock file committed, everything destroyed | 3 |
-| 5 | AWS code with your seed, formatted and valid (nothing created) | 3 |
+| 5 | Azure code with your seed, formatted and valid (nothing created) | 3 |
 | 6 | `answers.txt` (read by your instructor) | 3 |
 
 ## If something goes wrong

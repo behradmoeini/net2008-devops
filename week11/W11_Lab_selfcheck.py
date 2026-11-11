@@ -103,9 +103,9 @@ def main():
     # ---- Part 5 (3 points)
     cloud = read("cloud/main.tf")
     ok_evidence = "the configuration is valid" in read("evidence/part5-validate.txt").lower()
-    check(5, f"cloud/main.tf uses the AWS provider and your seed ({seed}) in the network address and names",
-          "hashicorp/aws" in cloud and f"10.{seed}.0.0/16" in cloud and f"bytown-web-{seed}" in cloud
-          and "aws_vpc" in cloud and "aws_instance" in cloud, 1)
+    check(5, f"cloud/main.tf uses the Azure provider and your seed ({seed}) in the network address and names",
+          "hashicorp/azurerm" in cloud and f"10.{seed}.0.0/16" in cloud and f"bytown-web-{seed}" in cloud
+          and "azurerm_virtual_network" in cloud and "azurerm_linux_virtual_machine" in cloud, 1)
     if run("terraform", "version")[0] == 0 and (root / "cloud/.terraform").exists():
         rc, out = run("terraform", "fmt", "-check", cwd=root / "cloud")
         check(5, "cloud: terraform fmt -check passes", rc == 0, 1)
