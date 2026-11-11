@@ -196,7 +196,7 @@ Terraform --> empty servers exist --> Ansible --> website installed and running
 ---
 ## Step 1. Vagrant: a VM as code (read, and run if you can)
 
-Back to the developer's laptop. Vagrant is the recipe for her test VM. The recipe file is called a `Vagrantfile`. Read this one. It describes one Ubuntu VM:
+Bytown Pizza's developer needs an Ubuntu VM on her laptop to test the ordering website. Instead of installing it by hand, she describes it in a file called a `Vagrantfile`. Below is the `Vagrantfile` for that VM. Read it. It describes one Ubuntu VM:
 
 ```ruby
 Vagrant.configure("2") do |config|
