@@ -93,27 +93,32 @@ A VM has a virtual network card. You choose how it connects:
 
 **Goal:** create an Ubuntu Server VM manually, so you feel what Vagrant will remove later. It takes about 25 minutes, and most of that is the Ubuntu installer.
 
-**First, find out which tool you can use.** The processor decides.
+#### Find your tag
 
-| Your computer | Hypervisor to use |
-|---|---|
-| Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | **VirtualBox** |
-| Mac with Apple silicon (M1, M2, M3, M4) | **UTM** |
-| Windows laptop with an ARM chip (for example Snapdragon), **Windows 11 Pro or Enterprise** | **Hyper-V**, which is built into Windows. It needs a few extra steps, shown below. |
-| Windows laptop with an ARM chip, **Windows 11 Home** | Home has no Hyper-V and there is no other tool for it. Read this section and skip the hands-on. You lose no marks. |
+The processor of your laptop decides which tool you use. Find your row and remember your **tag** (A, B, C or D). Every step below tells you what each tag does.
 
-How to check: on a Mac open the Apple menu > **About This Mac** and read **Chip**. On Windows open **Settings > System > About** and read **System type**. On Linux run `uname -m`: `x86_64` means Intel or AMD, `aarch64` or `arm64` means ARM.
+| Tag | Your computer | Tool you use | Ubuntu ISO you need |
+|---|---|---|---|
+| **A** | Windows with an Intel or AMD chip, Mac with an Intel chip, Linux on Intel or AMD | **VirtualBox** | amd64 |
+| **B** | Mac with Apple silicon (M1, M2, M3, M4) | **UTM** | arm64 |
+| **C** | Windows with an ARM chip (for example Snapdragon), **Windows 11 Pro or Enterprise** | **Hyper-V** (built into Windows) | arm64 |
+| **D** | Windows with an ARM chip, **Windows 11 Home** | None. Home has no Hyper-V and there is no other tool for it. | |
 
-**Why different tools?** A VM must match the processor of the host. An ARM laptop can only run ARM systems, so it needs the **arm64** Ubuntu ISO. VirtualBox on an Apple silicon Mac does not officially support Ubuntu on ARM, so Macs use UTM, which is built for Apple silicon. Windows on ARM uses Hyper-V instead.
+How to check your chip: on a Mac open the Apple menu > **About This Mac** and read **Chip**. On Windows open **Settings > System > About** and read **System type**. On Linux run `uname -m`: `x86_64` means Intel or AMD, `aarch64` or `arm64` means ARM.
+
+**Why different tools?** A VM must match the processor of the host. An ARM laptop can only run ARM systems, so it needs the **arm64** Ubuntu ISO. VirtualBox on an Apple silicon Mac does not officially support Ubuntu on ARM, so those Macs use UTM, which is built for Apple silicon. Windows on ARM uses Hyper-V.
 
 #### 1. Download the Ubuntu Server ISO
 
-An **ISO** is a disk image of the Ubuntu installer, like a virtual DVD. Download **Ubuntu Server (LTS)** and save it in your Downloads folder. It is about 2 GB, so start it now.
+An **ISO** is a disk image of the Ubuntu installer, like a virtual DVD. Save it in your Downloads folder. It is about 2 GB, so start it now.
 
-- Intel, AMD and VirtualBox: <https://ubuntu.com/download/server> (the **amd64** version)
-- Apple silicon Mac with UTM, or Windows on ARM with Hyper-V: <https://ubuntu.com/download/server/arm> (the **arm64** version)
+- **Tag A:** download the **amd64** Ubuntu Server (LTS) from <https://ubuntu.com/download/server>.
+- **Tag B and Tag C:** download the **arm64** Ubuntu Server (LTS) from <https://ubuntu.com/download/server/arm>.
+- **Tag D:** nothing to download. Read the steps below and continue with the Vagrant section.
 
 #### 2. Install the hypervisor
+
+**Tag A (VirtualBox):** use the commands for your system.
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
@@ -130,12 +135,6 @@ Linux on Intel or AMD (Ubuntu or Debian):
 sudo apt update && sudo apt install -y virtualbox  # Install VirtualBox.
 ```
 
-Mac with Apple silicon:
-
-```bash
-brew install --cask utm  # Install UTM.
-```
-
 </details>
 
 <details open>
@@ -147,21 +146,29 @@ Open **PowerShell as Administrator** (right-click the Start button, choose Termi
 winget install --id Oracle.VirtualBox -e  # Install VirtualBox.
 ```
 
-VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox and read the VM section without doing the hands-on.
+VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox and read the rest of this section without doing the hands-on.
 
-**Windows on ARM (Windows 11 Pro or Enterprise): use Hyper-V instead of VirtualBox.** Open PowerShell as Administrator:
+</details>
+
+**Tag B (UTM):**
+
+```bash
+brew install --cask utm  # Install UTM.
+```
+
+**Tag C (Hyper-V):** open **PowerShell as Administrator**:
 
 ```powershell
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All  # Turn on Hyper-V, Windows' built-in hypervisor. Restart when it asks.
 ```
 
-</details>
+**Tag D:** nothing to install.
 
 #### 3. Create the VM and install Ubuntu
 
 The names of buttons can change a little between versions. Follow the idea if a label looks different.
 
-**VirtualBox (Windows, Intel Mac, Linux):**
+**Tag A (VirtualBox):**
 
 1. Open **VirtualBox** and click **New**.
 2. **Name:** `manual-vm`. **ISO Image:** choose the Ubuntu Server ISO you downloaded. Click **Next**.
@@ -170,7 +177,7 @@ The names of buttons can change a little between versions. Follow the idea if a 
 5. **Virtual Hard disk:** **20 GB**. Click **Next**, then **Finish**.
 6. Select `manual-vm` and click **Start**. A window opens with the Ubuntu installer.
 
-**UTM (Apple silicon Mac):**
+**Tag B (UTM):**
 
 1. Open **UTM** and click **Create a New Virtual Machine**.
 2. Choose **Virtualize**, then **Linux**.
@@ -178,7 +185,7 @@ The names of buttons can change a little between versions. Follow the idea if a 
 4. **Memory:** 2048 MB, **CPU Cores:** 2. **Storage:** 20 GB. Skip the shared directory. Name it `manual-vm` and click **Save**.
 5. Click the **Play** button to start the VM.
 
-**Hyper-V (Windows on ARM):** do not use **Quick Create**: it does not work for Linux on ARM.
+**Tag C (Hyper-V):** do not use **Quick Create**: it does not work for Linux on ARM.
 
 1. Open **Hyper-V Manager** from the Start menu. Right-click your computer's name on the left, choose **New > Virtual Machine**, and click **Next**.
 2. **Name:** `manual-vm`. Click **Next**.
@@ -190,13 +197,17 @@ The names of buttons can change a little between versions. Follow the idea if a 
 8. **Before you start it**, right-click `manual-vm` and open **Settings**. Under **Security**, **untick Enable Secure Boot**, and click **OK**. Ubuntu on ARM does not start with Secure Boot on. Under **Processor**, set **Number of virtual processors** to `1`: some ARM laptops freeze with more.
 9. Double-click `manual-vm`, click **Start**, and the Ubuntu installer appears.
 
-**The Ubuntu installer (all tools):** use the keyboard. Press Enter on the defaults for language, keyboard and network. When it asks for a profile, set your name, a server name (`manual-vm`), a user name and a password, and tick **Install OpenSSH server** when offered. Skip optional snaps. Wait for the installation to finish and choose **Reboot Now**. In UTM, if the installer starts again, shut the VM down, open its settings and clear the CD/DVD drive (**Eject**), then start it again.
+**Tag D:** skip this step.
+
+**All tags: the Ubuntu installer.** Use the keyboard. Press Enter on the defaults for language, keyboard and network. When it asks for a profile, set your name, a server name (`manual-vm`), a user name and a password, and tick **Install OpenSSH server** when offered. Skip optional snaps. Wait for the installation to finish and choose **Reboot Now**.
+
+- **Tag B only:** if the installer starts again after the reboot, shut the VM down, open its settings and clear the CD/DVD drive (**Eject**), then start it again.
 
 When you see `manual-vm login:`, type your user name and password.
 
 #### 4. Look inside your VM
 
-Run these inside the VM. It is a separate computer with its own system.
+**All tags except D.** Run these inside the VM. It is a separate computer with its own system.
 
 ```bash
 hostname  # The name you chose.
@@ -211,7 +222,7 @@ free -h | head -2  # The memory you gave it: about 2 GB.
 ```
 
 ```bash
-ip -br address  # The VM's network address. With NAT it is usually 10.0.2.15 (VirtualBox) or a 192.168.x.x address (UTM).
+ip -br address  # The VM's network address. With NAT it is a private address: usually 10.0.2.15 for Tag A, and a 192.168.x.x address for Tag B.
 ```
 
 ```bash
@@ -222,15 +233,21 @@ ping -c 2 8.8.8.8  # NAT lets the VM reach the internet.
 
 Shut the VM down with `sudo poweroff`. Then change how the network card connects:
 
-- **VirtualBox:** select the VM, **Settings > Network > Adapter 1 > Attached to: Bridged Adapter**, choose your Wi-Fi or Ethernet card, click **OK**, and start the VM again.
-- **UTM:** open the VM's settings, **Network > Network Mode: Bridged (Advanced)**, choose the interface, save, and start it again.
-- **Hyper-V:** in Hyper-V Manager open **Virtual Switch Manager**, create a new **External** virtual switch on your Wi-Fi or Ethernet card, then in the VM's **Settings > Network Adapter** choose that switch, and start the VM again.
+- **Tag A (VirtualBox):** select the VM, **Settings > Network > Adapter 1 > Attached to: Bridged Adapter**, choose your Wi-Fi or Ethernet card, click **OK**, and start the VM again.
+- **Tag B (UTM):** open the VM's settings, **Network > Network Mode: Bridged (Advanced)**, choose the interface, save, and start it again.
+- **Tag C (Hyper-V):** in Hyper-V Manager open **Virtual Switch Manager**, create a new **External** virtual switch on your Wi-Fi or Ethernet card, then in the VM's **Settings > Network Adapter** choose that switch, and start the VM again.
+- **Tag D:** skip this step.
 
-Log in and run `ip -br address`. The VM now has an address on your **real network**, like a separate computer. Run `ping -c 2` followed by that address from your laptop terminal: it answers. With NAT it would not.
+**All tags except D:** log in and run `ip -br address`. The VM now has an address on your **real network**, like a separate computer. Run `ping -c 2` followed by that address from your laptop terminal: it answers. With NAT it would not.
 
 #### 6. Delete the VM
 
-Shut the VM down with `sudo poweroff`. In VirtualBox right-click it and choose **Remove > Delete all files**. In UTM right-click it and choose **Delete**. In Hyper-V right-click it and choose **Delete**, then delete its `.vhdx` disk file from the folder shown in the VM's settings.
+Shut the VM down with `sudo poweroff`. Then:
+
+- **Tag A (VirtualBox):** right-click the VM and choose **Remove > Delete all files**.
+- **Tag B (UTM):** right-click the VM and choose **Delete**.
+- **Tag C (Hyper-V):** right-click the VM and choose **Delete**, then delete its `.vhdx` disk file from the folder shown in the VM's settings.
+- **Tag D:** nothing to delete.
 
 **What did that cost?** About 25 minutes and a dozen clicks. If your teammate needs the same VM, you must repeat the clicks and hope you choose the same options. If you need ten VMs, it takes four hours. This is the problem Vagrant solves.
 
@@ -248,15 +265,13 @@ Shut the VM down with `sudo poweroff`. In VirtualBox right-click it and choose *
 
 #### Who can run Vagrant?
 
-Be honest about this: **not every laptop can run `vagrant up`.**
+Be honest about this: **not every laptop can run `vagrant up`.** Use the same tag you found above.
 
-| Your computer | Can you run `vagrant up`? |
-|---|---|
-| Windows (Intel or AMD) | Yes, with VirtualBox. Install Vagrant in **Windows**, not in the Ubuntu terminal. |
-| Mac with an Intel chip | Yes, with VirtualBox |
-| Linux on Intel or AMD | Yes, with VirtualBox |
-| Windows with an ARM chip | **No**, for the same reason as Apple silicon. |
-| Mac with Apple silicon | **No.** The box in this lesson is built for Intel. VirtualBox on Apple silicon runs only ARM systems, and there is no reliable Ubuntu setup for it. |
+| Tag | Your computer | Can you run `vagrant up`? |
+|---|---|---|
+| **A** | Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | Yes, with VirtualBox. On Windows install Vagrant in **Windows**, not in the Ubuntu terminal. |
+| **B** | Mac with Apple silicon | **No.** The box in this lesson is built for Intel. VirtualBox on Apple silicon runs only ARM systems, and there is no reliable Ubuntu setup for it. |
+| **C** and **D** | Windows with an ARM chip | **No**, for the same reason. |
 
 There is no single setup that lets every laptop run it, so the lab does not require it. **Everyone writes the Vagrantfile and runs `vagrant validate`**, which works on every system once Vagrant is installed. Only students who can run `vagrant up` should do it. This is a lab choice, not a penalty: you lose no marks.
 
@@ -448,7 +463,9 @@ Cloud Shell is a terminal inside your browser. Azure's command line (`az`) and T
 
 1. In the portal, click the **Cloud Shell** icon (`>_`) in the top bar.
 2. Choose **Bash**.
-3. The first time it asks to create storage for your files. Accept.
+3. A **Getting started** window opens. Keep **No storage account required** selected. Under **Subscription** choose **Azure for Students**. **Leave "Use an existing private virtual network" unticked.** Click **Apply**.
+
+Without a storage account, the files you create in Cloud Shell are deleted when the session ends. That is fine for this lesson.
 
 #### 3. Create a VM
 
