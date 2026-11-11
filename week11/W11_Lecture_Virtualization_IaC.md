@@ -13,12 +13,12 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 
 Every example in this lecture is about one small company, **Bytown Pizza**. They sell pizza in Ottawa and they are building an **online ordering website**. You are their new DevOps person. Each part of the lecture solves one problem the company has:
 
-| Problem at Bytown Pizza | What solves it | Where |
+| Problem at Bytown Pizza | What solves it | Section |
 |---|---|---|
-| "I want to test the site on Ubuntu without erasing my laptop." | Virtual machines | Part A, Step 1 |
-| "Buying servers is too expensive. Friday night we need ten, Monday we need one." | The cloud | Part B |
-| "Nobody remembers how the production server was set up." | Infrastructure as Code | Parts C and D |
-| "Build the same servers, every time, from a file." | Terraform | Steps 2 to 10 |
+| "I want to test the site on Ubuntu without erasing my laptop." | A virtual machine on her laptop | Virtual machines, Step 1 |
+| "Buying servers is too expensive. Friday night we need ten, Monday we need one." | Renting servers in the cloud | The cloud |
+| "Nobody remembers how the production server was set up." | Describing servers in a file (Infrastructure as Code) | The problem with building servers by hand, Infrastructure as Code |
+| "Build the same servers, every time, from a file." | Terraform builds them from the file | Steps 2 to 10 |
 
 ## What you will learn today (in one minute)
 
@@ -30,7 +30,7 @@ Every example in this lecture is about one small company, **Bytown Pizza**. They
 ---
 ## The big picture
 
-### Part A. Virtual machines
+### Virtual machines
 
 **Bytown Pizza's first problem.** Their developer has a MacBook, but the ordering website must run on Ubuntu Linux. She does not want to erase her laptop. A **virtual machine (VM)** solves this: it runs Ubuntu inside a window on her Mac, as if it were a second computer. It has its own pretend disk, its own pretend network card and its own operating system.
 
@@ -65,13 +65,13 @@ There are two kinds of hypervisor. The only difference is **where the hypervisor
 
 **How does the test VM connect to the network?** A VM has a pretend network card. You choose how it plugs in:
 
-| Mode | In plain words | Bytown Pizza example |
+| Mode | In plain words | Example |
 |---|---|---|
 | **NAT** | The VM can go out to the internet through your laptop, but nobody can come in. | The test VM downloads updates. Nobody can open its website. |
 | **Host-only (private network)** | The VM can only talk to your laptop and other VMs. Not the internet. | Our developer opens the test website from her own laptop. A private lab. |
 | **Bridged** | The VM gets its own address on your real network, like a separate computer. | The owner opens the test website on her phone, on the same Wi-Fi. |
 
-### Part B. The cloud
+### The cloud
 
 **Bytown Pizza's second problem.** On a Monday morning the website gets 10 visitors. On a Friday night it gets 10,000. If the company **bought** servers for Friday night, nine of them would sit idle all week. In the cloud they **rent** servers by the hour: ten on Friday evening, one on Monday.
 
@@ -115,13 +115,13 @@ Most cloud break-ins are the customer's mistake, not the provider's. At Bytown P
 
 **Why Terraform matters in the cloud.** Bytown Pizza could click through the AWS website to create its servers. But three weeks later, nobody remembers what was clicked. With Terraform the list of servers is written in a file. If the company later moves to Azure or Google, Terraform uses the same language and the same four commands. Today you practise with Docker. Later you only change the provider.
 
-### Part C. The problem with building servers by hand
+### The problem with building servers by hand
 
 **Bytown Pizza's third problem.** The first website server was built by hand: someone clicked through an installer, installed packages and changed settings. Three weeks later nobody can say exactly what is on it. One teammate fixed a bug by editing a file on the server and told nobody. Now the server crashes on Friday night, and nobody can build the same one again.
 
 Such a server is called a **snowflake**: every one is different, and fragile. Next month, when the company builds a second server, the bug is back.
 
-### Part D. Infrastructure as Code (IaC)
+### Infrastructure as Code (IaC)
 
 **The idea.** Instead of clicking, you **write** what you want in a text file. A tool reads the file and builds it. The file goes in Git, like your Python code.
 
@@ -136,13 +136,23 @@ What you get from this:
 
 **Three tools, three jobs:**
 
-| Tool | Job | At Bytown Pizza | This week |
+| Tool | What it does | Example | This week |
 |---|---|---|---|
-| **Vagrant** | Makes VMs on your own computer, for development | "Give the developer an Ubuntu VM to test the site" | Read a `Vagrantfile`. Run it if your laptop can. |
-| **Terraform** | Creates infrastructure: VMs, networks, containers, DNS | "Make a network and two web servers for the site" | You build real infrastructure (Docker containers) |
-| **Ansible** | Sets up what is **inside** a server: packages, files, services | "Install the web server and the website on them" | Week 12 |
+| **Vagrant** | Creates a VM on your own computer, for testing | The developer runs one command and gets a fresh Ubuntu VM to test the website. | Read a `Vagrantfile`. Run it if your laptop can. |
+| **Terraform** | Creates servers and networks, in the cloud or on your laptop | One file says "make a network and two web servers", and Terraform makes them. | You build real infrastructure (Docker containers) |
+| **Ansible** | Sets up the **inside** of a server: installs software, copies files | After the servers exist, it installs the web server software and the website on them. | Week 12 |
 
-Two separate jobs. **Terraform creates the empty servers. Ansible puts the website on them.**
+Three separate jobs. **Vagrant gives a developer a test VM. Terraform creates the real servers. Ansible puts the website on them.** We look at each one in the order of the table.
+
+### Vagrant in one picture
+
+You write the VM you want in one small file called a `Vagrantfile`: which Ubuntu version, how much memory, which network address. Then one command, `vagrant up`, builds that VM on your laptop using VirtualBox. Another command, `vagrant destroy`, deletes it.
+
+**At Bytown Pizza:** the developer's test VM is described in a `Vagrantfile` kept in Git. If she breaks the VM, she deletes it and runs `vagrant up` to get a fresh, identical one in a few minutes. A new teammate gets the same VM by running the same file. You will read a `Vagrantfile` in Step 1.
+
+```text
+Vagrantfile (what VM you want) --vagrant up--> a VM on your laptop (VirtualBox)
+```
 
 ### Terraform in one picture
 
@@ -166,6 +176,16 @@ terraform.tfstate (what Terraform believes exists) <------------ updated after e
 | **Output** | A value Terraform prints at the end | The web addresses of the servers |
 | **State** | Terraform's notebook of what it has built. **Never edit it by hand.** | "I made web server 0 and web server 1." |
 | **Plan** | A preview of the changes. Always read it before you apply. | "I will add 2 things." |
+
+### Ansible in one picture
+
+Terraform makes the empty server. **Ansible** logs in to it and sets up the inside: installs the web server, copies the website files, starts the service. You write the steps in a file called a **playbook**.
+
+**At Bytown Pizza:** Terraform creates the two web servers, then Ansible installs the ordering website on both of them with one command. This is next week (Week 12), so you do not need to learn it today.
+
+```text
+Terraform --> empty servers exist --> Ansible --> website installed and running
+```
 
 ---
 ## Step 1. Vagrant: a VM as code (read, and run if you can)
@@ -559,12 +579,12 @@ terraform apply -auto-approve  # Apply it. A port cannot change on a running con
 
 Learn the symbols. They matter much more in a cloud, where "replace" can mean a lost database.
 
-| Symbol | Meaning | At Bytown Pizza | Risk |
+| Symbol | Meaning | Example | Risk |
 |---|---|---|---|
-| `+` | Create | A new web server | Low |
-| `~` | Update in place | Rename a tag | Usually low |
-| `-/+` | Destroy, then create | Change a port. If it were the order database, **the orders are gone.** | **Check for data loss** |
-| `-` | Destroy | Remove a web server | Confirm it is intended |
+| `+` | Create something new | Add a third web server | Low |
+| `~` | Change something without deleting it | Change the label on a server | Usually low |
+| `-/+` | Delete it and build it again | Change the port of a server. It is deleted and a new one is built. If this were the database, **all the orders stored in it would be lost.** | **High. Stop and read.** |
+| `-` | Delete | Remove a web server you no longer need | Check it is what you wanted |
 
 A habit professionals use: save the plan, review it, then apply exactly that plan. Nothing changes between your review and your apply.
 
