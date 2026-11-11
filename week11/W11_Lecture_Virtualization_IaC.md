@@ -7,26 +7,16 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 
 - Every grey box is **one command** (or one file you create). Everything after the `#` on the first line is a comment that says what the command does. Copy the whole box, paste it into the terminal, press Enter, then go to the next box.
 - Do the steps in order. All practice work happens in one folder, `~/iac-practice`.
-- You do not need to memorize anything today. Read the explanation, run the command, look at what happens.
-
-## Today in one minute
-
-Every example in this lecture is about one small company, **Bytown Pizza**. They sell pizza in Ottawa and are building an **online ordering website**. You are their new DevOps person. Today you solve three problems for them:
-
-1. **"Our developer needs Ubuntu to test the site, but she has a Mac."** The answer is a **virtual machine**: a pretend computer that runs inside your real one.
-2. **"Friday night we need ten servers, Monday only one."** The answer is **the cloud**: other people's computers that you rent by the hour.
-3. **"Nobody remembers how our server was set up."** The answer is **Infrastructure as Code**: you write what you want in a text file, and a tool builds it, like a recipe. The tool you practise with is **Terraform**.
-
-You do not need to memorize anything today. Read the short explanation, run the commands, look at what happens.
+- Your "servers" are **Docker containers** on your laptop. Terraform treats them like real servers.
 
 ---
 ## The big picture
 
 ### Virtual machines
 
-**Bytown Pizza's first problem.** Their developer has a MacBook, but the ordering website must run on Ubuntu Linux. She does not want to erase her laptop. A **virtual machine (VM)** solves this: it runs Ubuntu inside a window on her Mac, as if it were a second computer. It has its own pretend disk, its own pretend network card and its own operating system.
+A **virtual machine** (VM) is a pretend computer that runs inside your real computer. For example, you can run Ubuntu Linux in a window on a Mac without erasing the Mac. A VM has its own pretend disk, its own pretend network card and its own operating system.
 
-A program called a **hypervisor** creates the VMs and shares the real computer's memory and CPU between them. Bytown Pizza would also like one VM for the website and another for the database, both on the same physical machine. The hypervisor keeps them apart.
+A program called a **hypervisor** creates the VMs and shares the real computer's memory and CPU between them. One physical machine can run many VMs (for example one for a web server and one for a database), and the hypervisor keeps them apart.
 
 There are two kinds of hypervisor. The only difference is **where the hypervisor sits**.
 
@@ -46,36 +36,36 @@ There are two kinds of hypervisor. The only difference is **where the hypervisor
   [ Hardware ]
 ```
 
-**At Bytown Pizza:**
+**Examples:**
 
-- Our developer opens VirtualBox on her laptop and starts Ubuntu in a window to test the website. That is **type 2**. It is just an app, like Chrome.
-- When the website goes live, the company will rent a server from AWS. Amazon runs that VM on a big machine in a data centre, with no desktop and no Chrome on it. That is **type 1**.
+- You open VirtualBox on your laptop and start Ubuntu in a window. That is **type 2**. It is just an app, like Chrome.
+- You click "launch server" on AWS. Amazon runs your VM on a big machine in a data centre, with no desktop and no Chrome on it. That is **type 1**.
 
 **Why the cloud uses type 1:** fewer layers means faster and cheaper, and a data centre has thousands of VMs to run. **Why you use type 2:** you already have a laptop with an operating system, and installing an app is easy.
 
 **What to remember:** type 2 = an app on your laptop (VirtualBox). Type 1 = the cloud's way (no system underneath). Your VM behaves the same either way.
 
-**How does the test VM connect to the network?** A VM has a pretend network card. You choose how it plugs in:
+**How does a VM connect to the network?** A VM has a pretend network card. You choose how it plugs in:
 
 | Mode | In plain words | Example |
 |---|---|---|
-| **NAT** | The VM can go out to the internet through your laptop, but nobody can come in. | The test VM downloads updates. Nobody can open its website. |
-| **Host-only (private network)** | The VM can only talk to your laptop and other VMs. Not the internet. | Our developer opens the test website from her own laptop. A private lab. |
-| **Bridged** | The VM gets its own address on your real network, like a separate computer. | The owner opens the test website on her phone, on the same Wi-Fi. |
+| **NAT** | The VM can go out to the internet through your laptop, but nobody can come in. | The VM downloads updates. Nobody can open its web server. |
+| **Host-only (private network)** | The VM can only talk to your laptop and other VMs. Not the internet. | You open the VM's web page from your own laptop. A private lab. |
+| **Bridged** | The VM gets its own address on your real network, like a separate computer. | Your phone on the same Wi-Fi can open the VM's web page. |
 
 ### The cloud
 
-**Bytown Pizza's second problem.** On a Monday morning the website gets 10 visitors. On a Friday night it gets 10,000. If the company **bought** servers for Friday night, nine of them would sit idle all week. In the cloud they **rent** servers by the hour: ten on Friday evening, one on Monday.
+**Why rent?** On a Monday morning a website gets 10 visitors. On a Friday night it gets 10,000. If you **bought** servers for Friday night, nine of them would sit idle all week. In the cloud you **rent** servers by the hour: ten on Friday evening, one on Monday.
 
 A **cloud provider** (AWS, Microsoft Azure, Google Cloud) owns huge buildings full of servers. You ask for a VM, a network or a database, and you pay for the hours you use. No hardware to buy, and you can ask for 1 server or 100 in a few minutes. You ask through a web page, or through code. Code is faster and repeatable, and that is where today's topic comes in.
 
-**Three ways to rent.** The same Bytown Pizza website, three ways to run it:
+**Three ways to rent.** The same website, three ways to run it:
 
-| Model | What Bytown Pizza would do | You manage | The provider manages |
+| Model | What you would do | You manage | The provider manages |
 |---|---|---|---|
-| **IaaS** (Infrastructure as a Service), for example AWS EC2 | Rent an empty VM, install Ubuntu updates, the web server and the website themselves | The operating system and everything above it | Hardware, network, hypervisor |
+| **IaaS** (Infrastructure as a Service), for example AWS EC2 | Rent an empty VM. Install updates, the web server and the website yourself. | The operating system and everything above it | Hardware, network, hypervisor |
 | **PaaS** (Platform as a Service), for example Azure App Service | Upload the website code. The provider runs it. | Your code and its settings | Also the operating system |
-| **SaaS** (Software as a Service), for example an online ordering service | Do not build a website at all. Pay a company that already provides one. | Only your menu and your staff accounts | Everything |
+| **SaaS** (Software as a Service), for example Gmail | Do not build anything. Just use it. | Only your data and your users | Everything |
 
 This course uses mostly IaaS: you get an empty server and you build it up.
 
@@ -83,41 +73,41 @@ This course uses mostly IaaS: you get an empty server and you build it up.
 
 | Word | Plain meaning | Example |
 |---|---|---|
-| **Region** | A part of the world where the provider has data centres | Bytown Pizza's customers are in Ottawa, so they pick `ca-central-1` (Montréal), the closest one. |
-| **Availability zone (AZ)** | One separate data centre inside a region | They put one website VM in each of two zones. If one building loses power, orders still work. |
-| **VPC (virtual network)** | Your own private network inside the cloud | Bytown Pizza's private network. Other companies' servers are not on it. |
-| **Subnet** | A smaller slice of that network | One slice for the website servers, one for the order database. |
-| **Security group** | A firewall around a VM. It lists who may come in. | "Allow port 80 so customers can see the website. Block everything else." |
-| **Instance type** | The size of a VM | `t3.micro` is small and cheap (2 CPUs, 1 GB of memory). Bytown Pizza starts with it. A bigger size costs more per hour. |
-| **Image (AMI)** | The starting disk of a VM | "Ubuntu 22.04", the same as on the developer's laptop. It is the cloud's version of a Vagrant box. |
-| **Key pair** | The key you use to log in with SSH | The developer keeps the private half. The cloud keeps the lock. |
+| **Region** | A part of the world where the provider has data centres | Your customers are in Ottawa, so you pick `ca-central-1` (Montréal), the closest one. |
+| **Availability zone (AZ)** | One separate data centre inside a region | Put one VM in each of two zones. If one building loses power, your site stays up. |
+| **VPC (virtual network)** | Your own private network inside the cloud | Other customers' servers are not on it. |
+| **Subnet** | A smaller slice of that network | One slice for web servers, one for databases. |
+| **Security group** | A firewall around a VM. It lists who may come in. | "Allow port 80 so people can see the website. Block everything else." |
+| **Instance type** | The size of a VM | `t3.micro` is small and cheap (2 CPUs, 1 GB of memory). A bigger size costs more per hour. |
+| **Image (AMI)** | The starting disk of a VM | "Ubuntu 22.04". It is the cloud's version of a Vagrant box. |
+| **Key pair** | The key you use to log in with SSH | You keep the private half. The cloud keeps the lock. |
 
-**Who is responsible for security? (shared responsibility)** Bytown Pizza stores customer names and addresses. Who protects them?
+**Who is responsible for security? (shared responsibility)** If you store customer names and addresses in the cloud, who protects them?
 
 - The **provider** (AWS) secures the data centre and the hypervisor.
-- **Bytown Pizza** secures what it puts inside: updates on the operating system, the firewall rules, the passwords, the customer data.
+- **You** secure what you put inside: updates on the operating system, the firewall rules, the passwords, the customer data.
 
-Most cloud break-ins are the customer's mistake, not the provider's. At Bytown Pizza it would look like this: someone leaves the storage bucket with customer addresses open to the world, or pastes a password key into a public GitHub repository.
+Most cloud break-ins are the customer's mistake, not the provider's. Examples: a storage bucket left open to the world, or a password key pasted into a public GitHub repository.
 
-**Money.** Bytown Pizza's developer creates a big test server on Friday and forgets it. It keeps costing money every hour, all weekend. So:
+**Money.** A test server you forget to turn off keeps costing money every hour, all weekend. So:
 
 - Put an **owner tag** on everything you create, so people know whose it is.
 - Set a **budget alert** so you get an email if the bill grows.
 - **Delete lab servers the same day.** With Terraform this is one command: `terraform destroy`.
 
-**Why Terraform matters in the cloud.** Bytown Pizza could click through the AWS website to create its servers. But three weeks later, nobody remembers what was clicked. With Terraform the list of servers is written in a file. If the company later moves to Azure or Google, Terraform uses the same language and the same four commands. Today you practise with Docker. Later you only change the provider.
+**Why Terraform matters in the cloud.** You can click through the AWS website to create servers. But three weeks later, nobody remembers what was clicked. With Terraform the list of servers is written in a file. If you move to Azure or Google, Terraform uses the same language and the same four commands. Today you practise with Docker. Later you only change the provider.
 
 ### The problem with building servers by hand
 
-**Bytown Pizza's third problem.** The first website server was built by hand: someone clicked through an installer, installed packages and changed settings. Three weeks later nobody can say exactly what is on it. One teammate fixed a bug by editing a file on the server and told nobody. Now the server crashes on Friday night, and nobody can build the same one again.
+You click through an installer, install packages, change settings. Three weeks later nobody can say exactly what is on the server, and nobody can build the same one again. One teammate fixed a bug by editing a file on the server and told nobody. When the server crashes, you cannot rebuild it.
 
-Such a server is called a **snowflake**: every one is different, and fragile. Next month, when the company builds a second server, the bug is back.
+Such a server is called a **snowflake**: every one is different, and fragile. When you build a second server, the bug is back.
 
 ### Infrastructure as Code (IaC)
 
 **The idea.** Instead of clicking, you **write** what you want in a text file. A tool reads the file and builds it. The file goes in Git, like your Python code.
 
-**Think of Bytown Pizza's own kitchen.** If the chef makes the dough by feel, nobody else can make the same pizza. If the chef writes the recipe, any cook can make it, and it tastes the same every time. IaC is the recipe for the company's servers.
+**Think of a recipe.** If a chef makes a dish by feel, nobody else can make the same dish. If the chef writes the recipe, any cook can make it, and it tastes the same every time. IaC is the recipe for your servers.
 
 What you get from this:
 
@@ -130,24 +120,22 @@ What you get from this:
 
 | Tool | What it does | Example | This week |
 |---|---|---|---|
-| **Vagrant** | Creates a VM on your own computer, for testing | The developer runs one command and gets a fresh Ubuntu VM to test the website. | Read a `Vagrantfile`. Run it if your laptop can. (Step 1) |
+| **Vagrant** | Creates a VM on your own computer, for testing | Run one command and get a fresh Ubuntu VM to test a website. | Read a `Vagrantfile`. Run it if your laptop can. (Step 1) |
 | **Terraform** | Creates servers and networks, in the cloud or on your laptop | One file says "make a network and two web servers", and Terraform makes them. | You build real infrastructure (Docker containers). (Steps 2 to 10) |
 | **Ansible** | Sets up the **inside** of a server: installs software, copies files | After the servers exist, it installs the web server software and the website on them. | Week 12 |
 
-Three separate jobs. **Vagrant gives a developer a test VM. Terraform creates the real servers. Ansible puts the website on them.** Vagrant and Terraform are explained in the steps below. Ansible is next week.
+Three separate jobs. **Vagrant gives you a test VM. Terraform creates the real servers. Ansible installs the software on them.** Vagrant and Terraform are explained in the steps below. Ansible is next week.
 
 ---
 ## Step 1. Vagrant: a VM as code (read, and run if you can)
 
-**Goal:** describe the developer's Ubuntu test VM in one file, and (if your laptop can) build it with one command.
-
-**Idea.** A `Vagrantfile` is a recipe for a VM: which Ubuntu, how much memory, which network address. The command `vagrant up` builds the VM with VirtualBox, and `vagrant destroy` deletes it. If Bytown Pizza's developer breaks her test VM, she deletes it and gets an identical one back in a few minutes. A new teammate gets the same VM from the same file.
+A `Vagrantfile` is a recipe for a VM: which Ubuntu, how much memory, which network address. The command `vagrant up` builds the VM with VirtualBox, and `vagrant destroy` deletes it. If you break the VM, delete it and get an identical one back in a few minutes. A new teammate gets the same VM from the same file.
 
 ```text
 Vagrantfile (what VM you want) --vagrant up--> a VM on your laptop (VirtualBox)
 ```
 
-**Do it.** First read the file. This `Vagrantfile` describes one Ubuntu VM:
+Read this `Vagrantfile`. It describes one Ubuntu VM:
 
 ```ruby
 Vagrant.configure("2") do |config|
@@ -211,9 +199,7 @@ vagrant destroy -f  # Delete the VM. The Vagrantfile stays: you can rebuild it a
 ---
 ## Step 2. Terraform: your first infrastructure
 
-**Goal:** make Terraform create a web server (an nginx container) for Bytown Pizza, and learn the four-command workflow.
-
-**Idea.** You write what you want to exist in `.tf` files (the language is called HCL and is easy to read). Terraform compares your file with what exists now and does only the work needed to match. If the file says "2 web servers" and 0 exist, it creates 2. If 2 exist, it does nothing. If 3 exist, it removes 1.
+You write what you want to exist in `.tf` files (the language is called HCL and is easy to read). Terraform compares your file with what exists now and does only the work needed to match. If the file says "2 web servers" and 0 exist, it creates 2. If 2 exist, it does nothing. If 3 exist, it removes 1.
 
 ```text
 .tf files (what you want) --terraform plan--> list of changes --terraform apply--> real infrastructure
@@ -223,7 +209,7 @@ terraform.tfstate (what Terraform believes exists) <------------ updated after e
 
 Today a "server" is a Docker container, because you already have Docker. New words (provider, resource, plan, state, variable, output) are explained at the moment you first use them.
 
-**Do it.** Create a folder:
+Create a folder:
 
 ```bash
 mkdir -p ~/iac-practice/tf && cd ~/iac-practice/tf  # Create the Terraform folder and move into it.
@@ -303,14 +289,12 @@ docker ps --filter name=tf-web  # Docker shows the container too. Terraform is o
 terraform apply  # Run apply again. It says "No changes". Applying twice is safe: this is called being idempotent.
 ```
 
-**"Idempotent"** is a big word for a simple idea: doing it twice gives the same result as doing it once. At Bytown Pizza it means: running `apply` twice does not create four web servers, it keeps the two you asked for.
+**"Idempotent"** is a big word for a simple idea: doing it twice gives the same result as doing it once. For example, running `apply` twice does not create four web servers, it keeps the two you asked for.
 
 ---
 ## Step 3. State
 
-**Goal:** see what Terraform remembers about the servers it built, and know which files go into Git.
-
-Terraform keeps a notebook of everything it built for Bytown Pizza. This notebook is the **state**.
+Terraform keeps a notebook of everything it built. This notebook is the **state**.
 
 ```bash
 terraform state list  # List everything Terraform believes it manages.
@@ -336,9 +320,7 @@ Which files go into Git?
 ---
 ## Step 4. Variables, outputs and `count`
 
-**Goal:** change the number of web servers by changing one value, not the code (Monday: 2 servers, Friday night: more).
-
-Remember Friday night: Bytown Pizza needs ten web servers, on Monday only one. If the number of servers is typed in the code, someone must edit the code every time. A **variable** fixes that: you name the value once, and change it from outside. **`count`** makes that many copies. **Outputs** print useful results (like web addresses) at the end.
+Hard-coded values are a problem. If the number of servers is typed in the code, you must edit the code every time you need more or fewer servers. A **variable** fixes that: you name the value once, and change it from outside. **`count`** makes that many copies. **Outputs** print useful results (like web addresses) at the end.
 
 Create three files:
 
@@ -430,7 +412,7 @@ terraform output  # Print the outputs: the two addresses.
 curl -s http://localhost:8095 && curl -s http://localhost:8096  # Each container serves its own page.
 ```
 
-Now it is Friday night. Change the number of servers **without touching the code**:
+Now change the number of servers **without touching the code**:
 
 ```bash
 terraform apply -auto-approve -var="instances=3"  # Ask for 3 containers. Terraform adds exactly one.
@@ -445,9 +427,7 @@ You can also write the values in a file named `terraform.tfvars` (a line like `i
 ---
 ## Step 5. Drift: when the real world changes
 
-**Goal:** see Terraform notice a change made by hand, and repair it.
-
-**Drift** means: reality no longer matches your code. At Bytown Pizza the code says "2 web servers", but a teammate deletes one by hand to "free some memory". Now there is only 1, and nobody told you. Watch Terraform notice.
+**Drift** means: reality no longer matches your code. The code says "2 web servers", but a teammate deletes one by hand. Now there is only 1, and nobody told you. Watch Terraform notice.
 
 ```bash
 docker rm -f tf-web-1  # Delete a container behind Terraform's back.
@@ -466,9 +446,7 @@ This is why you change infrastructure **only through the code**. A hand change i
 ---
 ## Step 6. Names for your copies: `locals` and `for_each`
 
-**Goal:** create two differently named servers, an `app` server and an `api` server, from one block of code.
-
-`count` gives copies a **number** (0, 1, 2). But Bytown Pizza needs two servers with different **names and jobs**: an `app` server for the ordering website and an `api` server that supplies the menu. For that use `for_each`. Add them to the same project:
+`count` gives copies a **number** (0, 1, 2). Sometimes the copies have different **names and jobs**: an `app` server and an `api` server. For that use `for_each`. Add them to the same project:
 
 ```bash
 cat > tiers.tf <<'EOF'
@@ -525,7 +503,7 @@ terraform apply -auto-approve  # Create them.
 curl -sI http://localhost:8100 | head -1 && curl -sI http://localhost:8101 | head -1  # Both answer with HTTP 200.
 ```
 
-**Why `for_each` is safer than `count` for named things.** Suppose Bytown Pizza has three servers numbered 0, 1 and 2, and server 0 is the ordering site. If the company removes server 0, the old 1 becomes the new 0 and the old 2 becomes the new 1: every number changed, so Terraform sees every server as "changed". With names (`app`, `api`), removing `app` only removes `app`.
+**Why `for_each` is safer than `count` for named things.** Suppose you have three servers numbered 0, 1 and 2, and you remove server 0. The old 1 becomes the new 0 and the old 2 becomes the new 1: every number changed, so Terraform sees every server as "changed". With names (`app`, `api`), removing `app` only removes `app`.
 
 Terraform works out the order from the pointers. If there is **no** pointer but one thing must wait for another, say it with `depends_on`:
 
@@ -542,9 +520,7 @@ Use it rarely: a real pointer is better.
 ---
 ## Step 7. Read the plan like a careful person
 
-**Goal:** read what a plan says before you apply it, and spot the dangerous change.
-
-Before Bytown Pizza changes the live servers, someone reads the plan. Every line starts with a symbol. Let us change one setting and see.
+Always read the plan before you apply. Every line starts with a symbol. Let us change one setting and see.
 
 Change the `api` port from 8101 to 8102:
 
@@ -584,9 +560,7 @@ terraform apply tfplan  # Apply exactly what you reviewed. No prompt is needed b
 ---
 ## Step 8. The same workflow in the cloud (read and validate)
 
-**Goal:** write the AWS version of Bytown Pizza's network and server, and have Terraform check it without creating anything.
-
-Now Bytown Pizza moves the site from your laptop to the cloud. You do **not** need a cloud account this week. A cloud account needs a credit card, and a wrong command can cost money. Instead you will write the real AWS code for the company's network and web server, and let Terraform **check** it, without creating anything. This is like proofreading a letter you do not send.
+Now the same workflow with a cloud provider. You do **not** need a cloud account this week. A cloud account needs a credit card, and a wrong command can cost money. Instead you will write real AWS code for a network and a web server, and let Terraform **check** it, without creating anything. This is like proofreading a letter you do not send.
 
 Make a folder:
 
@@ -708,9 +682,7 @@ Week 12 uses Ansible on servers like this. Terraform makes the server, Ansible s
 ---
 ## Step 9. State in a team
 
-**Goal:** understand why a team keeps Terraform's state in a shared place. This step is reading only.
-
-On your laptop the state notebook is one file. But Bytown Pizza's team of five cannot share a file on one laptop. Real projects keep the state in a **shared safe place** called a **remote backend**, for example a bucket in AWS. While one teammate runs `apply`, the state is **locked**, so two teammates never change the servers at the same time.
+On your laptop the state notebook is one file. But a team cannot share a file on one laptop. Real projects keep the state in a **shared safe place** called a **remote backend**, for example a bucket in AWS. While one teammate runs `apply`, the state is **locked**, so two teammates never change the servers at the same time.
 
 The setting looks like this (read only, do not run it):
 
@@ -733,9 +705,7 @@ terraform {
 ---
 ## Step 10. Destroy
 
-**Goal:** delete everything you created with one command.
-
-The Friday rush is over, and the test environment is no longer needed. One command removes everything Terraform created, so Bytown Pizza stops paying for it.
+Clean up. One command removes everything Terraform created.
 
 ```bash
 cd ~/iac-practice/tf  # Go back to the Docker project.
