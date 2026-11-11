@@ -467,7 +467,23 @@ Cloud Shell is a terminal inside your browser. Azure's command line (`az`) and T
 
 Without a storage account, the files you create in Cloud Shell are deleted when the session ends. That is fine for this lesson.
 
-#### 3. Create a VM
+#### 3. Look around first
+
+Before you create anything, play with Cloud Shell. These commands only read information and cost nothing.
+
+```bash
+az account show --output table  # Who you are and which subscription you are using. You should see Azure for Students.
+```
+
+```bash
+az group list --output table  # The resource groups that exist. A new account has none (or only a few).
+```
+
+```bash
+az vm list-sizes --location canadacentral --query "[?name=='Standard_B1s'].{Name:name, CPUs:numberOfCores, MemoryMB:memoryInMb}" --output table  # The size of VM we will use: 1 CPU and about 1 GB of memory.
+```
+
+#### 4. Create a VM
 
 ```bash
 az group create --name iac-practice-rg --location canadacentral  # Create a resource group: a folder for everything we make.
@@ -475,13 +491,15 @@ az group create --name iac-practice-rg --location canadacentral  # Create a reso
 
 If Azure says the region is not allowed for your subscription, the error lists the allowed regions. Replace `canadacentral` with one of them everywhere in this lesson.
 
+If it says `AuthorizationFailed`, your school account is not allowed to create resources in that subscription. This is a rule of the school's Azure setup, not a typing mistake. See the troubleshooting table at the end. You can still read the rest of this section.
+
 ```bash
 az vm create --resource-group iac-practice-rg --name cloud-vm --image Ubuntu2204 --size Standard_B1s --admin-username student --generate-ssh-keys --output table  # Create the VM. It takes about a minute. The table at the end shows its public IP address.
 ```
 
 If the size is not available in your region, the error says so: try `--size Standard_B2s`.
 
-#### 4. Log in and look inside
+#### 5. Log in and look inside
 
 Copy the **PublicIpAddress** from the table, then:
 
@@ -499,7 +517,7 @@ hostname && cat /etc/os-release | head -2 && free -h | head -2  # The same kind 
 exit  # Leave the cloud VM and go back to Cloud Shell.
 ```
 
-#### 5. Delete everything
+#### 6. Delete everything
 
 ```bash
 az group delete --name iac-practice-rg --yes --no-wait  # Delete the resource group and everything inside it. The VM stops costing money.
@@ -1164,6 +1182,7 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | Docker stops working after installing VirtualBox (Windows) | They can conflict. Uninstall VirtualBox and skip the VM hands-on. |
 | `az vm create` says the size or region is not available | Try `--size Standard_B2s`, or another region from the error message. |
 | Azure says the subscription cannot use that region | The error lists the allowed regions. Use one of them. |
+| `AuthorizationFailed` when you create a resource group | Your school account cannot create resources in that subscription (some colleges restrict it). Run `az account list --output table` to see if you have another subscription. If not, skip the Azure hands-on: the lab does not need an account. |
 | Azure student sign-up refuses your email | Use your school email. If it still fails, skip the Azure parts: the lab does not need an account. |
 
 ## Summary
