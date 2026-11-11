@@ -7,76 +7,137 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 
 - Every grey box is **one command** (or one file you create). Everything after the `#` on the first line is a comment that says what the command does. Copy the whole box, paste it into the terminal, press Enter, then go to the next box.
 - Do the steps in order. All practice work happens in one folder, `~/iac-practice`.
+- You do not need to memorize anything today. Read the explanation, run the command, look at what happens.
+
+## What you will learn today (in one minute)
+
+1. A **virtual machine** is a pretend computer that runs inside your real computer.
+2. The **cloud** is other people's computers that you rent by the hour.
+3. **Infrastructure as Code** means you write down what you want in a text file, and a tool builds it for you. Like a recipe: write it once, cook it any time.
+4. **Terraform** is that tool. You will use it to build things on your laptop, and then read the same kind of code for the cloud.
 
 ---
 ## The big picture
 
 ### Part A. Virtual machines
 
-A **virtual machine** (VM) is a complete computer made of software. A program called a **hypervisor** shares the real hardware among several VMs. Each VM has its own operating system, its own virtual disk and its own virtual network card.
+**The problem a VM solves.** You have one laptop with macOS. You want to try Ubuntu Linux without erasing your laptop. A **virtual machine (VM)** lets you run Ubuntu inside a window on your Mac, as if it were a second computer. It has its own pretend disk, its own pretend network card and its own operating system.
 
-| Hypervisor type | Runs on | Examples |
+**Think of an apartment building.** The building is the real computer. Each apartment is a VM. The **hypervisor** is the building manager: it decides which tenant gets how much space and keeps tenants out of each other's apartments.
+
+There are two kinds of hypervisor. The only difference is **where the manager sits**.
+
+| | Type 2 ("hosted") | Type 1 ("bare metal") |
 |---|---|---|
-| **Type 1** ("bare metal") | Directly on the hardware, in data centres | VMware ESXi, Microsoft Hyper-V, KVM |
-| **Type 2** ("hosted") | As a program inside your normal operating system | VirtualBox, VMware Workstation, Parallels |
+| **Simple idea** | An app you install on your laptop | The first and only thing on the server |
+| **Underneath it** | Your normal system (macOS, Windows) | Nothing. Just the hardware. |
+| **Where you see it** | Your laptop | Data centres (AWS, Azure, Google) |
+| **Examples** | VirtualBox, VMware Workstation, Parallels | KVM, VMware ESXi, Microsoft Hyper-V |
 
-Your laptop uses a type 2 hypervisor. Cloud providers use type 1 hypervisors to rent you VMs.
+```text
+  TYPE 2 (your laptop)          TYPE 1 (a cloud server)
 
-A VM network card can be attached in three common ways:
+  [ VM ]  [ VM ]                [ VM ]  [ VM ]  [ VM ]
+  [ VirtualBox app ]            [ Hypervisor ]
+  [ macOS / Windows ]           [ Hardware ]
+  [ Hardware ]
+```
 
-| Mode | What the VM can reach |
-|---|---|
-| **NAT** | The internet through your laptop. Nothing from outside can reach the VM. |
-| **Host-only (private network)** | Your laptop and the other VMs on that network only |
-| **Bridged** | The real network, as if it were a separate computer |
+**Examples you already know:**
+
+- You open VirtualBox on your laptop and start Ubuntu in a window. That is **type 2**. It is just an app, like Chrome.
+- You click "launch server" on AWS. Amazon runs your VM on a big machine in a data centre, with no desktop and no Chrome on it. That is **type 1**.
+
+**Why the cloud uses type 1:** fewer layers means faster and cheaper, and a data centre has thousands of VMs to run. **Why you use type 2:** you already have a laptop with an operating system, and installing an app is easy.
+
+**What to remember:** type 2 = an app on your laptop (VirtualBox). Type 1 = the cloud's way (no system underneath). Your VM behaves the same either way.
+
+**How does the VM connect to the network?** A VM has a pretend network card. You choose how it plugs in:
+
+| Mode | In plain words | Example |
+|---|---|---|
+| **NAT** | The VM can go out to the internet through your laptop, but nobody can come in. | The VM downloads updates. Nobody can reach its web server. |
+| **Host-only (private network)** | The VM can only talk to your laptop and other VMs. Not the internet. | Your laptop opens the VM's web page. A private lab. |
+| **Bridged** | The VM gets its own address on your real network, like a separate computer. | Your phone on the same Wi-Fi can open the VM's web page. |
 
 ### Part A2. The cloud
 
-A **cloud provider** (AWS, Microsoft Azure, Google Cloud) owns huge data centres full of type 1 hypervisors and rents you pieces of them by the second. You do not buy hardware: you ask for a VM, a network or a database through a web page or an **API**, and you pay for what you use.
+**The cloud is renting.** Think of a car. You can **buy** a car (buy servers), or you can **rent** one by the day (the cloud). A **cloud provider** (AWS, Microsoft Azure, Google Cloud) owns huge buildings full of servers. You ask for a VM, a network or a database, and you pay for the hours you use. No hardware to buy, and you can ask for 1 server or 100 in a few minutes.
 
-| Service model | You manage | The provider manages | Example |
-|---|---|---|---|
-| **IaaS** (Infrastructure as a Service) | The operating system and everything above it | Hardware, network, hypervisor | AWS EC2, Azure Virtual Machines |
-| **PaaS** (Platform as a Service) | Your code and its settings | Also the OS and runtime | AWS Elastic Beanstalk, Azure App Service |
-| **SaaS** (Software as a Service) | Only your data and users | Everything | Microsoft 365, Gmail |
+You ask through a web page, or through code. This is where today's topic comes in: code is faster and repeatable.
 
-Words you will meet in every cloud:
+**Three ways to rent.** Think of pizza:
 
-| Word | Meaning |
-|---|---|
-| **Region** | A geographic area with several data centres (for example `ca-central-1` in Montréal) |
-| **Availability zone (AZ)** | One data centre, or group of them, inside a region. Spreading VMs over two AZs survives the loss of one. |
-| **VPC / virtual network** | Your own private network inside the cloud, with subnets and routing |
-| **Security group** | A firewall attached to a VM. Default: everything inbound is blocked. |
-| **Instance type** | The size of a VM (`t3.micro` = 2 vCPU, 1 GB). Bigger costs more per hour. |
-| **Image (AMI)** | The disk template a VM starts from. A VM image is the cloud's version of a Vagrant box. |
-| **Key pair** | The SSH key you use to log in. The provider stores the public half. |
+| Model | Pizza example | Cloud example | You manage | The provider manages |
+|---|---|---|---|---|
+| **IaaS** (Infrastructure as a Service) | You buy the dough and cook at home | AWS EC2, Azure Virtual Machines: you get an empty VM | The operating system and everything above it | Hardware, network, hypervisor |
+| **PaaS** (Platform as a Service) | Take-and-bake pizza | AWS Elastic Beanstalk, Azure App Service: you give your code | Your code and its settings | Also the operating system |
+| **SaaS** (Software as a Service) | The pizza arrives ready to eat | Gmail, Microsoft 365: you just use it | Only your data and your users | Everything |
 
-**The shared responsibility model.** The provider secures the data centre and the hypervisor. **You** secure what you put in it: operating-system updates, firewall rules, passwords, data. Most cloud breaches come from the customer side (an open storage bucket, a leaked key), not from the provider.
+This course uses mostly IaaS: you get an empty server and you build it up.
 
-**Cost is part of the job.** A VM left running costs money every hour. IaC helps twice: `terraform destroy` removes everything you created, and the code tells you exactly what exists. Typical rules: tag every resource with an owner, set a budget alert, and destroy lab environments the same day.
+**Words you will meet in every cloud:**
 
-**Why Terraform matters here.** Clicking in a web console is the cloud version of a snowflake server. Every cloud has its own console, but Terraform describes AWS, Azure and Google with the same language and the same four commands. The Docker work in this lecture is the same workflow; only the provider changes.
+| Word | Plain meaning | Example |
+|---|---|---|
+| **Region** | A part of the world where the provider has data centres | `ca-central-1` is Montréal. Pick one near your users. |
+| **Availability zone (AZ)** | One separate data centre inside a region | Put one VM in each of two zones. If one building loses power, your site stays up. |
+| **VPC (virtual network)** | Your own private network inside the cloud | Like your home Wi-Fi: nobody else's computers are on it. |
+| **Subnet** | A smaller slice of that network | One slice for web servers, one for databases. |
+| **Security group** | A firewall around a VM. It lists who may come in. | "Allow port 80 so people can see my web page. Block everything else." |
+| **Instance type** | The size of a VM | `t3.micro` is small and cheap (2 CPUs, 1 GB of memory). A bigger size costs more per hour. |
+| **Image (AMI)** | The starting disk of a VM | Like picking "Ubuntu 22.04" in the installer. It is the cloud's version of a Vagrant box. |
+| **Key pair** | The key you use to log in with SSH | Like a house key. You keep the private half. The cloud keeps the lock. |
 
-### The problem with VMs by hand
+**Who is responsible for security? (shared responsibility)** Think of renting an apartment. The landlord locks the front door of the building and keeps the walls up. **You** lock your own apartment door. In the cloud:
 
-You click through an installer, install packages, change settings. Three weeks later nobody can say exactly what is on the VM, and nobody can build the same one again. Hand-built servers are called **snowflakes**: every one is unique and fragile.
+- The **provider** secures the building: the data centre and the hypervisor.
+- **You** secure what you put inside: updates on your operating system, your firewall rules, your passwords, your data.
+
+Most cloud break-ins are the customer's mistake, not the provider's. Examples: a storage bucket left open to the world, or a password key pasted into a public GitHub repository.
+
+**Money.** A VM you forget to turn off keeps costing money every hour, even at night. So:
+
+- Put an **owner tag** on everything you create, so people know whose it is.
+- Set a **budget alert** so you get an email if the bill grows.
+- **Delete lab servers the same day.** With Terraform this is one command: `terraform destroy`.
+
+**Why Terraform matters in the cloud.** You can click through the AWS website to create servers. But three weeks later, nobody remembers what was clicked. With Terraform the list of servers is written in a file. Azure and Google use different websites, but Terraform uses the same language and the same four commands for all of them. Today you practise with Docker. Later you only change the provider.
+
+### The problem with building servers by hand
+
+You click through an installer, install packages, change settings. Three weeks later nobody can say exactly what is on the VM, and nobody can build the same one again. If it breaks, you cannot rebuild it.
+
+Such a server is called a **snowflake**: every one is different, and fragile. **Example:** your teammate fixed a bug by editing a file on the server, but forgot to tell anyone. Next month you build a new server and the bug is back.
 
 ### Part B. Infrastructure as Code (IaC)
 
-**Infrastructure as Code** means you describe servers, networks and containers in **text files**, keep them in Git, and let a tool create them. You get what you get for source code: history, review, rollback, and the same result every time.
+**The idea.** Instead of clicking, you **write** what you want in a text file. A tool reads the file and builds it. The file goes in Git, like your Python code.
 
-| Tool | What it describes | This week |
-|---|---|---|
-| **Vagrant** | One or more **VMs** on your own computer (for development) | Read a `Vagrantfile`. Run it if your laptop can. |
-| **Terraform** | **Any infrastructure** through "providers": cloud VMs, networks, DNS, Docker | You build real infrastructure (Docker containers) |
-| **Ansible** | What is **inside** a server: packages, files, services | Week 12 |
+**Example:** a recipe. If you only cook by feel, nobody can make your dish. If you write the recipe, anybody can cook it, and the dish tastes the same every time. IaC is the recipe for your servers.
 
-Provisioning (Terraform: "make these things exist") and configuration (Ansible: "set them up") are separate jobs.
+What you get from this:
+
+- **History:** Git shows who changed what and when.
+- **Review:** a teammate reads your change before it is applied.
+- **Repeat:** run it again and get the same result. Need a copy for testing? Run it twice.
+- **Undo:** go back to an older version of the file.
+
+**Three tools, three jobs:**
+
+| Tool | Job | Example | This week |
+|---|---|---|---|
+| **Vagrant** | Makes VMs on your own computer, for development | "Give me an Ubuntu VM" | Read a `Vagrantfile`. Run it if your laptop can. |
+| **Terraform** | Creates infrastructure: VMs, networks, containers, DNS | "Make a network and two web servers" | You build real infrastructure (Docker containers) |
+| **Ansible** | Sets up what is **inside** a server: packages, files, services | "Install nginx and start it" | Week 12 |
+
+Think of building a house. **Terraform builds the house** (walls, rooms, the plumbing). **Ansible furnishes it** (beds, table, lights). Two separate jobs.
 
 ### Terraform in one picture
 
-You write the **desired state** in `.tf` files (HCL, a simple language). Terraform compares it with the **state** it remembers and with the real world, and makes the changes needed.
+You write the **desired state** in `.tf` files: what you want to exist. The language is called HCL and is easy to read. Terraform compares your file with what exists now, and does only the work needed to match.
+
+**Example:** you ask "I want 2 web servers". If 0 exist, Terraform creates 2. If 2 already exist, it does nothing. If 3 exist, it removes 1.
 
 ```text
 .tf files (what you want) --terraform plan--> list of changes --terraform apply--> real infrastructure
@@ -84,19 +145,21 @@ You write the **desired state** in `.tf` files (HCL, a simple language). Terrafo
 terraform.tfstate (what Terraform believes exists) <------------ updated after every apply
 ```
 
-| Word | Meaning |
-|---|---|
-| **Provider** | A plug-in that talks to one platform (AWS, Azure, Docker). You declare which. |
-| **Resource** | One thing to create: a container, a network, a VM |
-| **Variable** | An input. Lets one code base serve many environments. |
-| **Output** | A value Terraform prints when it finishes |
-| **State** | Terraform's record of what it created. **Never edit it by hand.** |
-| **Plan** | The list of changes Terraform would make. Always read it. |
+**Words you need today:**
+
+| Word | Plain meaning | Example |
+|---|---|---|
+| **Provider** | A plug-in that lets Terraform talk to one platform | The `docker` provider talks to Docker. The `aws` provider talks to AWS. |
+| **Resource** | One thing you want to exist | A container, a network, a VM |
+| **Variable** | An input, so you do not hard-code values | `instances = 2` today, `instances = 5` tomorrow |
+| **Output** | A value Terraform prints at the end | The web addresses |
+| **State** | Terraform's notebook of what it has built. **Never edit it by hand.** | "I made container web-0 and web-1." |
+| **Plan** | A preview of the changes. Always read it before you apply. | "I will add 2 things." |
 
 ---
 ## Step 1. Vagrant: a VM as code (read, and run if you can)
 
-A `Vagrantfile` is a small Ruby file. Read this one. It describes one Ubuntu VM:
+Vagrant is the recipe for a VM. The recipe file is called a `Vagrantfile`. Read this one. It describes one Ubuntu VM:
 
 ```ruby
 Vagrant.configure("2") do |config|
@@ -111,13 +174,15 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-| Line | Meaning |
+Read it line by line:
+
+| Line | In plain words |
 |---|---|
-| `config.vm.box` | The base image (a "box") to start from |
-| `config.vm.hostname` | The VM's host name |
-| `config.vm.network "private_network"` | A host-only network with this address |
-| `vb.memory`, `vb.cpus` | The size of the VM |
-| `config.vm.provision "shell"` | A command that runs **once** inside the VM when it is created |
+| `config.vm.box` | Start from this ready-made Ubuntu image (called a "box") |
+| `config.vm.hostname` | Name the VM `demo-vm` |
+| `config.vm.network "private_network"` | Give it a private address, `192.168.56.20`, that only your laptop can reach |
+| `vb.memory`, `vb.cpus` | Give it 1 GB of memory and 1 CPU |
+| `config.vm.provision "shell"` | Run this one command inside the VM the first time it starts |
 
 **If you installed Vagrant and VirtualBox** (Intel or AMD laptop), try it:
 
@@ -158,7 +223,7 @@ vagrant destroy -f  # Delete the VM. The Vagrantfile stays: you can rebuild it a
 ---
 ## Step 2. Terraform: your first infrastructure
 
-You build a web container and a network with Terraform and the Docker provider. Create a folder:
+Now the main tool. You will ask Terraform for a web server (an nginx container) and let it build the server. Terraform will use Docker, which you already have. Create a folder:
 
 ```bash
 mkdir -p ~/iac-practice/tf && cd ~/iac-practice/tf  # Create the Terraform folder and move into it.
@@ -194,13 +259,15 @@ resource "docker_container" "web" {
 EOF
 ```
 
-Read it:
+Read the file in plain words:
 
-- `terraform { ... }` says which provider to download and which versions are acceptable (`~> 3.0` means 3.x).
-- `resource "docker_image" "nginx"` declares an image. The two words after `resource` are the **type** and your **name** for it.
-- `docker_container.web` uses `docker_image.nginx.image_id`. That reference tells Terraform to create the image **first**. You never write the order yourself: Terraform builds it from the references.
+- `terraform { ... }`: "I need the Docker plug-in. Version 3.x is fine."
+- `provider "docker" {}`: "Use the Docker on this laptop."
+- `resource "docker_image" "nginx"`: "I want the nginx image to exist." The two words after `resource` are the **type** (`docker_image`) and the **name** you choose (`nginx`).
+- `resource "docker_container" "web"`: "I want a container called `tf-web`. Make it reachable on port 8095 of my laptop."
+- `image = docker_image.nginx.image_id`: this line points at the image above. Because of it, Terraform knows to make the **image first**. You never write the order. Terraform works it out from these pointers.
 
-Now the workflow. It has four commands:
+Now the workflow. Four commands, always in this order:
 
 ```bash
 terraform init  # Download the Docker provider into a hidden .terraform folder. Run it once per project, and again after you add a provider.
@@ -218,7 +285,7 @@ terraform validate  # Check the syntax and the references. You should see "Succe
 terraform plan  # Show what Terraform WOULD do. Read it: "+" create, "-" destroy, "~" change. Nothing is created yet.
 ```
 
-**You should see** `Plan: 2 to add, 0 to change, 0 to destroy.`
+**You should see** `Plan: 2 to add, 0 to change, 0 to destroy.` That means: "I will create 2 things (the image and the container)."
 
 ```bash
 terraform apply  # Show the plan again and ask for confirmation. Type yes to create the resources.
@@ -236,8 +303,12 @@ docker ps --filter name=tf-web  # Docker shows the container too. Terraform is o
 terraform apply  # Run apply again. It says "No changes". Applying twice is safe: this is called being idempotent.
 ```
 
+**"Idempotent"** is a big word for a simple idea: doing it twice gives the same result as doing it once. Pressing the elevator button twice does not call two elevators.
+
 ---
 ## Step 3. State
+
+Terraform keeps a notebook of everything it built. This notebook is the **state**.
 
 ```bash
 terraform state list  # List everything Terraform believes it manages.
@@ -251,17 +322,21 @@ terraform show | head -30  # Show the stored details of those resources.
 ls -la  # Look at the folder: terraform.tfstate is the state file, .terraform.lock.hcl pins the provider version.
 ```
 
+Which files go into Git?
+
 | File or folder | Commit to Git? | Why |
 |---|---|---|
 | `*.tf` | **Yes** | Your code |
-| `.terraform.lock.hcl` | **Yes** | Makes everyone use the same provider version |
-| `terraform.tfstate`, `terraform.tfstate.backup` | **No** | State can contain secrets and belongs to one real environment. Teams keep it in a shared remote store. |
-| `.terraform/` | **No** | Downloaded plug-ins. `terraform init` recreates it. |
+| `.terraform.lock.hcl` | **Yes** | Makes everyone use the same plug-in version |
+| `terraform.tfstate`, `terraform.tfstate.backup` | **No** | The notebook can contain passwords, and it belongs to one real environment. Teams keep it in a shared safe place. |
+| `.terraform/` | **No** | Downloaded plug-ins. `terraform init` makes it again. |
 
 ---
 ## Step 4. Variables, outputs and `count`
 
-Replace the file with a version that has inputs and outputs. Create three files:
+Hard-coded values are a problem. If the port is typed in three places, you must change three places. **Variables** fix that: you name a value once and use the name. **Outputs** print useful results (like web addresses) at the end. **`count`** makes copies.
+
+Create three files:
 
 ```bash
 cat > variables.tf <<'EOF'
@@ -326,14 +401,14 @@ EOF
 
 What is new:
 
-| Syntax | Meaning |
-|---|---|
-| `var.instances` | The value of the variable `instances` |
-| `count = var.instances` | Create that many copies of the resource |
-| `count.index` | 0 for the first copy, 1 for the second, and so on |
-| `"text ${expression}"` | Put the value of an expression inside a string |
-| `upload { ... }` | Put a file into the container when it is created |
-| `output` | A value printed at the end of `apply` |
+| Syntax | In plain words | Example |
+|---|---|---|
+| `var.instances` | The value of the variable `instances` | `2` |
+| `count = var.instances` | Make that many copies | `count = 2` makes two containers |
+| `count.index` | The copy's number, starting at 0 | 0 for the first, 1 for the second |
+| `"text ${expression}"` | Put a value inside a piece of text | `"tf-web-${count.index}"` becomes `tf-web-0`, `tf-web-1` |
+| `upload { ... }` | Put a file in the container when it is created | Each container gets its own web page |
+| `output` | A value printed at the end of `apply` | The two web addresses |
 
 ```bash
 terraform plan  # Read the plan. The old tf-web is destroyed (its name changed) and two new containers are created.
@@ -351,7 +426,7 @@ terraform output  # Print the outputs: the two addresses.
 curl -s http://localhost:8095 && curl -s http://localhost:8096  # Each container serves its own page.
 ```
 
-Change a variable **without editing the code**:
+Now the best part. Change the number of servers **without touching the code**:
 
 ```bash
 terraform apply -auto-approve -var="instances=3"  # Ask for 3 containers. Terraform adds exactly one.
@@ -361,12 +436,12 @@ terraform apply -auto-approve -var="instances=3"  # Ask for 3 containers. Terraf
 terraform apply -auto-approve  # Back to the default of 2. Terraform removes exactly one.
 ```
 
-You can also put values in a file named `terraform.tfvars` (a line like `instances = 3`), which Terraform reads by itself.
+You can also write the values in a file named `terraform.tfvars` (a line like `instances = 3`). Terraform reads it by itself.
 
 ---
 ## Step 5. Drift: when the real world changes
 
-Someone deletes a container by hand. Terraform notices.
+**Drift** means: reality no longer matches your code. **Example:** you wrote "2 web servers", but a teammate deleted one by hand. Now there is 1. Watch Terraform notice.
 
 ```bash
 docker rm -f tf-web-1  # Delete a container behind Terraform's back.
@@ -380,12 +455,12 @@ terraform plan  # Terraform compares the state with the real world and plans to 
 terraform apply -auto-approve  # Repair the difference.
 ```
 
-This is why you change infrastructure **only through the code**. A hand change is called **drift**, and the next `apply` undoes it.
+This is why you change infrastructure **only through the code**. A hand change is lost at the next `apply`, and nobody will understand why it vanished.
 
 ---
-## Step 6. Locals, `for_each` and `depends_on`
+## Step 6. Names for your copies: `locals` and `for_each`
 
-`count` numbers copies (0, 1, 2). When the copies have **names**, use `for_each`. Add a second tier to the same project: a database-like container and an app container, each from a map.
+`count` gives copies a **number** (0, 1, 2). Sometimes the copies have different **names and jobs**: an `app` server and an `api` server. For that use `for_each`. Add a second group of containers to the same project:
 
 ```bash
 cat > tiers.tf <<'EOF'
@@ -421,12 +496,14 @@ resource "docker_container" "tier" {
 EOF
 ```
 
-| Syntax | Meaning |
-|---|---|
-| `locals { ... }` | Named values used inside the code. They are not inputs. |
-| `for_each = map` | One copy per entry. `each.key` is the entry name, `each.value` its data. |
-| `docker_image.tier[each.key]` | The copy of the image with the same key |
-| `labels` | Tags on a resource. In a cloud these carry owner, cost centre, environment. |
+| Syntax | In plain words | Example |
+|---|---|---|
+| `locals { ... }` | Named values used inside the file. They are not inputs. | `project = "iac-practice"` |
+| `for_each = map` | One copy per entry in a list of named things | One for `app`, one for `api` |
+| `each.key` | The entry's name | `app` |
+| `each.value` | The entry's details | `{ image = "nginx:alpine", port = 8100 }` |
+| `docker_image.tier[each.key]` | The image copy with the same name | The `app` container uses the `app` image |
+| `labels` | A tag on a resource. In a cloud these carry owner, project, cost. | `owner = student` |
 
 ```bash
 terraform plan  # Two images and two containers are added. Notice the addresses: docker_container.tier["app"], not [0].
@@ -440,9 +517,9 @@ terraform apply -auto-approve  # Create them.
 curl -sI http://localhost:8100 | head -1 && curl -sI http://localhost:8101 | head -1  # Both answer with HTTP 200.
 ```
 
-Why `for_each` beats `count` for named things: remove the `app` entry and only `app` is destroyed. With `count`, removing item 0 shifts every number and Terraform would change all the others.
+**Why `for_each` is safer than `count` for named things.** Imagine three students in a row: Ana (0), Ben (1), Cara (2). If Ana leaves and you count again, Ben becomes 0 and Cara becomes 1: everyone's number changed, so everyone looks "changed". With names, removing Ana only removes Ana.
 
-Terraform builds the order from references. When there is **no** reference but one thing must wait for another, say it with `depends_on`:
+Terraform works out the order from the pointers. If there is **no** pointer but one thing must wait for another, say it with `depends_on`:
 
 ```hcl
 resource "docker_container" "late" {
@@ -452,12 +529,14 @@ resource "docker_container" "late" {
 }
 ```
 
-Use it rarely: a real reference is better.
+Use it rarely: a real pointer is better.
 
 ---
-## Step 7. Read the plan like a reviewer
+## Step 7. Read the plan like a careful person
 
-Change one setting and read what Terraform says. Edit `tiers.tf`: change the `api` port from 8101 to 8102, then:
+Always read the plan before you apply. Every line starts with a symbol. Let us change one setting and see.
+
+Edit `tiers.tf`: change the `api` port from 8101 to 8102, then:
 
 ```bash
 terraform plan -no-color | grep -E "^\s+[~+-]|Plan:"  # Look for "~" (change in place) or "-/+" (destroy and recreate).
@@ -469,14 +548,14 @@ terraform apply -auto-approve  # Apply it. A port cannot change on a running con
 
 Learn the symbols. They matter much more in a cloud, where "replace" can mean a lost database.
 
-| Symbol | Meaning | Risk |
-|---|---|---|
-| `+` | Create | Low |
-| `~` | Update in place | Usually low |
-| `-/+` | Destroy, then create | **Check for data loss** |
-| `-` | Destroy | Confirm it is intended |
+| Symbol | Meaning | Example | Risk |
+|---|---|---|---|
+| `+` | Create | A new server | Low |
+| `~` | Update in place | Rename a tag | Usually low |
+| `-/+` | Destroy, then create | Change a port | **Check for data loss** |
+| `-` | Destroy | Remove a server | Confirm it is intended |
 
-A habit used by professionals: save the plan, review it, then apply exactly that plan.
+A habit professionals use: save the plan, review it, then apply exactly that plan. Nothing changes between your review and your apply.
 
 ```bash
 terraform plan -out=tfplan -no-color | tail -2  # Save the plan to a file.
@@ -489,7 +568,7 @@ terraform apply tfplan  # Apply exactly what you reviewed. No prompt is needed b
 ---
 ## Step 8. The same workflow in the cloud (read and validate)
 
-You do **not** need a cloud account this week. A cloud account needs a credit card, and a wrong command can cost money. You will write real AWS code and let Terraform **check** it, without creating anything.
+You do **not** need a cloud account this week. A cloud account needs a credit card, and a wrong command can cost money. Instead you will write real AWS code and let Terraform **check** it, without creating anything. This is like proofreading a letter you do not send.
 
 Make a folder:
 
@@ -566,14 +645,16 @@ output "web_private_ip" {
 EOF
 ```
 
-Read it. Everything from Step 2 is here: a provider, resources, references (the instance uses the subnet and the security group, so Terraform creates them first), variables and an output. Only the provider and the resource types changed.
+Read it. It looks like the Docker file from Step 2: a provider, resources, pointers, variables and an output. Only the provider and the resource types changed. That is the whole point: **one skill, many clouds**.
 
-| Resource | What it is |
+| Resource | In plain words |
 |---|---|
 | `aws_vpc` | Your private network, `10.0.0.0/16` |
 | `aws_subnet` | A slice of that network, `10.0.1.0/24` |
-| `aws_security_group` | The firewall: allow web traffic in (port 80), everything out |
-| `aws_instance` | The VM. `ami` is its disk image (this one is a placeholder). |
+| `aws_security_group` | The firewall: let web visitors in on port 80, let everything out |
+| `aws_instance` | The VM. `ami` is its starting disk (this one is a made-up placeholder). |
+
+The instance points at the subnet and the security group, so Terraform creates those first.
 
 ```bash
 terraform init  # Download the AWS provider (a large download, about 1 minute).
@@ -583,19 +664,19 @@ terraform init  # Download the AWS provider (a large download, about 1 minute).
 terraform fmt -check && terraform validate  # Check the formatting and the code. No account is needed. You should see "Success! The configuration is valid."
 ```
 
-**Do not run `terraform apply` here.** There are no credentials, and the AMI is a placeholder. In a real project you would also: set credentials through environment variables (never in the code), look up the current AMI with a `data` source, keep the state in a remote bucket, and run `terraform destroy` when finished.
+**Do not run `terraform apply` here.** There are no credentials, and the disk image is a placeholder. In a real project you would also: give credentials through environment variables (never in the code), look up the real disk image with a `data` source, keep the state in a shared bucket, and run `terraform destroy` when you finish.
 
-Now break it on purpose and read the error:
+Now break it on purpose and read the error. Mistakes are the best way to learn:
 
 ```bash
 sed -i.bak 's/subnet_id              = aws_subnet.public.id/subnet_id              = aws_subnet.private.id/' main.tf && terraform validate; mv main.tf.bak main.tf  # Point at a subnet that does not exist, read the error, then restore the file.
 ```
 
-The message `Reference to undeclared resource` names the file and line. A cloud mistake caught by `validate` costs nothing.
+The message `Reference to undeclared resource` says which file and which line. A mistake caught by `validate` costs nothing. A mistake caught by the cloud bill costs money.
 
-### Azure in two lines
+### Azure in a table
 
-Azure is the same idea with a different provider and names:
+Azure is the same idea with different names:
 
 | AWS | Azure |
 |---|---|
@@ -604,12 +685,14 @@ Azure is the same idea with a different provider and names:
 | `aws_instance` | `azurerm_linux_virtual_machine` |
 | Region `ca-central-1` | Location `canadacentral` |
 
-Week 12 uses Ansible against servers like this. Terraform makes the server, Ansible sets it up.
+Week 12 uses Ansible on servers like this. Terraform makes the server, Ansible sets it up.
 
 ---
 ## Step 9. State in a team
 
-On your laptop, state is a file. A team cannot share a file on one laptop, so real projects use a **remote backend**: the state lives in a shared bucket and is **locked** while someone applies, so two people never change the same thing together. The setting looks like this (read only):
+On your laptop the state notebook is one file. But a team of five cannot share a file on one laptop. Real projects keep the state in a **shared safe place** called a **remote backend**, for example a bucket in AWS. While one person runs `apply`, the state is **locked**, so two people never change the same thing at once. **Example:** like a bathroom door: one person at a time.
+
+The setting looks like this (read only, do not run it):
 
 ```hcl
 terraform {
@@ -623,12 +706,14 @@ terraform {
 
 | Question | Answer |
 |---|---|
-| Why not Git? | State can hold passwords, and two people can overwrite each other. |
-| What does the lock do? | A second `apply` waits or fails instead of corrupting the state. |
-| What if state is lost? | Terraform forgets what it built and tries to create it again. Back it up. |
+| Why not keep state in Git? | It can contain passwords, and two people can overwrite each other's version. |
+| What does the lock do? | A second `apply` has to wait, instead of corrupting the state. |
+| What if the state is lost? | Terraform forgets what it built and tries to create everything again. So back it up. |
 
 ---
 ## Step 10. Destroy
+
+Clean up. One command removes everything Terraform created.
 
 ```bash
 cd ~/iac-practice/tf  # Go back to the Docker project.
@@ -642,7 +727,7 @@ terraform destroy  # Show what would be deleted and ask. Type yes. Everything Te
 docker ps -a --filter name=tf-web --filter name=iac-practice  # Nothing is left.
 ```
 
-The `.tf` files are all you need to build it again. That is the point of IaC.
+The `.tf` files are all you need to build it again. That is the point of IaC: **delete is safe, because the recipe is saved.**
 
 ---
 ## Practice questions
@@ -653,9 +738,9 @@ Answer these in your head or on paper before the lab. The answers follow.
 2. What is the difference between `plan` and `apply`?
 3. Why is `for_each` safer than `count` for a list of named servers?
 4. Your plan shows `-/+` on a database. What do you do?
-5. A teammate says "the cloud is just someone else's computer, so security is their job". Which model contradicts this?
+5. A teammate says "the cloud is just someone else's computer, so security is their job". Which idea says this is wrong?
 
-**Answers:** (1) Drift and a snowflake that nobody can rebuild. (2) `plan` only previews; `apply` changes things. (3) Each entry has a stable key, so removing one does not renumber and change the others. (4) Stop and read why it is replaced; it means the data is destroyed. Change the code so the resource is updated in place, or back up first. (5) The shared responsibility model.
+**Answers:** (1) Drift (the real server no longer matches the code) and a snowflake that nobody can rebuild. (2) `plan` only shows a preview; `apply` really makes the changes. (3) Each entry has its own name, so removing one does not renumber and change the others. (4) Stop and read why it is replaced; it means the data is destroyed. Change the code so the resource is updated in place, or back up first. (5) The shared responsibility model: the provider secures the building, you secure what is inside.
 
 ## Cheat sheet
 
@@ -680,21 +765,21 @@ Answer these in your head or on paper before the lab. The answers follow.
 | `Error: Failed to query available provider packages` | No internet during `init`, or a typo in `source`. Check `kreuzwerker/docker`. |
 | `port is already allocated` | Something uses the host port. `docker ps`, remove the old container, or change `base_port`. |
 | `Error: Reference to undeclared input variable` | A variable is used but not declared in a `variable` block. |
+| `Error: Reference to undeclared resource` | A name in a pointer is misspelled or the resource does not exist. Read the file and line. |
 | `Error: Unsupported argument` | A typo in an attribute name, or the wrong block type. Read the line and column in the message. |
 | `Error: container exited immediately` | The image or command is wrong. `docker logs NAME`. |
 | `Error acquiring the state lock` | A previous run was killed. Wait a minute, or `terraform force-unlock ID` (the ID is in the message). |
-| `Error: Reference to undeclared resource` | A name in a reference is misspelled or the resource does not exist. Read the file and line. |
 | `terraform: command not found` | Terraform is not installed in this terminal. See [W11_Setup_Terraform.md](W11_Setup_Terraform.md). |
 | macOS: `unix:///var/run/docker.sock` not found | Docker Desktop > Settings > Advanced: enable **Allow the default Docker socket to be used**, or set `provider "docker" { host = "unix:///Users/YOU/.docker/run/docker.sock" }`. |
 | Windows: Docker works in Ubuntu but Terraform does not | Run Terraform in the **Ubuntu** terminal, with Docker Desktop's WSL integration on. |
 
 ## Summary
 
-- A VM is a whole computer in software, run by a hypervisor. Vagrant describes VMs as code for development.
-- Infrastructure as Code keeps infrastructure in text files in Git, so it is reviewable and repeatable.
-- Terraform workflow: `init`, `plan`, `apply`, `destroy`. Always read the plan. State is Terraform's memory: never edit it, never commit it.
+- A VM is a pretend computer inside a real one, run by a hypervisor. Type 2 is an app on your laptop. Type 1 is what the cloud uses.
+- The cloud is rented computers. You secure what you put in it (shared responsibility), and you delete what you do not need.
+- Infrastructure as Code means you write the servers you want in text files in Git. That makes them reviewable and repeatable.
+- Terraform workflow: `init`, `plan`, `apply`, `destroy`. Always read the plan. State is Terraform's notebook: never edit it, never commit it.
 - Variables make code reusable. `count` makes numbered copies, `for_each` makes named ones. A hand change causes drift, and `apply` repairs it.
-- The cloud rents you VMs and networks by the hour (IaaS, PaaS, SaaS). You secure what you put in it (shared responsibility), and you destroy what you do not need.
-- The same Terraform workflow works for AWS and Azure; only the provider and resource types change. `validate` checks cloud code for free.
+- The same workflow works for AWS and Azure; only the provider and resource types change. `validate` checks cloud code for free.
 
-**Next:** the Week 11 lab (graded) builds a Vagrantfile and a Terraform project with your own seed.
+**Next:** the Week 11 lab (graded) builds a Vagrantfile, a Terraform project with your own seed, and AWS code that you validate.
