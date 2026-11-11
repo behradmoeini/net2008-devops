@@ -270,8 +270,8 @@ Be honest about this: **not every laptop can run `vagrant up`.** Use the same ta
 | Tag | Your computer | Can you run `vagrant up`? |
 |---|---|---|
 | **A** | Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | Yes, with VirtualBox. On Windows install Vagrant in **Windows**, not in the Ubuntu terminal. |
-| **B** | Mac with Apple silicon | **No.** The box in this lesson is built for Intel. VirtualBox on Apple silicon runs only ARM systems, and there is no reliable Ubuntu setup for it. |
-| **C** and **D** | Windows with an ARM chip | **No**, for the same reason. |
+| **B** | Mac with Apple silicon | **No.** The box in this lesson is built for Intel. VirtualBox on Apple silicon runs only ARM systems, and there is no reliable Ubuntu setup for it. **Use Multipass instead** (below): the same idea, a VM from a file. |
+| **C** and **D** | Windows with an ARM chip | **No**, for the same reason. There is no tool we can confirm for these laptops, so read the Vagrantfile and run `vagrant validate`. |
 
 There is no single setup that lets every laptop run it, so the lab does not require it. **Everyone writes the Vagrantfile and runs `vagrant validate`**, which works on every system once Vagrant is installed. Only students who can run `vagrant up` should do it. This is a lab choice, not a penalty: you lose no marks.
 
@@ -394,6 +394,53 @@ Run `vagrant up` once more: the same VM comes back. That is the point.
 | `vagrant destroy` | Delete it |
 | `vagrant status` | Show the state |
 
+#### Tag B (Apple silicon): the same idea with Multipass
+
+**Multipass** is a tool from the makers of Ubuntu. It builds an Ubuntu VM with one command, and it runs on Apple silicon. Instead of a `Vagrantfile`, it reads a small config file. The idea is the same: the VM is described in a file, built with one command, and deleted with one command.
+
+```bash
+brew install --cask multipass  # Install Multipass. It asks for your password.
+```
+
+```bash
+mkdir -p ~/iac-practice/vm && cd ~/iac-practice/vm  # Create a folder for the VM and move into it.
+```
+
+```bash
+cat > demo-vm.yaml <<'EOF'
+#cloud-config
+write_files:
+  - path: /etc/demo-greeting
+    content: hello
+EOF
+```
+
+This file does the same job as the `provision` line of the Vagrantfile: it puts the word `hello` in the file `/etc/demo-greeting` the first time the VM starts.
+
+```bash
+multipass launch 24.04 --name demo-vm --cpus 1 --memory 1G --disk 5G --cloud-init demo-vm.yaml  # Download Ubuntu 24.04 and create the VM. The first time takes a few minutes.
+```
+
+```bash
+multipass list  # Your VM, its state and its address.
+```
+
+```bash
+multipass exec demo-vm -- bash -c "hostname && cat /etc/demo-greeting"  # Run commands inside the VM. You should see the name demo-vm and the word hello.
+```
+
+```bash
+multipass delete demo-vm --purge  # Delete the VM. The config file stays: you can rebuild it any time.
+```
+
+| Multipass command | Vagrant equivalent |
+|---|---|
+| `multipass launch ...` | `vagrant up` |
+| `multipass shell demo-vm` | `vagrant ssh` |
+| `multipass stop demo-vm` | `vagrant halt` |
+| `multipass delete demo-vm --purge` | `vagrant destroy` |
+| `multipass list` | `vagrant status` |
+
 **Where Vagrant stops.** Vagrant builds VMs on **your own computer**. Your laptop has limited memory, and a teammate cannot reach your VM. For a real website you need machines that are always on and bigger than a laptop. That is the cloud.
 
 ## Cloud
@@ -443,7 +490,7 @@ In this course we use IaaS: we get an empty server and build it up.
 
 ### Hands-on: your first cloud VM (Azure for Students)
 
-**Goal:** create an Ubuntu VM in the cloud with three commands, log in, and delete it. Compare it with the 25 minutes of the VM by hand.
+**Goal:** create a VM in the cloud with two commands, see it in the Azure portal, do a few small things with it to show that it works, and delete it. This is a short look, nothing more.
 
 This part is **optional** because it needs a student account. The lab does not require it. If you cannot get an account, read this section and keep going.
 
@@ -459,78 +506,60 @@ AWS and Google Cloud offer free tiers too, but they ask for a credit card. That 
 
 #### 2. Open Cloud Shell
 
-Cloud Shell is a terminal inside your browser. Azure's command line (`az`) and Terraform are already installed and signed in.
+Cloud Shell is a terminal inside your browser, with Azure's command line (`az`) already installed and signed in. It is only a **remote control** that Azure gives you: you type commands in it, and they tell Azure what to build. It is not the VM we create.
 
 1. In the portal, click the **Cloud Shell** icon (`>_`) in the top bar.
 2. Choose **Bash**.
 3. A **Getting started** window opens. Keep **No storage account required** selected. Under **Subscription** choose **Azure for Students**. **Leave "Use an existing private virtual network" unticked.** Click **Apply**.
 
-Without a storage account, the files you create in Cloud Shell are deleted when the session ends. That is fine for this lesson.
-
-#### 3. Look around first
-
-Before you create anything, play with Cloud Shell. These commands only read information and cost nothing.
-
 ```bash
-az account show --output table  # Who you are and which subscription you are using. You should see Azure for Students.
+az account show --output table  # Check the Name column: it must say Azure for Students.
 ```
 
-**Check the `Name` column. It must say `Azure for Students`.** If it shows another name (some school accounts also have a school subscription, and Azure may pick that one first), switch to yours. Otherwise the next steps fail with `AuthorizationFailed`:
+If it shows another name (some school accounts also have a school subscription), switch to yours. Otherwise the next step fails with `AuthorizationFailed`:
 
 ```bash
-az account list --all --output table  # List every subscription you can use. Find the one named Azure for Students.
+az account set --subscription "Azure for Students"  # Make it the active subscription. Then run az account show again to check.
 ```
 
-```bash
-az account set --subscription "Azure for Students"  # Make it the active one. Then run az account show again to check.
-```
-
-```bash
-az group list --output table  # The resource groups that exist. A new account has none (or only a few).
-```
-
-```bash
-az account list-locations --query "[].{Name:name, Region:displayName}" --output table  # The regions you can create things in. We will use canadacentral (Toronto).
-```
-
-```bash
-az vm image list --output table  # Popular VM images and their short names. Find Ubuntu2204: that is the image we will use.
-```
-
-If a region or VM size is not allowed for your subscription, you will find out in the next step: the error message says so and tells you what to change.
-
-#### 4. Create a VM
+#### 3. Create a VM
 
 ```bash
 az group create --name iac-practice-rg --location canadacentral  # Create a resource group: a folder for everything we make.
 ```
 
-If Azure says the region is not allowed for your subscription, the error lists the allowed regions. Replace `canadacentral` with one of them everywhere in this lesson.
-
-If it says `AuthorizationFailed`, you are probably using the wrong subscription. Go back to step 3 and check that `az account show` says Azure for Students. See also the troubleshooting table at the end.
-
 ```bash
-az vm create --resource-group iac-practice-rg --name cloud-vm --image Ubuntu2204 --size Standard_B1s --admin-username student --generate-ssh-keys --output table  # Create the VM. It takes about a minute. The table at the end shows its public IP address.
+az vm create --resource-group iac-practice-rg --name cloud-vm --image Ubuntu2204 --size Standard_B1s --admin-username student --generate-ssh-keys --output table  # Create the VM. It takes about a minute.
 ```
 
-If the size is not available in your region, the error says so: try `--size Standard_B2s`.
+If Azure says the region or the size is not allowed, the error message says what to change: use another region it lists, or `--size Standard_B2s`.
 
-#### 5. Log in and look inside
-
-Copy the **PublicIpAddress** from the table, then:
+#### 4. See what you created
 
 ```bash
-ssh student@PUBLIC-IP  # Log in to your cloud VM. Replace PUBLIC-IP with the address from the table. Type yes if it asks to continue.
+az vm list --output table  # Your VM, with its name, resource group and location.
 ```
 
-Run the same commands you ran in the VM by hand:
+Now look at it in the portal. Click **All resources** (or **View all resources** on the home page). You see the VM, and also the things Azure made for it: a disk, a network, a public IP address and a firewall (network security group). One command created all of them. Click **cloud-vm** to see its size, its operating system and its public IP address.
+
+#### 5. Do a few small things with it
+
+You never logged in to this VM, but you can still control it. Each command below is small: we only want to see that it is a real machine that works.
 
 ```bash
-hostname && cat /etc/os-release | head -2 && free -h | head -2  # The same kind of machine, created in about a minute.
+az vm show --resource-group iac-practice-rg --name cloud-vm --show-details --query "{Name:name, State:powerState, Size:hardwareProfile.vmSize, PublicIP:publicIps}" --output table  # Its state (VM running), size and public IP address.
 ```
 
 ```bash
-exit  # Leave the cloud VM and go back to Cloud Shell.
+az vm run-command invoke --resource-group iac-practice-rg --name cloud-vm --command-id RunShellScript --scripts "hostname; cat /etc/os-release | head -2; free -h | head -2" --query "value[0].message" --output tsv  # Run commands inside the VM from here, without logging in. It takes about 30 seconds. You should see its name, Ubuntu, and about 1 GB of memory: the same kind of machine you built by hand.
+```
+
+```bash
+az vm deallocate --resource-group iac-practice-rg --name cloud-vm  # Stop the VM. It takes about a minute. A stopped (deallocated) VM no longer costs for computing time, which is why you stop what you are not using.
+```
+
+```bash
+az vm show --resource-group iac-practice-rg --name cloud-vm --show-details --query powerState --output tsv  # The state is now: VM deallocated.
 ```
 
 #### 6. Delete everything
@@ -539,7 +568,9 @@ exit  # Leave the cloud VM and go back to Cloud Shell.
 az group delete --name iac-practice-rg --yes --no-wait  # Delete the resource group and everything inside it. The VM stops costing money.
 ```
 
-**What did that cost?** About two minutes, three commands, and nothing installed on your laptop. But you typed those commands by hand once. Next week, who remembers them? Who knows what exists in the account? That is the last problem.
+Refresh **All resources** after a minute: everything is gone. Always delete lab resources the same day.
+
+**What did that cost?** About two minutes and two commands, with nothing installed on your laptop. But you typed those commands by hand once. Next week, who remembers them? Who knows what exists in the account? That is the last problem.
 
 ## Infrastructure as Code with Terraform
 
