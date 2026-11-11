@@ -53,6 +53,8 @@ Virtual machines on a laptop depend on the processor. The Week 11 lab is written
 |---|---|---|
 | Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | VirtualBox | Yes |
 | Mac with Apple silicon (M1 to M4) | **UTM** (VirtualBox cannot run Intel Ubuntu there) | **No.** You can still install Vagrant and run `vagrant validate`. |
+| Windows with an ARM chip, Windows 11 **Pro or Enterprise** | **Hyper-V** (built into Windows; the lecture shows the steps) | **No.** You can still install Vagrant and run `vagrant validate`. |
+| Windows with an ARM chip, Windows 11 **Home** | None (Home has no Hyper-V). Skip the hands-on. | **No.** |
 
 VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox.
 

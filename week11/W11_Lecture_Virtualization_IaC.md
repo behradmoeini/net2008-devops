@@ -9,7 +9,6 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - Some boxes come in two versions, **macOS / Linux** and **Windows**. Open the one for your system. The Windows one is open by default.
 - Do the sections in order. Terraform practice work happens in one folder, `~/iac-practice`.
 
----
 ## The big picture
 
 This is a short introduction. Nothing here needs to be memorized: it explains why we spend a whole class on this.
@@ -35,7 +34,6 @@ Ansible, the tool that sets up the **inside** of a server, is next week (Week 12
 
 **Rough plan for the class:** virtualization about 45 minutes (VM by hand, then Vagrant), cloud about 25 minutes, Terraform about 50 minutes. These times are estimates.
 
----
 ## Virtualization
 
 ### What is virtualization?
@@ -46,9 +44,9 @@ Ansible, the tool that sets up the **inside** of a server, is next week (Week 12
 
 ### How is a VM different from a container?
 
-Last week you used containers. They solve a similar problem in a different way.
+Containers solve a similar problem in a different way.
 
-| | Virtual machine | Container (Week 9) |
+| | Virtual machine | Container |
 |---|---|---|
 | What it is | A whole computer in software | A packaged program in an isolated process |
 | Operating system | Its **own** kernel and OS | **Shares** the kernel of the host |
@@ -58,28 +56,28 @@ Last week you used containers. They solve a similar problem in a different way.
 | Can run a different OS than the host? | Yes (Linux VM on a Mac) | No: it uses the host's kernel |
 | Use it when | You need a full separate system | You need to run an application the same way everywhere |
 
-In practice they work together: in the cloud your containers usually run **inside** VMs.
+VMs and containers are often used together. In the cloud, your containers usually run **inside** VMs.
 
 ### Two kinds of hypervisor
 
 The only difference is **where the hypervisor sits**. Both are ordinary software.
 
-| | Type 2 ("hosted") | Type 1 ("bare metal") |
+| | Type 1 ("bare metal") | Type 2 ("hosted") |
 |---|---|---|
-| Runs on | A normal operating system (macOS, Windows, Linux) | Directly on the hardware, with no normal OS underneath |
-| Where you meet it | Your laptop | Data centres (cloud providers) |
-| Examples | VirtualBox, UTM, VMware Workstation, Parallels | KVM, VMware ESXi, Microsoft Hyper-V |
+| Runs on | Directly on the hardware, with no normal OS underneath | A normal operating system (macOS, Windows, Linux) |
+| Where you meet it | Data centres (cloud providers) | Your laptop |
+| Examples | KVM, VMware ESXi, Microsoft Hyper-V | VirtualBox, UTM, VMware Workstation, Parallels |
 
 ```text
-  TYPE 2 (your laptop)          TYPE 1 (a cloud server)
+  TYPE 1 (a cloud server)       TYPE 2 (your laptop)
 
-  [ VM ]  [ VM ]                [ VM ]  [ VM ]  [ VM ]
-  [ VirtualBox app ]            [ Hypervisor ]
-  [ macOS / Windows ]           [ Hardware ]
-  [ Hardware ]
+  [ VM ]  [ VM ]  [ VM ]        [ VM ]  [ VM ]
+  [ Hypervisor ]                [ VirtualBox app ]
+  [ Hardware ]                  [ macOS / Windows ]
+                                [ Hardware ]
 ```
 
-Today you use a type 2 hypervisor. The cloud uses type 1.
+The cloud uses type 1. Today you use a type 2 hypervisor on your laptop.
 
 ### VM networking
 
@@ -101,18 +99,19 @@ A VM has a virtual network card. You choose how it connects:
 |---|---|
 | Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | **VirtualBox** |
 | Mac with Apple silicon (M1, M2, M3, M4) | **UTM** |
-| Windows laptop with an ARM chip (rare) | Read this section and skip the hands-on. You lose no marks. |
+| Windows laptop with an ARM chip (for example Snapdragon), **Windows 11 Pro or Enterprise** | **Hyper-V**, which is built into Windows. It needs a few extra steps, shown below. |
+| Windows laptop with an ARM chip, **Windows 11 Home** | Home has no Hyper-V and there is no other tool for it. Read this section and skip the hands-on. You lose no marks. |
 
 How to check: on a Mac open the Apple menu > **About This Mac** and read **Chip**. On Windows open **Settings > System > About** and read **System type**. On Linux run `uname -m`: `x86_64` means Intel or AMD, `aarch64` or `arm64` means ARM.
 
-**Why two tools?** VirtualBox on an Apple silicon Mac can only run ARM systems, and Ubuntu on ARM is not an officially supported guest there. UTM is built for Apple silicon and runs the ARM version of Ubuntu.
+**Why different tools?** A VM must match the processor of the host. An ARM laptop can only run ARM systems, so it needs the **arm64** Ubuntu ISO. VirtualBox on an Apple silicon Mac does not officially support Ubuntu on ARM, so Macs use UTM, which is built for Apple silicon. Windows on ARM uses Hyper-V instead.
 
 #### 1. Download the Ubuntu Server ISO
 
 An **ISO** is a disk image of the Ubuntu installer, like a virtual DVD. Download **Ubuntu Server (LTS)** and save it in your Downloads folder. It is about 2 GB, so start it now.
 
 - Intel, AMD and VirtualBox: <https://ubuntu.com/download/server> (the **amd64** version)
-- Apple silicon Mac and UTM: <https://ubuntu.com/download/server/arm> (the **arm64** version)
+- Apple silicon Mac with UTM, or Windows on ARM with Hyper-V: <https://ubuntu.com/download/server/arm> (the **arm64** version)
 
 #### 2. Install the hypervisor
 
@@ -150,6 +149,12 @@ winget install --id Oracle.VirtualBox -e  # Install VirtualBox.
 
 VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox and read the VM section without doing the hands-on.
 
+**Windows on ARM (Windows 11 Pro or Enterprise): use Hyper-V instead of VirtualBox.** Open PowerShell as Administrator:
+
+```powershell
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All  # Turn on Hyper-V, Windows' built-in hypervisor. Restart when it asks.
+```
+
 </details>
 
 #### 3. Create the VM and install Ubuntu
@@ -173,7 +178,19 @@ The names of buttons can change a little between versions. Follow the idea if a 
 4. **Memory:** 2048 MB, **CPU Cores:** 2. **Storage:** 20 GB. Skip the shared directory. Name it `manual-vm` and click **Save**.
 5. Click the **Play** button to start the VM.
 
-**The Ubuntu installer (both tools):** use the keyboard. Press Enter on the defaults for language, keyboard and network. When it asks for a profile, set your name, a server name (`manual-vm`), a user name and a password, and tick **Install OpenSSH server** when offered. Skip optional snaps. Wait for the installation to finish and choose **Reboot Now**. In UTM, if the installer starts again, shut the VM down, open its settings and clear the CD/DVD drive (**Eject**), then start it again.
+**Hyper-V (Windows on ARM):** do not use **Quick Create**: it does not work for Linux on ARM.
+
+1. Open **Hyper-V Manager** from the Start menu. Right-click your computer's name on the left, choose **New > Virtual Machine**, and click **Next**.
+2. **Name:** `manual-vm`. Click **Next**.
+3. **Generation:** choose **Generation 2**. Click **Next**.
+4. **Startup memory:** `2048` MB. Click **Next**.
+5. **Networking:** choose **Default Switch** (this is NAT). Click **Next**.
+6. **Virtual hard disk:** `20` GB. Click **Next**.
+7. **Installation options:** choose **Install an operating system from a bootable image file**, browse to the **arm64** Ubuntu Server ISO, and click **Finish**.
+8. **Before you start it**, right-click `manual-vm` and open **Settings**. Under **Security**, **untick Enable Secure Boot**, and click **OK**. Ubuntu on ARM does not start with Secure Boot on. Under **Processor**, set **Number of virtual processors** to `1`: some ARM laptops freeze with more.
+9. Double-click `manual-vm`, click **Start**, and the Ubuntu installer appears.
+
+**The Ubuntu installer (all tools):** use the keyboard. Press Enter on the defaults for language, keyboard and network. When it asks for a profile, set your name, a server name (`manual-vm`), a user name and a password, and tick **Install OpenSSH server** when offered. Skip optional snaps. Wait for the installation to finish and choose **Reboot Now**. In UTM, if the installer starts again, shut the VM down, open its settings and clear the CD/DVD drive (**Eject**), then start it again.
 
 When you see `manual-vm login:`, type your user name and password.
 
@@ -207,12 +224,13 @@ Shut the VM down with `sudo poweroff`. Then change how the network card connects
 
 - **VirtualBox:** select the VM, **Settings > Network > Adapter 1 > Attached to: Bridged Adapter**, choose your Wi-Fi or Ethernet card, click **OK**, and start the VM again.
 - **UTM:** open the VM's settings, **Network > Network Mode: Bridged (Advanced)**, choose the interface, save, and start it again.
+- **Hyper-V:** in Hyper-V Manager open **Virtual Switch Manager**, create a new **External** virtual switch on your Wi-Fi or Ethernet card, then in the VM's **Settings > Network Adapter** choose that switch, and start the VM again.
 
 Log in and run `ip -br address`. The VM now has an address on your **real network**, like a separate computer. Run `ping -c 2` followed by that address from your laptop terminal: it answers. With NAT it would not.
 
 #### 6. Delete the VM
 
-Shut the VM down with `sudo poweroff`. In VirtualBox right-click it and choose **Remove > Delete all files**. In UTM right-click it and choose **Delete**.
+Shut the VM down with `sudo poweroff`. In VirtualBox right-click it and choose **Remove > Delete all files**. In UTM right-click it and choose **Delete**. In Hyper-V right-click it and choose **Delete**, then delete its `.vhdx` disk file from the folder shown in the VM's settings.
 
 **What did that cost?** About 25 minutes and a dozen clicks. If your teammate needs the same VM, you must repeat the clicks and hope you choose the same options. If you need ten VMs, it takes four hours. This is the problem Vagrant solves.
 
@@ -237,6 +255,7 @@ Be honest about this: **not every laptop can run `vagrant up`.**
 | Windows (Intel or AMD) | Yes, with VirtualBox. Install Vagrant in **Windows**, not in the Ubuntu terminal. |
 | Mac with an Intel chip | Yes, with VirtualBox |
 | Linux on Intel or AMD | Yes, with VirtualBox |
+| Windows with an ARM chip | **No**, for the same reason as Apple silicon. |
 | Mac with Apple silicon | **No.** The box in this lesson is built for Intel. VirtualBox on Apple silicon runs only ARM systems, and there is no reliable Ubuntu setup for it. |
 
 There is no single setup that lets every laptop run it, so the lab does not require it. **Everyone writes the Vagrantfile and runs `vagrant validate`**, which works on every system once Vagrant is installed. Only students who can run `vagrant up` should do it. This is a lab choice, not a penalty: you lose no marks.
@@ -362,7 +381,6 @@ Run `vagrant up` once more: the same VM comes back. That is the point.
 
 **Where Vagrant stops.** Vagrant builds VMs on **your own computer**. Your laptop has limited memory, and a teammate cannot reach your VM. For a real website you need machines that are always on and bigger than a laptop. That is the cloud.
 
----
 ## Cloud
 
 ### What is the cloud?
@@ -472,7 +490,6 @@ az group delete --name iac-practice-rg --yes --no-wait  # Delete the resource gr
 
 **What did that cost?** About two minutes, three commands, and nothing installed on your laptop. But you typed those commands by hand once. Next week, who remembers them? Who knows what exists in the account? That is the last problem.
 
----
 ## Infrastructure as Code with Terraform
 
 ### The problem
@@ -1071,7 +1088,6 @@ docker ps -a --filter name=tf-web --filter name=iac-practice  # Nothing is left.
 
 The `.tf` files are all you need to build it again. That is the point of IaC: **delete is safe, because the recipe is saved.**
 
----
 ## Practice questions
 
 Answer these in your head or on paper before the lab. Open the answers only after you tried.
@@ -1126,6 +1142,8 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | `terraform: command not found` | Terraform is not installed in this terminal. See [W11_Setup_Terraform.md](W11_Setup_Terraform.md). |
 | Windows: Docker works in Ubuntu but Terraform does not | Run Terraform in the **Ubuntu** terminal, with Docker Desktop's WSL integration on. |
 | `vagrant up` fails with `platform architecture x86 is not supported on ARM` | Your laptop has an ARM chip (Apple silicon). VirtualBox cannot run Intel VMs there. Run `vagrant destroy -f` and `vagrant box remove ubuntu/jammy64`, then stop at `vagrant validate`. You lose no marks. |
+| Hyper-V: the Ubuntu VM shows a Secure Boot error or will not start | Turn Secure Boot off: VM **Settings > Security**, untick **Enable Secure Boot**. |
+| Hyper-V: the VM freezes while installing | VM **Settings > Processor**: set the number of virtual processors to 1. |
 | Docker stops working after installing VirtualBox (Windows) | They can conflict. Uninstall VirtualBox and skip the VM hands-on. |
 | `az vm create` says the size or region is not available | Try `--size Standard_B2s`, or another region from the error message. |
 | Azure says the subscription cannot use that region | The error lists the allowed regions. Use one of them. |
