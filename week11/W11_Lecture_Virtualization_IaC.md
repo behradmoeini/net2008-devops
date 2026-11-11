@@ -9,23 +9,15 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 - Do the steps in order. All practice work happens in one folder, `~/iac-practice`.
 - You do not need to memorize anything today. Read the explanation, run the command, look at what happens.
 
-## Our story for today: Bytown Pizza
+## Today in one minute
 
-Every example in this lecture is about one small company, **Bytown Pizza**. They sell pizza in Ottawa and they are building an **online ordering website**. You are their new DevOps person. Each part of the lecture solves one problem the company has:
+Every example in this lecture is about one small company, **Bytown Pizza**. They sell pizza in Ottawa and are building an **online ordering website**. You are their new DevOps person. Today you solve three problems for them:
 
-| Problem at Bytown Pizza | What solves it | Section |
-|---|---|---|
-| "I want to test the site on Ubuntu without erasing my laptop." | A virtual machine on her laptop | Virtual machines, Step 1 |
-| "Buying servers is too expensive. Friday night we need ten, Monday we need one." | Renting servers in the cloud | The cloud |
-| "Nobody remembers how the production server was set up." | Describing servers in a file (Infrastructure as Code) | The problem with building servers by hand, Infrastructure as Code |
-| "Build the same servers, every time, from a file." | Terraform builds them from the file | Steps 2 to 10 |
+1. **"Our developer needs Ubuntu to test the site, but she has a Mac."** The answer is a **virtual machine**: a pretend computer that runs inside your real one.
+2. **"Friday night we need ten servers, Monday only one."** The answer is **the cloud**: other people's computers that you rent by the hour.
+3. **"Nobody remembers how our server was set up."** The answer is **Infrastructure as Code**: you write what you want in a text file, and a tool builds it, like a recipe. The tool you practise with is **Terraform**.
 
-## What you will learn today (in one minute)
-
-1. A **virtual machine** is a pretend computer that runs inside your real computer.
-2. The **cloud** is other people's computers that you rent by the hour.
-3. **Infrastructure as Code** means you write down what you want in a text file, and a tool builds it for you. Like a recipe: write it once, cook it any time.
-4. **Terraform** is that tool. You will use it to build things on your laptop, and then read the same kind of code for the cloud.
+You do not need to memorize anything today. Read the short explanation, run the commands, look at what happens.
 
 ---
 ## The big picture
@@ -134,69 +126,28 @@ What you get from this:
 - **Repeat:** run it again and get the same result. Need a copy for testing? Run it twice.
 - **Undo:** go back to an older version of the file.
 
-#### Three tools, three jobs
+**Three tools, three jobs:**
 
-Bytown Pizza uses three tools. Each one has a different job: **Vagrant gives a developer a test VM, Terraform creates the real servers, and Ansible puts the website on them.** Here is each one.
+| Tool | What it does | Example | This week |
+|---|---|---|---|
+| **Vagrant** | Creates a VM on your own computer, for testing | The developer runs one command and gets a fresh Ubuntu VM to test the website. | Read a `Vagrantfile`. Run it if your laptop can. (Step 1) |
+| **Terraform** | Creates servers and networks, in the cloud or on your laptop | One file says "make a network and two web servers", and Terraform makes them. | You build real infrastructure (Docker containers). (Steps 2 to 10) |
+| **Ansible** | Sets up the **inside** of a server: installs software, copies files | After the servers exist, it installs the web server software and the website on them. | Week 12 |
 
-#### Vagrant
+Three separate jobs. **Vagrant gives a developer a test VM. Terraform creates the real servers. Ansible puts the website on them.** Vagrant and Terraform are explained in the steps below. Ansible is next week.
 
-**What it does:** creates a VM on your own computer, for testing.
+---
+## Step 1. Vagrant: a VM as code (read, and run if you can)
 
-You write the VM you want in one small file called a `Vagrantfile`: which Ubuntu version, how much memory, which network address. Then one command, `vagrant up`, builds that VM on your laptop using VirtualBox. Another command, `vagrant destroy`, deletes it.
+**Goal:** describe the developer's Ubuntu test VM in one file, and (if your laptop can) build it with one command.
 
-**At Bytown Pizza:** the developer's test VM is described in a `Vagrantfile` kept in Git. If she breaks the VM, she deletes it and runs `vagrant up` to get a fresh, identical one in a few minutes. A new teammate gets the same VM by running the same file.
+**Idea.** A `Vagrantfile` is a recipe for a VM: which Ubuntu, how much memory, which network address. The command `vagrant up` builds the VM with VirtualBox, and `vagrant destroy` deletes it. If Bytown Pizza's developer breaks her test VM, she deletes it and gets an identical one back in a few minutes. A new teammate gets the same VM from the same file.
 
 ```text
 Vagrantfile (what VM you want) --vagrant up--> a VM on your laptop (VirtualBox)
 ```
 
-**This week:** you read a `Vagrantfile` in Step 1, and run it if your laptop can.
-
-#### Terraform
-
-**What it does:** creates servers and networks, in the cloud or on your laptop.
-
-You write the **desired state** in `.tf` files: what you want to exist. The language is called HCL and is easy to read. Terraform compares your file with what exists now, and does only the work needed to match.
-
-**At Bytown Pizza:** the file says "I want 2 web servers". If 0 exist, Terraform creates 2. If 2 already exist, it does nothing. If 3 exist, it removes 1.
-
-```text
-.tf files (what you want) --terraform plan--> list of changes --terraform apply--> real infrastructure
-                                                                                          |
-terraform.tfstate (what Terraform believes exists) <------------ updated after every apply
-```
-
-**Terraform terminology:**
-
-| Word | Plain meaning | Example |
-|---|---|---|
-| **Provider** | A plug-in that lets Terraform talk to one platform | The `docker` provider talks to Docker today. Later, the `aws` provider talks to AWS. |
-| **Resource** | One thing you want to exist | A web server, a network |
-| **Variable** | An input, so you do not hard-code values | `instances = 2` on Monday, `instances = 10` on Friday night |
-| **Output** | A value Terraform prints at the end | The web addresses of the servers |
-| **State** | Terraform's notebook of what it has built. **Never edit it by hand.** | "I made web server 0 and web server 1." |
-| **Plan** | A preview of the changes. Always read it before you apply. | "I will add 2 things." |
-
-**This week:** you build real infrastructure with Terraform (Docker containers) in Steps 2 to 10.
-
-#### Ansible
-
-**What it does:** sets up the **inside** of a server: installs software and copies files.
-
-Terraform makes the empty server. **Ansible** logs in to it and sets up the inside: installs the web server, copies the website files, starts the service. You write the steps in a file called a **playbook**.
-
-**At Bytown Pizza:** Terraform creates the two web servers, then Ansible installs the ordering website on both of them with one command.
-
-```text
-Terraform --> empty servers exist --> Ansible --> website installed and running
-```
-
-**This week:** nothing. Ansible is Week 12, so you do not need to learn it today.
-
----
-## Step 1. Vagrant: a VM as code (read, and run if you can)
-
-Bytown Pizza's developer needs an Ubuntu VM on her laptop to test the ordering website. Instead of installing it by hand, she describes it in a file called a `Vagrantfile`. Below is the `Vagrantfile` for that VM. Read it. It describes one Ubuntu VM:
+**Do it.** First read the file. This `Vagrantfile` describes one Ubuntu VM:
 
 ```ruby
 Vagrant.configure("2") do |config|
@@ -260,7 +211,19 @@ vagrant destroy -f  # Delete the VM. The Vagrantfile stays: you can rebuild it a
 ---
 ## Step 2. Terraform: your first infrastructure
 
-Now the main tool. Bytown Pizza needs web servers for the ordering site. You will ask Terraform for one (an nginx container) and let it build it. Today a "server" is a Docker container, because you already have Docker. Create a folder:
+**Goal:** make Terraform create a web server (an nginx container) for Bytown Pizza, and learn the four-command workflow.
+
+**Idea.** You write what you want to exist in `.tf` files (the language is called HCL and is easy to read). Terraform compares your file with what exists now and does only the work needed to match. If the file says "2 web servers" and 0 exist, it creates 2. If 2 exist, it does nothing. If 3 exist, it removes 1.
+
+```text
+.tf files (what you want) --terraform plan--> list of changes --terraform apply--> real infrastructure
+                                                                                          |
+terraform.tfstate (what Terraform believes exists) <------------ updated after every apply
+```
+
+Today a "server" is a Docker container, because you already have Docker. New words (provider, resource, plan, state, variable, output) are explained at the moment you first use them.
+
+**Do it.** Create a folder:
 
 ```bash
 mkdir -p ~/iac-practice/tf && cd ~/iac-practice/tf  # Create the Terraform folder and move into it.
@@ -345,6 +308,8 @@ terraform apply  # Run apply again. It says "No changes". Applying twice is safe
 ---
 ## Step 3. State
 
+**Goal:** see what Terraform remembers about the servers it built, and know which files go into Git.
+
 Terraform keeps a notebook of everything it built for Bytown Pizza. This notebook is the **state**.
 
 ```bash
@@ -370,6 +335,8 @@ Which files go into Git?
 
 ---
 ## Step 4. Variables, outputs and `count`
+
+**Goal:** change the number of web servers by changing one value, not the code (Monday: 2 servers, Friday night: more).
 
 Remember Friday night: Bytown Pizza needs ten web servers, on Monday only one. If the number of servers is typed in the code, someone must edit the code every time. A **variable** fixes that: you name the value once, and change it from outside. **`count`** makes that many copies. **Outputs** print useful results (like web addresses) at the end.
 
@@ -478,6 +445,8 @@ You can also write the values in a file named `terraform.tfvars` (a line like `i
 ---
 ## Step 5. Drift: when the real world changes
 
+**Goal:** see Terraform notice a change made by hand, and repair it.
+
 **Drift** means: reality no longer matches your code. At Bytown Pizza the code says "2 web servers", but a teammate deletes one by hand to "free some memory". Now there is only 1, and nobody told you. Watch Terraform notice.
 
 ```bash
@@ -496,6 +465,8 @@ This is why you change infrastructure **only through the code**. A hand change i
 
 ---
 ## Step 6. Names for your copies: `locals` and `for_each`
+
+**Goal:** create two differently named servers, an `app` server and an `api` server, from one block of code.
 
 `count` gives copies a **number** (0, 1, 2). But Bytown Pizza needs two servers with different **names and jobs**: an `app` server for the ordering website and an `api` server that supplies the menu. For that use `for_each`. Add them to the same project:
 
@@ -571,9 +542,17 @@ Use it rarely: a real pointer is better.
 ---
 ## Step 7. Read the plan like a careful person
 
+**Goal:** read what a plan says before you apply it, and spot the dangerous change.
+
 Before Bytown Pizza changes the live servers, someone reads the plan. Every line starts with a symbol. Let us change one setting and see.
 
-Edit `tiers.tf`: change the `api` port from 8101 to 8102, then:
+Change the `api` port from 8101 to 8102:
+
+```bash
+sed -i.bak 's/port = 8101/port = 8102/' tiers.tf && rm tiers.tf.bak  # Edit tiers.tf for you. (You can also open the file and change the number by hand.)
+```
+
+Now read the plan:
 
 ```bash
 terraform plan -no-color | grep -E "^\s+[~+-]|Plan:"  # Look for "~" (change in place) or "-/+" (destroy and recreate).
@@ -604,6 +583,8 @@ terraform apply tfplan  # Apply exactly what you reviewed. No prompt is needed b
 
 ---
 ## Step 8. The same workflow in the cloud (read and validate)
+
+**Goal:** write the AWS version of Bytown Pizza's network and server, and have Terraform check it without creating anything.
 
 Now Bytown Pizza moves the site from your laptop to the cloud. You do **not** need a cloud account this week. A cloud account needs a credit card, and a wrong command can cost money. Instead you will write the real AWS code for the company's network and web server, and let Terraform **check** it, without creating anything. This is like proofreading a letter you do not send.
 
@@ -727,6 +708,8 @@ Week 12 uses Ansible on servers like this. Terraform makes the server, Ansible s
 ---
 ## Step 9. State in a team
 
+**Goal:** understand why a team keeps Terraform's state in a shared place. This step is reading only.
+
 On your laptop the state notebook is one file. But Bytown Pizza's team of five cannot share a file on one laptop. Real projects keep the state in a **shared safe place** called a **remote backend**, for example a bucket in AWS. While one teammate runs `apply`, the state is **locked**, so two teammates never change the servers at the same time.
 
 The setting looks like this (read only, do not run it):
@@ -750,6 +733,8 @@ terraform {
 ---
 ## Step 10. Destroy
 
+**Goal:** delete everything you created with one command.
+
 The Friday rush is over, and the test environment is no longer needed. One command removes everything Terraform created, so Bytown Pizza stops paying for it.
 
 ```bash
@@ -769,7 +754,7 @@ The `.tf` files are all you need to build it again. That is the point of IaC: **
 ---
 ## Practice questions
 
-Answer these in your head or on paper before the lab. The answers follow.
+Answer these in your head or on paper before the lab. Open the answers only after you tried.
 
 1. A colleague logs in to a server and edits a config file by hand. Which two IaC problems does that cause?
 2. What is the difference between `plan` and `apply`?
@@ -777,7 +762,12 @@ Answer these in your head or on paper before the lab. The answers follow.
 4. Your plan shows `-/+` on a database. What do you do?
 5. A teammate says "the cloud is just someone else's computer, so security is their job". Which idea says this is wrong?
 
-**Answers:** (1) Drift (the real server no longer matches the code) and a snowflake that nobody can rebuild. (2) `plan` only shows a preview; `apply` really makes the changes. (3) Each entry has its own name, so removing one does not renumber and change the others. (4) Stop and read why it is replaced; it means the data is destroyed. Change the code so the resource is updated in place, or back up first. (5) The shared responsibility model: the provider secures the building, you secure what is inside.
+<details>
+<summary>Show the answers (try the questions first)</summary>
+
+(1) Drift (the real server no longer matches the code) and a snowflake that nobody can rebuild. (2) `plan` only shows a preview; `apply` really makes the changes. (3) Each entry has its own name, so removing one does not renumber and change the others. (4) Stop and read why it is replaced; it means the data is destroyed. Change the code so the resource is updated in place, or back up first. (5) The shared responsibility model: the provider secures the building, you secure what is inside.
+
+</details>
 
 ## Cheat sheet
 
