@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 430" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="428" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Three problems, three ideas</text>
+<g>
+<rect x="30" y="70" width="240" height="290" fill="#fff" stroke="#4ab8e8" stroke-width="2"/>
+<rect x="30" y="70" width="240" height="38" fill="#4ab8e8"/>
+<text x="150" y="95" font-size="17" fill="#fff">Virtualization</text>
+<rect x="305" y="70" width="240" height="290" fill="#fff" stroke="#78b83e" stroke-width="2"/>
+<rect x="305" y="70" width="240" height="38" fill="#78b83e"/>
+<text x="425" y="95" font-size="17" fill="#fff">Cloud</text>
+<rect x="580" y="70" width="240" height="290" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="580" y="70" width="240" height="38" fill="#2d526e"/>
+<text x="700" y="95" font-size="17" fill="#fff">Infrastructure as Code</text>
+</g>
+<path d="M270 215 H300" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M545 215 H575" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<g font-size="12" fill="#4a6178">
+<text x="150" y="134">PROBLEM</text><text x="425" y="134">PROBLEM</text><text x="700" y="134">PROBLEM</text>
+<text x="150" y="226">IDEA</text><text x="425" y="226">IDEA</text><text x="700" y="226">IDEA</text>
+<text x="150" y="314">TOOL TODAY</text><text x="425" y="314">TOOL TODAY</text><text x="700" y="314">TOOL TODAY</text>
+</g>
+<g font-size="14" font-weight="400" font-style="italic" fill="#33475b">
+<text x="150" y="158">"I need another Linux system,</text>
+<text x="150" y="178">but I have one laptop."</text>
+<text x="425" y="158">"I do not want to buy and</text>
+<text x="425" y="178">look after servers."</text>
+<text x="700" y="158">"Clicking is slow and nobody</text>
+<text x="700" y="178">can repeat it exactly."</text>
+</g>
+<g font-size="16" fill="#33475b">
+<text x="150" y="250">Virtual machines</text>
+<text x="425" y="250">Rent by the hour</text>
+<text x="700" y="250">Describe it in a file</text>
+</g>
+<g font-size="13" font-weight="400" fill="#33475b">
+<text x="150" y="272">One computer runs several</text>
+<text x="150" y="290">virtual computers.</text>
+<text x="425" y="272">Use computers that a</text>
+<text x="425" y="290">provider owns.</text>
+<text x="700" y="272">A tool reads the file and</text>
+<text x="700" y="290">builds the machines.</text>
+</g>
+<g font-size="16" fill="#33475b">
+<text x="150" y="340">VirtualBox, Vagrant</text>
+<text x="425" y="340">Azure</text>
+<text x="700" y="340">Terraform</text>
+</g>
+<text x="425" y="396" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">Each section of today's class solves one problem. Ansible (next week) sets up the inside of the servers.</text>
+</svg>

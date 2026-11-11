@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 360" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="358" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Drift: the real world no longer matches the code</text>
+<rect x="30" y="80" width="230" height="190" fill="#cdeaf8" stroke="#4ab8e8"/>
+<rect x="30" y="80" width="230" height="36" fill="#4ab8e8"/>
+<text x="145" y="104" font-size="16" fill="#fff">1. The code says</text>
+<rect x="60" y="150" width="75" height="70" fill="#fff" stroke="#4ab8e8" stroke-width="2"/>
+<text x="97" y="190" font-size="14" fill="#33475b">web-0</text>
+<rect x="155" y="150" width="75" height="70" fill="#fff" stroke="#4ab8e8" stroke-width="2"/>
+<text x="192" y="190" font-size="14" fill="#33475b">web-1</text>
+<text x="145" y="248" font-size="13" font-weight="400" fill="#33475b">instances = 2</text>
+<path d="M260 175 H306" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="310" y="80" width="230" height="190" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="310" y="80" width="230" height="36" fill="#2d526e"/>
+<text x="425" y="104" font-size="16" fill="#fff">2. Someone deletes one</text>
+<rect x="340" y="150" width="75" height="70" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="377" y="190" font-size="14" fill="#33475b">web-0</text>
+<rect x="435" y="150" width="75" height="70" fill="#f6fbff" stroke="#f21d1d" stroke-width="2" stroke-dasharray="5 4"/>
+<path d="M447 163 L498 207 M498 163 L447 207" stroke="#f21d1d" stroke-width="3"/>
+<text x="425" y="248" font-size="13" font-weight="400" fill="#f21d1d">docker rm -f tf-web-1</text>
+<path d="M540 175 H586" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="590" y="80" width="230" height="190" fill="#fff" stroke="#78b83e" stroke-width="2"/>
+<rect x="590" y="80" width="230" height="36" fill="#78b83e"/>
+<text x="705" y="104" font-size="16" fill="#fff">3. Terraform repairs it</text>
+<text x="705" y="146" font-size="13" font-weight="400" fill="#33475b">terraform plan:</text>
+<text x="705" y="168" font-family="Consolas, Menlo, monospace" font-size="13" font-weight="400" fill="#33475b">1 to add, 0 to change,</text>
+<text x="705" y="186" font-family="Consolas, Menlo, monospace" font-size="13" font-weight="400" fill="#33475b">0 to destroy</text>
+<text x="705" y="222" font-size="13" font-weight="400" fill="#33475b">terraform apply:</text>
+<text x="705" y="244" font-size="13" font-weight="400" fill="#33475b">web-1 is created again</text>
+<text x="425" y="318" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">Change infrastructure only through the code. A change by hand is undone at the next apply.</text>
+</svg>

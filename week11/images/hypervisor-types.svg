@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 445" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<rect x="1" y="1" width="848" height="443" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Two kinds of hypervisor</text>
+<g>
+<rect x="40" y="70" width="360" height="38" fill="#2d526e"/>
+<text x="220" y="95" font-size="17" fill="#fff">Type 1: bare metal</text>
+<text x="220" y="132" font-size="14" font-weight="400" fill="#4a6178">A cloud server in a data centre</text>
+<rect x="70" y="150" width="86" height="60" fill="#cdeaf8" stroke="#4ab8e8"/>
+<rect x="177" y="150" width="86" height="60" fill="#cdeaf8" stroke="#4ab8e8"/>
+<rect x="284" y="150" width="86" height="60" fill="#cdeaf8" stroke="#4ab8e8"/>
+<g font-size="15" fill="#33475b"><text x="113" y="186">VM</text><text x="220" y="186">VM</text><text x="327" y="186">VM</text></g>
+<rect x="70" y="222" width="300" height="50" fill="#78b83e"/>
+<text x="220" y="253" font-size="16" fill="#fff">Hypervisor</text>
+<rect x="70" y="284" width="300" height="50" fill="#2d526e"/>
+<text x="220" y="315" font-size="16" fill="#fff">Hardware</text>
+<text x="220" y="362" font-size="13" font-weight="400" fill="#33475b">KVM, VMware ESXi, Microsoft Hyper-V</text>
+</g>
+<g>
+<rect x="450" y="70" width="360" height="38" fill="#4ab8e8"/>
+<text x="630" y="95" font-size="17" fill="#fff">Type 2: hosted</text>
+<text x="630" y="132" font-size="14" font-weight="400" fill="#4a6178">Your laptop</text>
+<rect x="480" y="150" width="130" height="60" fill="#cdeaf8" stroke="#4ab8e8"/>
+<rect x="640" y="150" width="130" height="60" fill="#cdeaf8" stroke="#4ab8e8"/>
+<g font-size="15" fill="#33475b"><text x="545" y="186">VM</text><text x="705" y="186">VM</text></g>
+<rect x="480" y="222" width="290" height="46" fill="#78b83e"/>
+<text x="625" y="251" font-size="16" fill="#fff">Hypervisor app (VirtualBox)</text>
+<rect x="480" y="278" width="290" height="46" fill="#9bc7dc"/>
+<text x="625" y="307" font-size="16" fill="#fff">macOS / Windows / Linux</text>
+<rect x="480" y="334" width="290" height="40" fill="#2d526e"/>
+<text x="625" y="360" font-size="16" fill="#fff">Hardware</text>
+<text x="630" y="396" font-size="13" font-weight="400" fill="#33475b">VirtualBox, UTM, VMware Workstation, Parallels</text>
+</g>
+<text x="425" y="428" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">The only difference is where the hypervisor sits. Both are ordinary software.</text>
+</svg>

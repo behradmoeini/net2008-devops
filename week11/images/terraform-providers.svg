@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 400" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="398" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Where Terraform runs and what it builds</text>
+<rect x="30" y="80" width="260" height="250" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="30" y="80" width="260" height="36" fill="#2d526e"/>
+<text x="160" y="104" font-size="16" fill="#fff">Your laptop</text>
+<rect x="55" y="170" width="210" height="100" rx="4" fill="#78b83e"/>
+<text x="160" y="205" font-size="18" fill="#fff">Terraform</text>
+<text x="160" y="232" font-size="14" font-weight="400" fill="#fff">+ your .tf files</text>
+<text x="160" y="252" font-size="13" font-weight="400" fill="#fff">(init, plan, apply, destroy)</text>
+<path d="M265 200 C 330 200, 330 140, 436 140" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="372" y="122" font-size="13" fill="#33475b">docker provider</text>
+<path d="M265 245 C 330 245, 330 290, 436 290" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="372" y="322" font-size="13" fill="#33475b">azurerm provider</text>
+<rect x="440" y="90" width="380" height="100" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="630" y="122" font-size="16" fill="#33475b">Containers (Docker on your laptop)</text>
+<text x="630" y="148" font-size="14" font-weight="400" fill="#33475b">Today's practice: free, works on every system.</text>
+<text x="630" y="170" font-size="13" font-weight="400" fill="#4a6178">A "server" is a Docker container.</text>
+<rect x="440" y="240" width="380" height="100" fill="#fff" stroke="#78b83e" stroke-width="2"/>
+<text x="630" y="272" font-size="16" fill="#33475b">VMs in the Azure cloud</text>
+<text x="630" y="298" font-size="14" font-weight="400" fill="#33475b">The same workflow. Needs an account.</text>
+<text x="630" y="320" font-size="13" font-weight="400" fill="#4a6178">We only read and validate this code.</text>
+<text x="425" y="372" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">Only the provider and the resource types change. The four commands stay the same.</text>
+</svg>

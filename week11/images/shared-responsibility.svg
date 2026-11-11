@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 440" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<rect x="1" y="1" width="848" height="438" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Shared responsibility: who secures what</text>
+<g>
+<rect x="210" y="70" width="430" height="46" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="425" y="99" font-size="16" fill="#33475b">Your data and your users</text>
+<rect x="210" y="122" width="430" height="46" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="425" y="151" font-size="16" fill="#33475b">Passwords, keys and firewall rules</text>
+<rect x="210" y="174" width="430" height="46" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="425" y="203" font-size="16" fill="#33475b">Operating system and its updates</text>
+<rect x="210" y="236" width="430" height="46" fill="#78b83e"/>
+<text x="425" y="265" font-size="16" fill="#fff">Hypervisor</text>
+<rect x="210" y="288" width="430" height="46" fill="#78b83e"/>
+<text x="425" y="317" font-size="16" fill="#fff">Servers, storage and network</text>
+<rect x="210" y="340" width="430" height="46" fill="#78b83e"/>
+<text x="425" y="369" font-size="16" fill="#fff">The data centre building</text>
+</g>
+<path d="M190 70 H178 V220 H190" stroke="#4ab8e8" stroke-width="3" fill="none"/>
+<text x="90" y="138" font-size="18" fill="#33475b">You</text>
+<text x="90" y="160" font-size="14" font-weight="400" fill="#33475b">secure this</text>
+<path d="M660 236 H672 V386 H660" stroke="#78b83e" stroke-width="3" fill="none"/>
+<text x="760" y="304" font-size="18" fill="#33475b">The provider</text>
+<text x="760" y="326" font-size="14" font-weight="400" fill="#33475b">secures this</text>
+<text x="425" y="418" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">Most cloud break-ins come from the customer's side, for example an open storage bucket or a leaked key.</text>
+</svg>

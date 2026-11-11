@@ -23,12 +23,7 @@ There are three problems. Each section of today's class solves one.
 | "I do not want to buy and look after servers. I need 1 today and 100 tomorrow." | **Cloud**: rent computers from a provider and pay by the hour. | Azure |
 | "Creating machines by clicking is slow, and nobody can repeat it exactly." | **Infrastructure as Code (IaC)**: write the machines you want in a file, and a tool builds them. | Terraform |
 
-```text
-Virtualization                  Cloud                           Infrastructure as Code
-many machines on                machines you rent               machines described in
-one computer          -->       instead of owning       -->     a file and built by a tool
-(VM, Vagrant)                   (Azure)                         (Terraform)
-```
+![Three problems and three ideas: virtualization (VirtualBox, Vagrant) answers "I need another Linux system but I have one laptop"; the cloud (Azure) answers "I do not want to buy and look after servers"; Infrastructure as Code (Terraform) answers "clicking is slow and nobody can repeat it exactly"](images/three-problems.svg)
 
 Ansible, the tool that sets up the **inside** of a server, is next week (Week 12). Today we only create the servers.
 
@@ -56,6 +51,8 @@ Containers solve a similar problem in a different way.
 | Can run a different OS than the host? | Yes (Linux VM on a Mac) | No: it uses the host's kernel |
 | Use it when | You need a full separate system | You need to run an application the same way everywhere |
 
+![Containers vs virtual machines: each VM carries its own guest OS on a hypervisor; containers share the host OS through Docker Engine](../week09/images/container-vs-vm.svg)
+
 VMs and containers are often used together. In the cloud, your containers usually run **inside** VMs.
 
 ### Two kinds of hypervisor
@@ -68,14 +65,7 @@ The only difference is **where the hypervisor sits**. Both are ordinary software
 | Where you meet it | Data centres (cloud providers) | Your laptop |
 | Examples | KVM, VMware ESXi, Microsoft Hyper-V | VirtualBox, UTM, VMware Workstation, Parallels |
 
-```text
-  TYPE 1 (a cloud server)       TYPE 2 (your laptop)
-
-  [ VM ]  [ VM ]  [ VM ]        [ VM ]  [ VM ]
-  [ Hypervisor ]                [ VirtualBox app ]
-  [ Hardware ]                  [ macOS / Windows ]
-                                [ Hardware ]
-```
+![Two kinds of hypervisor: type 1 runs directly on the hardware of a cloud server and hosts several VMs; type 2 is an app (such as VirtualBox) on top of macOS, Windows or Linux on your laptop and hosts VMs](images/hypervisor-types.svg)
 
 The cloud uses type 1. Today you use a type 2 hypervisor on your laptop.
 
@@ -89,20 +79,21 @@ A VM has a virtual network card. You choose how it connects:
 | **Host-only** (private network) | Your laptop and other VMs only | Your laptop | A private lab with a fixed address |
 | **Bridged** | The real network, like a separate computer | Anyone on that network | A VM that your phone or a classmate must reach |
 
+![Three ways to connect a VM to the network: with NAT the VM reaches the internet through your laptop and nobody can reach the VM; with host-only the VM talks only to your laptop and other VMs; with bridged the VM gets its own address on your real network](images/vm-networking.svg)
+
 ### Hands-on: build a VM by hand
 
 **Goal:** create an Ubuntu Server VM manually, so you feel what Vagrant will remove later. It takes about 25 minutes, and most of that is the Ubuntu installer.
 
 #### Find your tag
 
-The processor of your laptop decides which tool you use. Find your row and remember your **tag** (A, B, C or D). Every step below tells you what each tag does.
+The processor of your laptop decides which tool you use. Find your row and remember your **tag** (A, B or C). Every step below tells you what each tag does.
 
 | Tag | Your computer | Tool you use | Ubuntu ISO you need |
 |---|---|---|---|
 | **A** | Windows with an Intel or AMD chip, Mac with an Intel chip, Linux on Intel or AMD | **VirtualBox** | amd64 |
 | **B** | Mac with Apple silicon (M1, M2, M3, M4) | **UTM** | arm64 |
 | **C** | Windows with an ARM chip (for example Snapdragon), **Windows 11 Pro or Enterprise** | **Hyper-V** (built into Windows) | arm64 |
-| **D** | Windows with an ARM chip, **Windows 11 Home** | None. Home has no Hyper-V and there is no other tool for it. | |
 
 How to check your chip: on a Mac open the Apple menu > **About This Mac** and read **Chip**. On Windows open **Settings > System > About** and read **System type**. On Linux run `uname -m`: `x86_64` means Intel or AMD, `aarch64` or `arm64` means ARM.
 
@@ -114,7 +105,6 @@ An **ISO** is a disk image of the Ubuntu installer, like a virtual DVD. Save it 
 
 - **Tag A:** download the **amd64** Ubuntu Server (LTS) from <https://ubuntu.com/download/server>.
 - **Tag B and Tag C:** download the **arm64** Ubuntu Server (LTS) from <https://ubuntu.com/download/server/arm>.
-- **Tag D:** nothing to download. Read the steps below and continue with the Vagrant section.
 
 #### 2. Install the hypervisor
 
@@ -162,8 +152,6 @@ brew install --cask utm  # Install UTM.
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All  # Turn on Hyper-V, Windows' built-in hypervisor. Restart when it asks.
 ```
 
-**Tag D:** nothing to install.
-
 #### 3. Create the VM and install Ubuntu
 
 The names of buttons can change a little between versions. Follow the idea if a label looks different.
@@ -196,8 +184,6 @@ The names of buttons can change a little between versions. Follow the idea if a 
 7. **Installation options:** choose **Install an operating system from a bootable image file**, browse to the **arm64** Ubuntu Server ISO, and click **Finish**.
 8. **Before you start it**, right-click `manual-vm` and open **Settings**. Under **Security**, **untick Enable Secure Boot**, and click **OK**. Ubuntu on ARM does not start with Secure Boot on. Under **Processor**, set **Number of virtual processors** to `1`: some ARM laptops freeze with more.
 9. Double-click `manual-vm`, click **Start**, and the Ubuntu installer appears.
-
-**Tag D:** skip this step.
 
 **All tags: the Ubuntu installer.** Use the keyboard. Press Enter on the defaults for language, keyboard and network. When it asks for a profile, set your name, a server name (`manual-vm`), a user name and a password, and tick **Install OpenSSH server** when offered. Skip optional snaps. Wait for the installation to finish and choose **Reboot Now**.
 
@@ -236,9 +222,8 @@ Shut the VM down with `sudo poweroff`. Then change how the network card connects
 - **Tag A (VirtualBox):** select the VM, **Settings > Network > Adapter 1 > Attached to: Bridged Adapter**, choose your Wi-Fi or Ethernet card, click **OK**, and start the VM again.
 - **Tag B (UTM):** open the VM's settings, **Network > Network Mode: Bridged (Advanced)**, choose the interface, save, and start it again.
 - **Tag C (Hyper-V):** in Hyper-V Manager open **Virtual Switch Manager**, create a new **External** virtual switch on your Wi-Fi or Ethernet card, then in the VM's **Settings > Network Adapter** choose that switch, and start the VM again.
-- **Tag D:** skip this step.
 
-**All tags except D:** log in and run `ip -br address`. The VM now has an address on your **real network**, like a separate computer. Run `ping -c 2` followed by that address from your laptop terminal: it answers. With NAT it would not.
+Log in and run `ip -br address`. The VM now has an address on your **real network**, like a separate computer. Run `ping -c 2` followed by that address from your laptop terminal: it answers. With NAT it would not.
 
 #### 6. Delete the VM
 
@@ -247,13 +232,14 @@ Shut the VM down with `sudo poweroff`. Then:
 - **Tag A (VirtualBox):** right-click the VM and choose **Remove > Delete all files**.
 - **Tag B (UTM):** right-click the VM and choose **Delete**.
 - **Tag C (Hyper-V):** right-click the VM and choose **Delete**, then delete its `.vhdx` disk file from the folder shown in the VM's settings.
-- **Tag D:** nothing to delete.
 
 **What did that cost?** About 25 minutes and a dozen clicks. If your teammate needs the same VM, you must repeat the clicks and hope you choose the same options. If you need ten VMs, it takes four hours. This is the problem Vagrant solves.
 
 ### Vagrant: the same VM from a file
 
 **Vagrant** is a tool that drives VirtualBox for you. You describe the VM in a small text file called a `Vagrantfile`. One command, `vagrant up`, builds the VM. It skips the installer because it starts from a ready-made image called a **box**.
+
+![Vagrant: the Vagrantfile (box, hostname, memory, network) goes to Vagrant with vagrant up; Vagrant downloads the ready-made box once and creates the VM demo-vm in VirtualBox on your laptop; vagrant ssh logs in, halt stops, destroy deletes](images/vagrant-flow.svg)
 
 | | By hand (what you just did) | Vagrant |
 |---|---|---|
@@ -271,7 +257,7 @@ Vagrant needs two things that match your processor: **VirtualBox**, and a **box*
 |---|---|---|
 | **A** | Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | Yes, with VirtualBox. On Windows install Vagrant in **Windows**, not in the Ubuntu terminal. |
 | **B** | Mac with Apple silicon | Yes, with VirtualBox 7.2 and the ARM version of the box. Tested on an M-series Mac. |
-| **C** and **D** | Windows with an ARM chip | Maybe. VirtualBox 7.2 runs on Windows on ARM (marked experimental by Oracle) and the box exists for ARM, but we have not tested it. Try it. If `vagrant up` fails, stop at `vagrant validate`. |
+| **C** | Windows with an ARM chip | Maybe. VirtualBox 7.2 runs on Windows on ARM (marked experimental by Oracle) and the box exists for ARM, but we have not tested it. Try it. If `vagrant up` fails, stop at `vagrant validate`. |
 
 **Everyone writes the Vagrantfile and runs `vagrant validate`**, which works on every system once Vagrant is installed. `vagrant up` is not graded: if it does not work on your laptop, you lose no marks.
 
@@ -447,6 +433,8 @@ In this course we use IaaS: we get an empty server and build it up.
 
 **Shared responsibility.** The provider secures the data centre and the hypervisor. **You** secure what you put inside: operating-system updates, firewall rules, passwords and data. Most cloud break-ins are the customer's mistake, for example a storage bucket left open to the world, or a key pasted into a public GitHub repository.
 
+![Shared responsibility: you secure your data and users, your passwords, keys and firewall rules, and the operating system with its updates; the provider secures the hypervisor, the servers, storage and network, and the data centre building](images/shared-responsibility.svg)
+
 **Money.** A VM you forget keeps costing money every hour. Always tag what you create with an owner, set a budget alert, and **delete lab resources the same day**.
 
 ### Hands-on: your first cloud VM (Azure for Students)
@@ -503,6 +491,8 @@ az vm list --output table  # Your VM, with its name, resource group and location
 
 Now look at it in the portal. Click **All resources** (or **View all resources** on the home page). You see the VM, and also the things Azure made for it: a disk, a network, a public IP address and a firewall (network security group). One command created all of them. Click **cloud-vm** to see its size, its operating system and its public IP address.
 
+![One command creates a whole group of resources: you type az commands in Cloud Shell, which is only a remote control and not the VM; Azure creates a resource group iac-practice-rg that holds the VM cloud-vm, its disk, network card, public IP address, virtual network and firewall](images/azure-resource-group.svg)
+
 #### 5. Do a few small things with it
 
 You never logged in to this VM, but you can still control it. Each command below is small: we only want to see that it is a real machine that works.
@@ -557,16 +547,7 @@ Terraform creates the empty servers. Ansible installs the software on them.
 
 Terraform is a program that runs **on your laptop** (or in Cloud Shell). It talks to a **provider**: a plug-in for one platform. The platform decides what a "server" is.
 
-```text
-            your laptop                                      what Terraform builds
-   +--------------------------+      docker provider        +---------------------------+
-   | Terraform + your .tf     | --------------------------> | containers on your laptop |
-   | files                    |                             | (free, works on every OS) |
-   |                          |      azurerm provider       +---------------------------+
-   |                          | --------------------------> | VMs in the Azure cloud    |
-   +--------------------------+                             | (needs an account)        |
-                                                            +---------------------------+
-```
+![Where Terraform runs and what it builds: Terraform and your .tf files run on your laptop; the docker provider builds containers (today's practice, free); the azurerm provider builds VMs in the Azure cloud (needs an account); only the provider and resource types change](images/terraform-providers.svg)
 
 **Today the main practice uses the Docker provider.** A "server" is a Docker container on your laptop, because every student has Docker and it costs nothing. The workflow is identical for the cloud: only the provider and the resource types change. At the end you read and validate the Azure version of the same idea.
 
@@ -582,11 +563,7 @@ export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}
 
 You write the **desired state** in `.tf` files: what you want to exist. The language is called HCL and is easy to read. Terraform compares your file with what exists now and does only the work needed. If the file says "2 web servers" and 0 exist, it creates 2. If 2 exist, it does nothing. If 3 exist, it removes 1.
 
-```text
-.tf files (what you want) --terraform plan--> list of changes --terraform apply--> real infrastructure
-                                                                                          |
-terraform.tfstate (what Terraform believes exists) <------------ updated after every apply
-```
+![The Terraform workflow: your .tf files describe what you want; terraform plan produces a list of changes to read; terraform apply makes the real infrastructure; the state file terraform.tfstate is Terraform's notebook, compared with your files and updated after every apply](images/terraform-workflow.svg)
 
 ### Your first infrastructure
 
@@ -806,6 +783,8 @@ You can also write the values in a file named `terraform.tfvars` (a line like `i
 ### Drift: when the real world changes
 
 **Drift** means: reality no longer matches your code. The code says "2 web servers", but a teammate deletes one by hand. Now there is only 1, and nobody told you. Watch Terraform notice.
+
+![Drift: the code says two web servers; someone deletes one by hand; terraform plan sees one is missing and terraform apply creates it again](images/drift.svg)
 
 ```bash
 docker rm -f tf-web-1  # Delete a container behind Terraform's back.

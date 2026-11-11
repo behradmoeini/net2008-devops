@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 420" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="418" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">The Terraform workflow</text>
+<rect x="30" y="80" width="200" height="120" fill="#cdeaf8" stroke="#4ab8e8"/>
+<rect x="30" y="80" width="200" height="36" fill="#4ab8e8"/>
+<text x="130" y="104" font-size="16" fill="#fff">Your .tf files</text>
+<text x="130" y="145" font-size="14" font-weight="400" fill="#33475b">What you want</text>
+<text x="130" y="168" font-family="Consolas, Menlo, monospace" font-size="13" font-weight="400" fill="#33475b">2 web servers</text>
+<path d="M230 140 H326" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="278" y="128" font-size="12" fill="#33475b">terraform plan</text>
+<rect x="330" y="80" width="190" height="120" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="330" y="80" width="190" height="36" fill="#2d526e"/>
+<text x="425" y="104" font-size="16" fill="#fff">The plan</text>
+<text x="425" y="140" font-size="14" font-weight="400" fill="#33475b">A list of changes. Read it!</text>
+<g font-family="Consolas, Menlo, monospace" font-size="13" font-weight="400" fill="#33475b">
+<text x="425" y="166">+ create  ~ change</text>
+<text x="425" y="186">- delete  -/+ replace</text>
+</g>
+<path d="M520 140 H616" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="568" y="128" font-size="12" fill="#33475b">terraform apply</text>
+<rect x="620" y="80" width="200" height="120" fill="#78b83e"/>
+<text x="720" y="112" font-size="16" fill="#fff">Real infrastructure</text>
+<text x="720" y="146" font-size="14" font-weight="400" fill="#fff">containers, VMs,</text>
+<text x="720" y="166" font-size="14" font-weight="400" fill="#fff">networks</text>
+<rect x="280" y="270" width="290" height="84" fill="#fff" stroke="#2d526e" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="425" y="298" font-size="16" fill="#33475b">terraform.tfstate</text>
+<text x="425" y="321" font-size="13" font-weight="400" fill="#33475b">Terraform's notebook of what it built.</text>
+<text x="425" y="339" font-size="13" font-weight="400" fill="#f21d1d">Never edit it by hand. Never commit it.</text>
+<path d="M425 268 V204" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="440" y="240" font-size="12" font-weight="400" fill="#4a6178" text-anchor="start">compared with your files</text>
+<path d="M720 202 V312 H574" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="650" y="334" font-size="12" font-weight="400" fill="#4a6178">updated after every apply</text>
+<text x="425" y="396" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">plan only shows a preview. apply makes the change and updates the notebook.</text>
+</svg>

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 480" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs>
+<marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker>
+<marker id="arrow2" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="2" refY="6" orient="auto-start-reverse"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker>
+</defs>
+<rect x="1" y="1" width="848" height="478" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Three ways to connect a VM to the network</text>
+<!-- NAT -->
+<rect x="25" y="70" width="250" height="36" fill="#4ab8e8"/>
+<text x="150" y="94" font-size="17" fill="#fff">NAT</text>
+<rect x="85" y="130" width="130" height="50" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="150" y="161" font-size="15" fill="#33475b">VM</text>
+<rect x="85" y="230" width="130" height="50" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<text x="150" y="261" font-size="15" fill="#33475b">Your laptop</text>
+<rect x="65" y="330" width="170" height="50" fill="#78b83e"/>
+<text x="150" y="361" font-size="15" fill="#fff">Internet</text>
+<path d="M150 180 V228" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M150 280 V328" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M250 328 V185" stroke="#f21d1d" stroke-width="2" stroke-dasharray="5 4" fill="none"/>
+<path d="M239 246 L261 268 M261 246 L239 268" stroke="#f21d1d" stroke-width="3"/>
+<g font-size="13" font-weight="400" fill="#33475b">
+<text x="150" y="412">The VM reaches the internet</text>
+<text x="150" y="430">through your laptop.</text>
+<text x="150" y="452" fill="#f21d1d">Nobody can reach the VM.</text>
+</g>
+<!-- Host-only -->
+<rect x="300" y="70" width="250" height="36" fill="#4ab8e8"/>
+<text x="425" y="94" font-size="17" fill="#fff">Host-only</text>
+<rect x="360" y="130" width="130" height="50" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="425" y="161" font-size="15" fill="#33475b">VM</text>
+<rect x="360" y="230" width="130" height="50" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<text x="425" y="261" font-size="15" fill="#33475b">Your laptop</text>
+<rect x="340" y="330" width="170" height="50" fill="#78b83e"/>
+<text x="425" y="361" font-size="15" fill="#fff">Internet</text>
+<path d="M425 182 V228" stroke="#33475b" stroke-width="2" fill="none" marker-start="url(#arrow2)" marker-end="url(#arrow)"/>
+<path d="M425 280 V328" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)" opacity="0.35"/>
+<path d="M410 300 L440 316 M440 300 L410 316" stroke="#f21d1d" stroke-width="3"/>
+<g font-size="13" font-weight="400" fill="#33475b">
+<text x="425" y="412">The VM talks to your laptop and</text>
+<text x="425" y="430">other VMs only.</text>
+<text x="425" y="452" fill="#f21d1d">No internet for the VM.</text>
+</g>
+<!-- Bridged -->
+<rect x="575" y="70" width="250" height="36" fill="#4ab8e8"/>
+<text x="700" y="94" font-size="17" fill="#fff">Bridged</text>
+<rect x="635" y="130" width="130" height="50" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="700" y="161" font-size="15" fill="#33475b">VM</text>
+<rect x="635" y="230" width="130" height="50" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<text x="700" y="261" font-size="15" fill="#33475b">Your laptop</text>
+<rect x="615" y="330" width="170" height="50" fill="#78b83e"/>
+<text x="700" y="361" font-size="15" fill="#fff">Real network</text>
+<path d="M700 280 V328" stroke="#33475b" stroke-width="2" fill="none" marker-start="url(#arrow2)" marker-end="url(#arrow)"/>
+<path d="M765 155 H800 V355 H787" stroke="#33475b" stroke-width="2" fill="none" marker-start="url(#arrow2)" marker-end="url(#arrow)"/>
+<g font-size="13" font-weight="400" fill="#33475b">
+<text x="700" y="412">The VM gets its own address on</text>
+<text x="700" y="430">your real network, like a separate</text>
+<text x="700" y="448">computer. Your phone can reach it.</text>
+</g>
+</svg>

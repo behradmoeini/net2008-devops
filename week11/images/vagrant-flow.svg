@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 380" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="378" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Vagrant: a VM from a file</text>
+<rect x="30" y="80" width="230" height="170" fill="#cdeaf8" stroke="#4ab8e8"/>
+<rect x="30" y="80" width="230" height="38" fill="#4ab8e8"/>
+<text x="145" y="105" font-size="17" fill="#fff">Vagrantfile</text>
+<g font-family="Consolas, Menlo, monospace" font-weight="400" font-size="13" fill="#33475b" text-anchor="start">
+<text x="48" y="145">box = bento/ubuntu-24.04</text>
+<text x="48" y="170">hostname = demo-vm</text>
+<text x="48" y="195">memory = 1024</text>
+<text x="48" y="220">network = 192.168.56.20</text>
+</g>
+<text x="145" y="272" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">What you write (kept in Git)</text>
+<path d="M260 165 H326" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="293" y="153" font-size="12" fill="#33475b">vagrant up</text>
+<rect x="330" y="115" width="170" height="100" rx="4" fill="#78b83e"/>
+<text x="415" y="152" font-size="18" fill="#fff">Vagrant</text>
+<text x="415" y="180" font-size="14" font-weight="400" fill="#fff">reads the file</text>
+<text x="415" y="200" font-size="14" font-weight="400" fill="#fff">and builds the VM</text>
+<rect x="330" y="268" width="170" height="52" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<text x="415" y="291" font-size="14" fill="#33475b">Box</text>
+<text x="415" y="309" font-size="12" font-weight="400" fill="#33475b">ready-made Ubuntu image</text>
+<path d="M415 266 V217" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="470" y="246" font-size="12" font-weight="400" fill="#4a6178">downloaded once</text>
+<path d="M500 165 H586" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="543" y="153" font-size="13" fill="#33475b">creates</text>
+<rect x="590" y="80" width="230" height="170" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="590" y="80" width="230" height="38" fill="#2d526e"/>
+<text x="705" y="105" font-size="17" fill="#fff">VirtualBox</text>
+<rect x="620" y="138" width="170" height="90" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="705" y="170" font-size="16" fill="#33475b">demo-vm</text>
+<text x="705" y="192" font-size="13" font-weight="400" fill="#33475b">Ubuntu 24.04</text>
+<text x="705" y="210" font-size="13" font-weight="400" fill="#33475b">192.168.56.20</text>
+<text x="705" y="272" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">The VM on your laptop</text>
+<g font-family="Consolas, Menlo, monospace" font-size="13" font-weight="400" fill="#33475b">
+<text x="425" y="350">vagrant ssh = log in   |   vagrant halt = stop   |   vagrant destroy = delete</text>
+</g>
+</svg>
