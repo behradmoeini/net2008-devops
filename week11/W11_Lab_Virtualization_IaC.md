@@ -1,7 +1,7 @@
 # Week 11 Lab: Bytown Infrastructure as Code
 **NET2008 DevOps · Algonquin College**
 
-This lab is graded (2% of final grade). You describe a virtual machine with Vagrant and build real infrastructure with Terraform: a network and web containers, changed through code, repaired after drift, and destroyed. Everything runs on **your own laptop**.
+This lab is graded (2% of final grade). You describe a virtual machine with Vagrant and build real infrastructure with Terraform: a network and web containers, changed through code, repaired after drift, and destroyed. You also write and validate AWS (cloud) code. Everything runs on **your own laptop**.
 
 **Rules**
 
@@ -88,7 +88,7 @@ git add vagrant && git commit -m "Add Vagrantfile for the Bytown VM"  # Commit n
 ```
 
 ---
-## Part 2. Terraform: network and web containers (6 points)
+## Part 2. Terraform: network and web containers (5 points)
 
 Create three files in the `terraform` folder. First the **variables**:
 
@@ -211,7 +211,7 @@ cd .. && git add -A && git commit -m "Add Terraform for network and web containe
 ```
 
 ---
-## Part 3. Change and drift (4 points)
+## Part 3. Change and drift (3 points)
 
 **3a. Drift.** Delete one container behind Terraform's back, and watch Terraform notice:
 
@@ -254,7 +254,7 @@ cd .. && git add -A && git commit -m "Scale to three web containers"  # Commit n
 ```
 
 ---
-## Part 4. Lock file, state and destroy (4 points)
+## Part 4. Lock file, state and destroy (3 points)
 
 ```bash
 git ls-files terraform  # The files Git tracks. You must see .terraform.lock.hcl and the .tf files, and no state file.
@@ -281,19 +281,96 @@ cd .. && git add -A && git commit -m "Record the destroyed state"  # Commit numb
 ```
 
 ---
-## Part 5. Answers (3 points)
+## Part 5. Terraform for the cloud (3 points)
+
+You write AWS code and let Terraform **check** it. Nothing is created and no account is needed. Use your seed in the names.
+
+```bash
+mkdir -p ~/bytown-iac/cloud && cd ~/bytown-iac/cloud  # Create the cloud folder and move into it.
+```
+
+```bash
+cat > main.tf <<EOF
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "ca-central-1"
+}
+
+resource "aws_vpc" "bytown" {
+  cidr_block = "10.$SEED.0.0/16"
+  tags       = { Name = "bytown-vpc-$SEED", Owner = "student" }
+}
+
+resource "aws_subnet" "public" {
+  vpc_id     = aws_vpc.bytown.id
+  cidr_block = "10.$SEED.1.0/24"
+  tags       = { Name = "bytown-public-$SEED" }
+}
+
+resource "aws_security_group" "web" {
+  name   = "bytown-web-$SEED"
+  vpc_id = aws_vpc.bytown.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_instance" "web" {
+  ami                    = "ami-0123456789abcdef0"
+  instance_type          = "t3.micro"
+  subnet_id              = aws_subnet.public.id
+  vpc_security_group_ids = [aws_security_group.web.id]
+  tags                   = { Name = "bytown-web-$SEED", Owner = "student" }
+}
+EOF
+```
+
+```bash
+grep -n "$SEED" main.tf  # Check that your seed appears in the network address and the names.
+```
+
+```bash
+terraform init  # Download the AWS provider (about a minute).
+```
+
+```bash
+terraform fmt -check && terraform validate | tee ../evidence/part5-validate.txt  # You must see "Success! The configuration is valid."
+```
+
+**Do not run `terraform apply` in this folder.** The AMI is a placeholder and you have no credentials.
+
+```bash
+cd .. && git add -A && git commit -m "Add AWS Terraform code, validated"  # Commit number 6. Check that no .terraform folder is listed.
+```
+
+---
+## Part 6. Answers (3 points)
 
 Answer in a file named `answers.txt`, one answer per line, in the form `Q1: your answer` (at least 20 characters each):
 
 1. In Part 3a you deleted a container by hand. What did Terraform do, and why must you change infrastructure through the code?
 2. Why is `terraform.tfstate` not committed to Git?
 3. What is the difference between what Terraform does and what Ansible (Week 12) will do?
+4. In the shared responsibility model, name one thing the cloud provider secures and one thing you secure on an AWS VM.
 
 ```bash
 cat > answers.txt <<'EOF'
 Q1: replace this with your answer
 Q2: replace this with your answer
 Q3: replace this with your answer
+Q4: replace this with your answer
 EOF
 ```
 
@@ -302,7 +379,7 @@ Open `answers.txt` in an editor and replace each placeholder.
 ---
 ## Check your work
 
-The self-check reads your repository and your proof files. It runs `terraform fmt -check` and `validate` on your code. It changes nothing. Run it from your lab folder, **after** Part 4 (the destroy):
+The self-check reads your repository and your proof files. It runs `terraform fmt -check` and `validate` on your code. It changes nothing. Run it from your lab folder, **after** Part 5:
 
 ```bash
 python3 ~/net2008-devops/week11/W11_Lab_selfcheck.py --seed "$SEED"  # Check your work against the lab.
@@ -331,10 +408,11 @@ git push -u origin main  # Upload to GitHub.
 | Part | What | Points |
 |---|---|---|
 | 1 | `vagrant/Vagrantfile` with your host name, address and provisioning line | 3 |
-| 2 | Terraform code formatted and valid, network and two containers created, both pages show your seed | 6 |
-| 3 | Drift shown in a plan and repaired, scaled to three by the values file | 4 |
-| 4 | State never committed, lock file committed, everything destroyed | 4 |
-| 5 | `answers.txt` (read by your instructor) | 3 |
+| 2 | Terraform code formatted and valid, network and two containers created, both pages show your seed | 5 |
+| 3 | Drift shown in a plan and repaired, scaled to three by the values file | 3 |
+| 4 | State never committed, lock file committed, everything destroyed | 3 |
+| 5 | AWS code with your seed, formatted and valid (nothing created) | 3 |
+| 6 | `answers.txt` (read by your instructor) | 3 |
 
 ## If something goes wrong
 

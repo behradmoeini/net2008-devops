@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Week 11 lab self-check (NET2008 DevOps).
 
-Run it from inside your lab folder (bytown-iac), after Part 4:
+Run it from inside your lab folder (bytown-iac), after Part 5:
 
     python3 /path/to/W11_Lab_selfcheck.py --seed 17
 
@@ -52,7 +52,7 @@ def main():
           f'ip: "192.168.56.{10 + seed}"' in vf and "private_network" in vf, 1)
     check(1, f'The Vagrantfile has the provisioning line for seed={seed}', f"seed={seed}" in vf and "provision" in vf and "ubuntu/jammy64" in vf, 1)
 
-    # ---- Part 2 (6 points)
+    # ---- Part 2 (5 points)
     tf = root / "terraform"
     main_tf, var_tf, out_tf = read("terraform/main.tf"), read("terraform/variables.tf"), read("terraform/outputs.tf")
     check(2, "main.tf, variables.tf and outputs.tf exist and use the Docker provider, a network and count",
@@ -71,43 +71,57 @@ def main():
         m = re.match(r"^\s*(\w+)\s*=\s*(\d+)\s*$", line)
         if m:
             tfvars[m.group(1)] = int(m.group(2))
-    check(2, f"terraform.tfvars has seed = {seed}", tfvars.get("seed") == seed, 1)
     out2 = read("evidence/part2-output.txt")
-    check(2, f"evidence/part2-output.txt lists the ports {8500 + seed} and {8501 + seed}", f":{8500 + seed}" in out2 and f":{8501 + seed}" in out2, 1)
+    check(2, f"terraform.tfvars has seed = {seed} and evidence/part2-output.txt lists the ports {8500 + seed} and {8501 + seed}",
+          tfvars.get("seed") == seed and f":{8500 + seed}" in out2 and f":{8501 + seed}" in out2, 1)
     c0, c1 = read("evidence/part2-curl0.txt"), read("evidence/part2-curl1.txt")
     check(2, "The two evidence pages show your seed and instance 0 and 1",
           f"Seed: {seed}, instance: 0" in c0 and f"Seed: {seed}, instance: 1" in c1, 1)
 
-    # ---- Part 3 (4 points)
+    # ---- Part 3 (3 points)
     plan = read("evidence/part3-plan.txt")
-    check(3, "evidence/part3-plan.txt shows the drift: Plan: 1 to add, 0 to change, 0 to destroy", "Plan: 1 to add, 0 to change, 0 to destroy" in plan, 2)
+    check(3, "evidence/part3-plan.txt shows the drift: Plan: 1 to add, 0 to change, 0 to destroy", "Plan: 1 to add, 0 to change, 0 to destroy" in plan, 1)
     st = read("evidence/part3-state.txt")
     n = len(re.findall(r"docker_container\.web\[\d+\]", st))
     check(3, "evidence/part3-state.txt lists three containers", n == 3, 1)
     check(3, f"evidence/part3-curl2.txt shows instance 2 with your seed", f"Seed: {seed}, instance: 2" in read("evidence/part3-curl2.txt"), 1)
 
-    # ---- Part 4 (4 points)
+    # ---- Part 4 (3 points)
     rc, tracked = run("git", "ls-files", cwd=root)
     files = tracked.splitlines() if rc == 0 else []
     rc, ever = run("git", "log", "--all", "--name-only", "--format=", cwd=root)
     everything = set(files) | set(ever.splitlines())
     check(4, "No .tfstate file was ever committed", not any(".tfstate" in f for f in everything), 1)
     ign = [l.strip() for l in read(".gitignore").splitlines()]
-    check(4, ".gitignore lists .terraform/ and *.tfstate", ".terraform/" in ign and "*.tfstate" in ign, 1)
-    check(4, "terraform/.terraform.lock.hcl is committed", "terraform/.terraform.lock.hcl" in files, 1)
+    check(4, ".gitignore lists .terraform/ and *.tfstate, and terraform/.terraform.lock.hcl is committed",
+          ".terraform/" in ign and "*.tfstate" in ign and "terraform/.terraform.lock.hcl" in files, 1)
     rc, left = run("docker", "ps", "-a", "--filter", f"name=bytown-tf-{seed}", "--format", "{{.Names}}")
     after = read("evidence/part4-after-destroy.txt")
     check(4, "Everything is destroyed: no container is left and the proof file shows only the header",
           rc == 0 and left == "" and "bytown-tf" not in after.replace("name=", "") and "CONTAINER ID" in after, 1)
 
     # ---- Part 5 (3 points)
+    cloud = read("cloud/main.tf")
+    check(5, f"cloud/main.tf uses the AWS provider and your seed ({seed}) in the network address and names",
+          "hashicorp/aws" in cloud and f"10.{seed}.0.0/16" in cloud and f"bytown-web-{seed}" in cloud
+          and "aws_vpc" in cloud and "aws_instance" in cloud, 1)
+    if run("terraform", "version")[0] == 0 and (root / "cloud/.terraform").exists():
+        rc, out = run("terraform", "fmt", "-check", cwd=root / "cloud")
+        check(5, "cloud: terraform fmt -check passes", rc == 0, 1)
+        rc, out = run("terraform", "validate", "-no-color", cwd=root / "cloud")
+        check(5, "cloud: terraform validate passes", rc == 0 and "valid" in out.lower(), 1)
+    else:
+        check(5, "cloud: terraform fmt -check passes (run terraform init in cloud/ first)", False, 1)
+        check(5, "cloud: terraform validate passes (run terraform init in cloud/ first)", False, 1)
+
+    # ---- Part 6 (3 points)
     ans = {}
     for line in read("answers.txt").splitlines():
-        m = re.match(r"^\s*Q([1-3])\s*:\s*(.*)$", line)
+        m = re.match(r"^\s*Q([1-4])\s*:\s*(.*)$", line)
         if m:
             ans[int(m.group(1))] = m.group(2).strip()
-    good = all(len(ans.get(i, "")) >= 20 and "replace this" not in ans[i] for i in (1, 2, 3))
-    check(5, "answers.txt has real answers for Q1 to Q3 (your instructor reads them)", good, 3)
+    good = all(len(ans.get(i, "")) >= 20 and "replace this" not in ans[i] for i in (1, 2, 3, 4))
+    check(6, "answers.txt has real answers for Q1 to Q4 (your instructor reads them)", good, 3)
 
     total = sum(p for *_, ok, p in results if ok)
     maxp = sum(p for *_, p in results)
