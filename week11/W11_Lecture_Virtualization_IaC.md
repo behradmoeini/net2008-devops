@@ -134,7 +134,7 @@ What you get from this:
 - **Repeat:** run it again and get the same result. Need a copy for testing? Run it twice.
 - **Undo:** go back to an older version of the file.
 
-**Three tools, three jobs:**
+#### Three tools, three jobs
 
 | Tool | What it does | Example | This week |
 |---|---|---|---|
@@ -144,7 +144,7 @@ What you get from this:
 
 Three separate jobs. **Vagrant gives a developer a test VM. Terraform creates the real servers. Ansible puts the website on them.** We look at each one in the order of the table.
 
-### Vagrant in one picture
+#### Vagrant
 
 You write the VM you want in one small file called a `Vagrantfile`: which Ubuntu version, how much memory, which network address. Then one command, `vagrant up`, builds that VM on your laptop using VirtualBox. Another command, `vagrant destroy`, deletes it.
 
@@ -154,7 +154,7 @@ You write the VM you want in one small file called a `Vagrantfile`: which Ubuntu
 Vagrantfile (what VM you want) --vagrant up--> a VM on your laptop (VirtualBox)
 ```
 
-### Terraform in one picture
+#### Terraform
 
 You write the **desired state** in `.tf` files: what you want to exist. The language is called HCL and is easy to read. Terraform compares your file with what exists now, and does only the work needed to match.
 
@@ -177,7 +177,7 @@ terraform.tfstate (what Terraform believes exists) <------------ updated after e
 | **State** | Terraform's notebook of what it has built. **Never edit it by hand.** | "I made web server 0 and web server 1." |
 | **Plan** | A preview of the changes. Always read it before you apply. | "I will add 2 things." |
 
-### Ansible in one picture
+#### Ansible
 
 Terraform makes the empty server. **Ansible** logs in to it and sets up the inside: installs the web server, copies the website files, starts the service. You write the steps in a file called a **playbook**.
 
