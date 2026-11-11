@@ -475,13 +475,31 @@ Before you create anything, play with Cloud Shell. These commands only read info
 az account show --output table  # Who you are and which subscription you are using. You should see Azure for Students.
 ```
 
+**Check the `Name` column. It must say `Azure for Students`.** If it shows another name (some school accounts also have a school subscription, and Azure may pick that one first), switch to yours. Otherwise the next steps fail with `AuthorizationFailed`:
+
+```bash
+az account list --all --output table  # List every subscription you can use. Find the one named Azure for Students.
+```
+
+```bash
+az account set --subscription "Azure for Students"  # Make it the active one. Then run az account show again to check.
+```
+
 ```bash
 az group list --output table  # The resource groups that exist. A new account has none (or only a few).
 ```
 
 ```bash
-az vm list-sizes --location canadacentral --query "[?name=='Standard_B1s'].{Name:name, CPUs:numberOfCores, MemoryMB:memoryInMb}" --output table  # The size of VM we will use: 1 CPU and about 1 GB of memory.
+az vm list-skus --location canadacentral --size Standard_B1s --resource-type virtualMachines --output table  # Is the VM size we will use (1 CPU, about 1 GB of memory) available in this region? Read the Restrictions column.
 ```
+
+**Restrictions** must be empty. If it says `NotAvailableForSubscription`, your account may not use this region. Find the regions where the size is allowed (this can take a minute):
+
+```bash
+az vm list-skus --size Standard_B1s --resource-type virtualMachines --query '[?length(restrictions)==`0`].locationInfo[0].location' --output tsv  # List the regions where the size is allowed for you.
+```
+
+Pick one region from that list and use it instead of `canadacentral` in every command below.
 
 #### 4. Create a VM
 
@@ -491,7 +509,7 @@ az group create --name iac-practice-rg --location canadacentral  # Create a reso
 
 If Azure says the region is not allowed for your subscription, the error lists the allowed regions. Replace `canadacentral` with one of them everywhere in this lesson.
 
-If it says `AuthorizationFailed`, your school account is not allowed to create resources in that subscription. This is a rule of the school's Azure setup, not a typing mistake. See the troubleshooting table at the end. You can still read the rest of this section.
+If it says `AuthorizationFailed`, you are probably using the wrong subscription. Go back to step 3 and check that `az account show` says Azure for Students. See also the troubleshooting table at the end.
 
 ```bash
 az vm create --resource-group iac-practice-rg --name cloud-vm --image Ubuntu2204 --size Standard_B1s --admin-username student --generate-ssh-keys --output table  # Create the VM. It takes about a minute. The table at the end shows its public IP address.
@@ -1182,7 +1200,7 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | Docker stops working after installing VirtualBox (Windows) | They can conflict. Uninstall VirtualBox and skip the VM hands-on. |
 | `az vm create` says the size or region is not available | Try `--size Standard_B2s`, or another region from the error message. |
 | Azure says the subscription cannot use that region | The error lists the allowed regions. Use one of them. |
-| `AuthorizationFailed` when you create a resource group | Your school account cannot create resources in that subscription (some colleges restrict it). Run `az account list --output table` to see if you have another subscription. If not, skip the Azure hands-on: the lab does not need an account. |
+| `AuthorizationFailed` when you create a resource group | You are probably using the wrong subscription (a school one, not Azure for Students). Run `az account show --output table`: if the Name is not Azure for Students, run `az account set --subscription "Azure for Students"` and try again. If that subscription is not in `az account list --all`, or you still get the error, skip the Azure hands-on: the lab does not need an account. |
 | Azure student sign-up refuses your email | Use your school email. If it still fails, skip the Azure parts: the lab does not need an account. |
 
 ## Summary
