@@ -52,9 +52,9 @@ Virtual machines on a laptop depend on the processor. The Week 11 lab is written
 | Your computer | VM by hand | `vagrant up` |
 |---|---|---|
 | Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | VirtualBox | Yes |
-| Mac with Apple silicon (M1 to M4) | **UTM** (VirtualBox cannot run Intel Ubuntu there) | **No.** You can still install Vagrant and run `vagrant validate`. |
-| Windows with an ARM chip, Windows 11 **Pro or Enterprise** | **Hyper-V** (built into Windows; the lecture shows the steps) | **No.** You can still install Vagrant and run `vagrant validate`. |
-| Windows with an ARM chip, Windows 11 **Home** | None (Home has no Hyper-V). Skip the hands-on. | **No.** |
+| Mac with Apple silicon (M1 to M4) | **UTM** | Yes, with VirtualBox 7.2 and the ARM version of the box |
+| Windows with an ARM chip, Windows 11 **Pro or Enterprise** | **Hyper-V** (built into Windows; the lecture shows the steps) | Maybe: VirtualBox 7.2 on Windows ARM is experimental and untested here. If it fails, run `vagrant validate`. |
+| Windows with an ARM chip, Windows 11 **Home** | None (Home has no Hyper-V). Skip the hands-on. | Maybe, same as above. |
 
 VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox.
 
@@ -78,7 +78,7 @@ macOS asks you to allow the VirtualBox system extension in System Settings > Pri
 Mac with Apple silicon:
 
 ```bash
-brew install --cask utm vagrant
+brew install --cask utm virtualbox vagrant
 ```
 
 Ubuntu or Debian Linux on Intel or AMD (the HashiCorp repository from section 1 must be added first):

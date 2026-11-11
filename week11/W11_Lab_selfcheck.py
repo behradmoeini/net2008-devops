@@ -50,7 +50,7 @@ def main():
     check(1, f'The Vagrantfile has the host name bytown-vm-{seed}', f'config.vm.hostname = "bytown-vm-{seed}"' in vf, 1)
     check(1, f'The Vagrantfile has the private address 192.168.56.{10 + seed}',
           f'ip: "192.168.56.{10 + seed}"' in vf and "private_network" in vf, 1)
-    check(1, f'The Vagrantfile has the provisioning line for seed={seed}', f"seed={seed}" in vf and "provision" in vf and "ubuntu/jammy64" in vf, 1)
+    check(1, f'The Vagrantfile has the provisioning line for seed={seed}', f"seed={seed}" in vf and "provision" in vf and "bento/ubuntu-24.04" in vf, 1)
 
     # ---- Part 2 (5 points)
     tf = root / "terraform"

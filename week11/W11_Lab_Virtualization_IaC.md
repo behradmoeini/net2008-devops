@@ -57,7 +57,8 @@ Your VM has a host name and an address that use your seed. The address is `192.1
 ```bash
 cat > vagrant/Vagrantfile <<EOF
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/jammy64"
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.box_version = "202510.26.0"
   config.vm.hostname = "bytown-vm-$SEED"
   config.vm.network "private_network", ip: "192.168.56.$((10 + SEED))"
   config.vm.provider "virtualbox" do |vb|
@@ -79,7 +80,7 @@ cat vagrant/Vagrantfile  # Check that your seed appears in the host name, the ad
 cd vagrant && vagrant validate | tee ../evidence/part1-validate.txt; cd ..  # Check the Vagrantfile and save the result. You must see "Vagrantfile validated successfully."
 ```
 
-Starting the VM (`vagrant up`) is **optional** and not graded. It works on Windows, Intel Mac and Linux with VirtualBox, but not on a Mac with Apple silicon. If you do it, run `vagrant destroy -f` afterwards.
+Starting the VM (`vagrant up`) is **optional** and not graded. It works with VirtualBox on Windows, Mac (Intel and Apple silicon) and Linux. It may not work on a Windows laptop with an ARM chip. If you do it, run `vagrant destroy -f` afterwards.
 
 **If you did not install Vagrant**, skip the validate command. Your Vagrantfile is checked by reading it, and you lose no marks.
 

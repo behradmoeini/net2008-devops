@@ -106,7 +106,7 @@ The processor of your laptop decides which tool you use. Find your row and remem
 
 How to check your chip: on a Mac open the Apple menu > **About This Mac** and read **Chip**. On Windows open **Settings > System > About** and read **System type**. On Linux run `uname -m`: `x86_64` means Intel or AMD, `aarch64` or `arm64` means ARM.
 
-**Why different tools?** A VM must match the processor of the host. An ARM laptop can only run ARM systems, so it needs the **arm64** Ubuntu ISO. VirtualBox on an Apple silicon Mac does not officially support Ubuntu on ARM, so those Macs use UTM, which is built for Apple silicon. Windows on ARM uses Hyper-V.
+**Why different tools?** A VM must match the processor of the host. An ARM laptop can only run ARM systems, so it needs the **arm64** Ubuntu ISO. VirtualBox on an Apple silicon Mac does run Ubuntu for ARM (Vagrant uses it below), but installing from an ISO there is not an officially supported route, so for the VM by hand those Macs use UTM, which is built for Apple silicon. Windows on ARM uses Hyper-V.
 
 #### 1. Download the Ubuntu Server ISO
 
@@ -265,25 +265,25 @@ Shut the VM down with `sudo poweroff`. Then:
 
 #### Who can run Vagrant?
 
-Be honest about this: **not every laptop can run `vagrant up`.** Use the same tag you found above.
+Vagrant needs two things that match your processor: **VirtualBox**, and a **box** (the ready-made Ubuntu image). The box in this lesson, `bento/ubuntu-24.04`, is published for both Intel/AMD and ARM, and Vagrant picks the right one by itself. Use the same tag you found above.
 
 | Tag | Your computer | Can you run `vagrant up`? |
 |---|---|---|
 | **A** | Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | Yes, with VirtualBox. On Windows install Vagrant in **Windows**, not in the Ubuntu terminal. |
-| **B** | Mac with Apple silicon | **No.** The box in this lesson is built for Intel. VirtualBox on Apple silicon runs only ARM systems, and there is no reliable Ubuntu setup for it. **Use Multipass instead** (below): the same idea, a VM from a file. |
-| **C** and **D** | Windows with an ARM chip | **No**, for the same reason. There is no tool we can confirm for these laptops, so read the Vagrantfile and run `vagrant validate`. |
+| **B** | Mac with Apple silicon | Yes, with VirtualBox 7.2 and the ARM version of the box. Tested on an M-series Mac. |
+| **C** and **D** | Windows with an ARM chip | Maybe. VirtualBox 7.2 runs on Windows on ARM (marked experimental by Oracle) and the box exists for ARM, but we have not tested it. Try it. If `vagrant up` fails, stop at `vagrant validate`. |
 
-There is no single setup that lets every laptop run it, so the lab does not require it. **Everyone writes the Vagrantfile and runs `vagrant validate`**, which works on every system once Vagrant is installed. Only students who can run `vagrant up` should do it. This is a lab choice, not a penalty: you lose no marks.
+**Everyone writes the Vagrantfile and runs `vagrant validate`**, which works on every system once Vagrant is installed. `vagrant up` is not graded: if it does not work on your laptop, you lose no marks.
 
 #### Install Vagrant
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
 
-Mac (Intel or Apple silicon: the install works on both, but `vagrant up` only works on Intel):
+Mac (Intel or Apple silicon):
 
 ```bash
-brew install --cask vagrant  # Install Vagrant.
+brew install --cask virtualbox vagrant  # Install VirtualBox (Vagrant uses it) and Vagrant. On a Mac, VirtualBox asks you to allow its system extension in System Settings > Privacy & Security. Allow it and restart.
 ```
 
 Linux (Ubuntu or Debian), after adding the HashiCorp repository from the [setup guide](W11_Setup_Terraform.md):
@@ -303,6 +303,12 @@ Vagrant must be installed in **Windows**, not in the Ubuntu terminal. Open **Pow
 winget install --id Hashicorp.Vagrant -e  # Install Vagrant.
 ```
 
+Tag C and D (Windows on ARM): Vagrant also needs VirtualBox, which you have not installed yet, so run this too:
+
+```powershell
+winget install --id Oracle.VirtualBox -e  # Install VirtualBox.
+```
+
 Close PowerShell and open a new one (not as Administrator).
 
 </details>
@@ -317,7 +323,8 @@ This `Vagrantfile` describes one Ubuntu VM:
 
 ```ruby
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/jammy64"
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.box_version = "202510.26.0"
   config.vm.hostname = "demo-vm"
   config.vm.network "private_network", ip: "192.168.56.20"
   config.vm.provider "virtualbox" do |vb|
@@ -330,7 +337,8 @@ end
 
 | Line | In plain words |
 |---|---|
-| `config.vm.box` | Start from this ready-made Ubuntu image (the box) |
+| `config.vm.box` | Start from this ready-made Ubuntu image (the box). It exists for Intel and ARM. |
+| `config.vm.box_version` | Use exactly this version of the box, so everyone gets the same VM |
 | `config.vm.hostname` | Name the VM `demo-vm` |
 | `config.vm.network "private_network"` | A host-only network (see the networking table) with this address |
 | `vb.memory`, `vb.cpus` | 1 GB of memory and 1 CPU |
@@ -363,14 +371,14 @@ New-Item -ItemType Directory -Force ~/iac-practice/vm | Out-Null; Set-Location ~
 The commands below are the same on every system.
 
 ```bash
-vagrant init ubuntu/jammy64  # Create a Vagrantfile for that box. Open it and compare with the one above.
+vagrant init bento/ubuntu-24.04 --box-version 202510.26.0  # Create a Vagrantfile for that box. Open it and compare with the one above.
 ```
 
 ```bash
 vagrant validate  # Check that the Vagrantfile is correct. It does not start anything. Everyone can run this one.
 ```
 
-**You should see** `Vagrantfile validated successfully.` If your laptop cannot run VMs (Apple silicon), stop here. The rest of this section is for Windows, Intel Mac and Linux.
+**You should see** `Vagrantfile validated successfully.` If `vagrant up` does not work on your laptop (for example a Windows on ARM laptop), stop here: validating is enough.
 
 ```bash
 vagrant up  # Download the box, create the VM and start it. The first time takes several minutes.
@@ -393,53 +401,6 @@ Run `vagrant up` once more: the same VM comes back. That is the point.
 | `vagrant halt` | Shut it down (keeps the disk) |
 | `vagrant destroy` | Delete it |
 | `vagrant status` | Show the state |
-
-#### Tag B (Apple silicon): the same idea with Multipass
-
-**Multipass** is a tool from the makers of Ubuntu. It builds an Ubuntu VM with one command, and it runs on Apple silicon. Instead of a `Vagrantfile`, it reads a small config file. The idea is the same: the VM is described in a file, built with one command, and deleted with one command.
-
-```bash
-brew install --cask multipass  # Install Multipass. It asks for your password.
-```
-
-```bash
-mkdir -p ~/iac-practice/vm && cd ~/iac-practice/vm  # Create a folder for the VM and move into it.
-```
-
-```bash
-cat > demo-vm.yaml <<'EOF'
-#cloud-config
-write_files:
-  - path: /etc/demo-greeting
-    content: hello
-EOF
-```
-
-This file does the same job as the `provision` line of the Vagrantfile: it puts the word `hello` in the file `/etc/demo-greeting` the first time the VM starts.
-
-```bash
-multipass launch 24.04 --name demo-vm --cpus 1 --memory 1G --disk 5G --cloud-init demo-vm.yaml  # Download Ubuntu 24.04 and create the VM. The first time takes a few minutes.
-```
-
-```bash
-multipass list  # Your VM, its state and its address.
-```
-
-```bash
-multipass exec demo-vm -- bash -c "hostname && cat /etc/demo-greeting"  # Run commands inside the VM. You should see the name demo-vm and the word hello.
-```
-
-```bash
-multipass delete demo-vm --purge  # Delete the VM. The config file stays: you can rebuild it any time.
-```
-
-| Multipass command | Vagrant equivalent |
-|---|---|
-| `multipass launch ...` | `vagrant up` |
-| `multipass shell demo-vm` | `vagrant ssh` |
-| `multipass stop demo-vm` | `vagrant halt` |
-| `multipass delete demo-vm --purge` | `vagrant destroy` |
-| `multipass list` | `vagrant status` |
 
 **Where Vagrant stops.** Vagrant builds VMs on **your own computer**. Your laptop has limited memory, and a teammate cannot reach your VM. For a real website you need machines that are always on and bigger than a laptop. That is the cloud.
 
@@ -1223,7 +1184,8 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | `Error acquiring the state lock` | A previous run was killed. Wait a minute, or `terraform force-unlock ID` (the ID is in the message). |
 | `terraform: command not found` | Terraform is not installed in this terminal. See [W11_Setup_Terraform.md](W11_Setup_Terraform.md). |
 | Windows: Docker works in Ubuntu but Terraform does not | Run Terraform in the **Ubuntu** terminal, with Docker Desktop's WSL integration on. |
-| `vagrant up` fails with `platform architecture x86 is not supported on ARM` | Your laptop has an ARM chip (Apple silicon). VirtualBox cannot run Intel VMs there. Run `vagrant destroy -f` and `vagrant box remove ubuntu/jammy64`, then stop at `vagrant validate`. You lose no marks. |
+| `vagrant up` fails with `platform architecture x86 is not supported on ARM` | You are using an Intel-only box (such as `ubuntu/jammy64`) on an ARM laptop. Run `vagrant destroy -f`, use `bento/ubuntu-24.04` as in this lesson, and run `vagrant up` again. |
+| `vagrant up` cannot start the VM on an Apple silicon Mac | Run `VBoxManage setextradata global "VBoxInternal/Devices/pcbios/0/Config/DebugLevel"` once, then try again. (This clears a VirtualBox setting that HashiCorp's guide says can block ARM VMs.) |
 | Hyper-V: the Ubuntu VM shows a Secure Boot error or will not start | Turn Secure Boot off: VM **Settings > Security**, untick **Enable Secure Boot**. |
 | Hyper-V: the VM freezes while installing | VM **Settings > Processor**: set the number of virtual processors to 1. |
 | Docker stops working after installing VirtualBox (Windows) | They can conflict. Uninstall VirtualBox and skip the VM hands-on. |
@@ -1234,7 +1196,7 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 
 ## Summary
 
-- **Virtualization:** one computer runs several complete virtual computers (VMs) through a hypervisor. A VM has its own OS; a container shares the host's kernel. Vagrant describes a VM in a file so it can be rebuilt with one command, but not every laptop can run it.
+- **Virtualization:** one computer runs several complete virtual computers (VMs) through a hypervisor. A VM has its own OS; a container shares the host's kernel. Vagrant describes a VM in a file so it can be rebuilt with one command.
 - **Cloud:** rented computers, billed by the hour. A cloud VM is the same kind of VM, in the provider's data centre. You secure what you put in it, and you delete what you do not need.
 - **Infrastructure as Code:** you write the infrastructure you want in text files in Git, and a tool builds it. That makes it reviewable and repeatable.
 - **Terraform:** workflow `init`, `plan`, `apply`, `destroy`. Always read the plan. State is Terraform's notebook: never edit it, never commit it. A hand change causes drift, and `apply` repairs it.
