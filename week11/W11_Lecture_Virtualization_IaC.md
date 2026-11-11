@@ -136,25 +136,25 @@ What you get from this:
 
 #### Three tools, three jobs
 
-| Tool | What it does | Example | This week |
-|---|---|---|---|
-| **Vagrant** | Creates a VM on your own computer, for testing | The developer runs one command and gets a fresh Ubuntu VM to test the website. | Read a `Vagrantfile`. Run it if your laptop can. |
-| **Terraform** | Creates servers and networks, in the cloud or on your laptop | One file says "make a network and two web servers", and Terraform makes them. | You build real infrastructure (Docker containers) |
-| **Ansible** | Sets up the **inside** of a server: installs software, copies files | After the servers exist, it installs the web server software and the website on them. | Week 12 |
-
-Three separate jobs. **Vagrant gives a developer a test VM. Terraform creates the real servers. Ansible puts the website on them.** We look at each one in the order of the table.
+Bytown Pizza uses three tools. Each one has a different job: **Vagrant gives a developer a test VM, Terraform creates the real servers, and Ansible puts the website on them.** Here is each one.
 
 #### Vagrant
 
+**What it does:** creates a VM on your own computer, for testing.
+
 You write the VM you want in one small file called a `Vagrantfile`: which Ubuntu version, how much memory, which network address. Then one command, `vagrant up`, builds that VM on your laptop using VirtualBox. Another command, `vagrant destroy`, deletes it.
 
-**At Bytown Pizza:** the developer's test VM is described in a `Vagrantfile` kept in Git. If she breaks the VM, she deletes it and runs `vagrant up` to get a fresh, identical one in a few minutes. A new teammate gets the same VM by running the same file. You will read a `Vagrantfile` in Step 1.
+**At Bytown Pizza:** the developer's test VM is described in a `Vagrantfile` kept in Git. If she breaks the VM, she deletes it and runs `vagrant up` to get a fresh, identical one in a few minutes. A new teammate gets the same VM by running the same file.
 
 ```text
 Vagrantfile (what VM you want) --vagrant up--> a VM on your laptop (VirtualBox)
 ```
 
+**This week:** you read a `Vagrantfile` in Step 1, and run it if your laptop can.
+
 #### Terraform
+
+**What it does:** creates servers and networks, in the cloud or on your laptop.
 
 You write the **desired state** in `.tf` files: what you want to exist. The language is called HCL and is easy to read. Terraform compares your file with what exists now, and does only the work needed to match.
 
@@ -177,15 +177,21 @@ terraform.tfstate (what Terraform believes exists) <------------ updated after e
 | **State** | Terraform's notebook of what it has built. **Never edit it by hand.** | "I made web server 0 and web server 1." |
 | **Plan** | A preview of the changes. Always read it before you apply. | "I will add 2 things." |
 
+**This week:** you build real infrastructure with Terraform (Docker containers) in Steps 2 to 10.
+
 #### Ansible
+
+**What it does:** sets up the **inside** of a server: installs software and copies files.
 
 Terraform makes the empty server. **Ansible** logs in to it and sets up the inside: installs the web server, copies the website files, starts the service. You write the steps in a file called a **playbook**.
 
-**At Bytown Pizza:** Terraform creates the two web servers, then Ansible installs the ordering website on both of them with one command. This is next week (Week 12), so you do not need to learn it today.
+**At Bytown Pizza:** Terraform creates the two web servers, then Ansible installs the ordering website on both of them with one command.
 
 ```text
 Terraform --> empty servers exist --> Ansible --> website installed and running
 ```
+
+**This week:** nothing. Ansible is Week 12, so you do not need to learn it today.
 
 ---
 ## Step 1. Vagrant: a VM as code (read, and run if you can)
