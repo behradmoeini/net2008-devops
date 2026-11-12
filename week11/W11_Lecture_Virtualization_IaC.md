@@ -11,8 +11,6 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 
 ## The big picture
 
-This is a short introduction. Nothing here needs to be memorized: it explains why we spend a whole class on this.
-
 In Week 9 you ran programs in containers. In Week 10 you ran many containers on a cluster. Both assumed one thing: **a computer to run them on**. This week asks where those computers come from, and how to create them quickly and the same way every time.
 
 There are three problems. Each section of today's class solves one.
@@ -20,14 +18,12 @@ There are three problems. Each section of today's class solves one.
 | Problem | The idea that solves it | What we use today |
 |---|---|---|
 | "I need a separate Linux system, but I have one laptop." | **Virtualization**: one physical computer runs several virtual computers (VMs). | VirtualBox or UTM, then Vagrant |
-| "I do not want to buy and look after servers. I need 1 today and 100 tomorrow." | **Cloud**: rent computers from a provider and pay by the hour. | Azure |
+| "I do not want to own servers. I need 1 today and 100 tomorrow." | **Cloud**: rent computers from a provider and pay by the hour. | Azure |
 | "Creating machines by clicking is slow, and nobody can repeat it exactly." | **Infrastructure as Code (IaC)**: write the machines you want in a file, and a tool builds them. | Terraform |
 
-![Three problems and three ideas: virtualization (VirtualBox, Vagrant) answers "I need another Linux system but I have one laptop"; the cloud (Azure) answers "I do not want to buy and look after servers"; Infrastructure as Code (Terraform) answers "clicking is slow and nobody can repeat it exactly"](images/three-problems.svg)
+![Three problems and three ideas: virtualization (VirtualBox, Vagrant) answers "I need another Linux system but I have one laptop"; the cloud (Azure) answers "I do not want to own servers"; Infrastructure as Code (Terraform) answers "clicking is slow and nobody can repeat it exactly"](images/three-problems.svg)
 
-Ansible, the tool that sets up the **inside** of a server, is next week (Week 12). Today we only create the servers.
-
-**Rough plan for the class:** virtualization about 45 minutes (VM by hand, then Vagrant), cloud about 25 minutes, Terraform about 50 minutes. These times are estimates.
+Ansible, the tool that configures the **inside** of a server, is next week (Week 12). Today we only create the servers.
 
 ## Virtualization
 
@@ -37,27 +33,26 @@ Ansible, the tool that sets up the **inside** of a server, is next week (Week 12
 
 **Example:** your laptop runs macOS or Windows. With a hypervisor you start Ubuntu Linux in a window, log in, install software, break it, and delete it. Your real system is not touched.
 
-### How is a VM different from a container?
+**How is a VM different from a container?**
 
 Containers solve a similar problem in a different way.
 
 | | Virtual machine | Container |
 |---|---|---|
 | What it is | A whole computer in software | A packaged program in an isolated process |
-| Operating system | Its **own** kernel and OS | **Shares** the kernel of the host |
+| Operating system | Its **own** kernel | **Shares** the kernel of the host |
 | Size | Gigabytes | Megabytes |
 | Starts in | Seconds to minutes | Under a second |
 | Isolation | Strong: separate system | Good, but weaker |
-| Can run a different OS than the host? | Yes (Linux VM on a Mac) | No: it uses the host's kernel |
-| Use it when | You need a full separate system | You need to run an application the same way everywhere |
+| Use it when | You need full isolation | You need to run an application to standardize the application execution everywhere. |
 
 ![Containers vs virtual machines: each VM carries its own guest OS on a hypervisor; containers share the host OS through Docker Engine](../week09/images/container-vs-vm.svg)
 
 VMs and containers are often used together. In the cloud, your containers usually run **inside** VMs.
 
-### Two kinds of hypervisor
+### Hypervisors
 
-The only difference is **where the hypervisor sits**. Both are ordinary software.
+A **hypervisor** is the program that creates and runs VMs. There are two kinds, and the only difference is **where the hypervisor sits**. Both are ordinary software.
 
 | | Type 1 ("bare metal") | Type 2 ("hosted") |
 |---|---|---|
@@ -76,7 +71,7 @@ A VM has a virtual network card. You choose how it connects:
 | Mode | What the VM can reach | Who can reach the VM | Use it for |
 |---|---|---|---|
 | **NAT** | The internet, through your laptop | Nobody (unless you forward a port) | Downloading updates. This is the default. |
-| **Host-only** (private network) | Your laptop and other VMs only | Your laptop | A private lab with a fixed address |
+| **Host-only** (private network) | Your laptop and other VMs only | Your laptop and other VMs | A private lab with a fixed address |
 | **Bridged** | The real network, like a separate computer | Anyone on that network | A VM that your phone or a classmate must reach |
 
 ![Three ways to connect a VM to the network: with NAT the VM reaches the internet through your laptop and nobody can reach the VM; with host-only the VM talks only to your laptop and other VMs; with bridged the VM gets its own address on your real network](images/vm-networking.svg)
@@ -130,13 +125,7 @@ sudo apt update && sudo apt install -y virtualbox  # Install VirtualBox.
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-The Windows commands in this section use **winget**, the Windows package installer. Most Windows 11 laptops already have it. If not, download it here: <https://aka.ms/getwinget>. It downloads a file ending in `.msixbundle`. Double-click it and click **Install**.
-
-Now open **PowerShell as Administrator** (right-click the Start button, choose Terminal (Admin)):
-
-```powershell
-winget install --id Oracle.VirtualBox -e  # Install VirtualBox.
-```
+Download VirtualBox from <https://www.virtualbox.org/wiki/Downloads>. Click **Windows hosts** and run the file you downloaded. Click **Next** and keep the default options. Click **Yes** if Windows asks for permission. When it finishes, click **Finish**.
 
 VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox and read the rest of this section without doing the hands-on.
 
@@ -285,7 +274,7 @@ sudo apt update && sudo apt install -y vagrant  # Install Vagrant.
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-Vagrant must be installed in **Windows**, not in the Ubuntu terminal. It uses winget (see the download link in the Install the hypervisor section above). Then open **PowerShell as Administrator**:
+Vagrant must be installed in **Windows**, not in the Ubuntu terminal. Open **PowerShell as Administrator**:
 
 ```powershell
 winget install --id Hashicorp.Vagrant -e  # Install Vagrant.
@@ -541,7 +530,7 @@ Three tools, three jobs:
 |---|---|---|
 | **Vagrant** | A VM on your own computer | You already used it |
 | **Terraform** | Creates infrastructure: VMs, networks, containers, in any cloud or on your laptop | The rest of this class |
-| **Ansible** | Sets up the **inside** of a server: packages, files, services | Week 12 |
+| **Ansible** | Configures the **inside** of a server: packages, files, services | Week 12 |
 
 Terraform creates the empty servers. Ansible installs the software on them.
 
