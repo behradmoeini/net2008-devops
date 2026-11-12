@@ -130,7 +130,9 @@ sudo apt update && sudo apt install -y virtualbox  # Install VirtualBox.
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-Open **PowerShell as Administrator** (right-click the Start button, choose Terminal (Admin)):
+The Windows commands in this section use **winget**, the Windows package installer. Most Windows 11 laptops already have it. If not, download it here: <https://aka.ms/getwinget>. It downloads a file ending in `.msixbundle`. Double-click it and click **Install**.
+
+Now open **PowerShell as Administrator** (right-click the Start button, choose Terminal (Admin)):
 
 ```powershell
 winget install --id Oracle.VirtualBox -e  # Install VirtualBox.
@@ -283,7 +285,7 @@ sudo apt update && sudo apt install -y vagrant  # Install Vagrant.
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-Vagrant must be installed in **Windows**, not in the Ubuntu terminal. Open **PowerShell as Administrator**:
+Vagrant must be installed in **Windows**, not in the Ubuntu terminal. It uses winget (see the download link in the Install the hypervisor section above). Then open **PowerShell as Administrator**:
 
 ```powershell
 winget install --id Hashicorp.Vagrant -e  # Install Vagrant.
