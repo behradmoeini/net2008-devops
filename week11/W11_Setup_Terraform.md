@@ -91,17 +91,12 @@ sudo apt update && sudo apt install -y virtualbox vagrant
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-**Vagrant must be installed in Windows, not in Ubuntu.** Open **PowerShell as Administrator** (right-click the Start button, choose Terminal (Admin)):
+**Vagrant must be installed in Windows, not in Ubuntu.** Download and run the installers (click **Yes** if Windows asks for permission):
 
-```powershell
-winget install --id Oracle.VirtualBox -e
-```
+- VirtualBox: <https://www.virtualbox.org/wiki/Downloads> (click **Windows hosts**)
+- Vagrant: <https://developer.hashicorp.com/vagrant/install> (click the **Windows** installer)
 
-```powershell
-winget install --id Hashicorp.Vagrant -e
-```
-
-Close PowerShell, open a new one (not as Administrator), and check:
+Close PowerShell, open a new one, and check:
 
 ```powershell
 vagrant --version

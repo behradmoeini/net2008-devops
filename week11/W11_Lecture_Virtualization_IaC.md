@@ -274,19 +274,13 @@ sudo apt update && sudo apt install -y vagrant  # Install Vagrant.
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-Vagrant must be installed in **Windows**, not in the Ubuntu terminal. Open **PowerShell as Administrator**:
+Vagrant must be installed in **Windows**, not in the Ubuntu terminal.
 
-```powershell
-winget install --id Hashicorp.Vagrant -e  # Install Vagrant.
-```
+Download Vagrant from <https://developer.hashicorp.com/vagrant/install>. Click the **Windows** installer, run the file, click **Next** and keep the defaults. Click **Yes** if Windows asks for permission.
 
-Tag C and D (Windows on ARM): Vagrant also needs VirtualBox, which you have not installed yet, so run this too:
+**Tag C** (Windows on ARM): Vagrant also needs VirtualBox. Download it from <https://www.virtualbox.org/wiki/Downloads> (click **Windows hosts**), the same way as in the hypervisor section above.
 
-```powershell
-winget install --id Oracle.VirtualBox -e  # Install VirtualBox.
-```
-
-Close PowerShell and open a new one (not as Administrator).
+Close PowerShell and open a new one. Installers change PATH, and an old window will still say the command is not recognized.
 
 </details>
 
@@ -544,6 +538,8 @@ Terraform is a program that runs **on your laptop** (or in Cloud Shell). It talk
 
 Windows students run Terraform in the **Ubuntu (WSL 2)** terminal with Docker Desktop's WSL integration on.
 
+**Before you start:** Docker Desktop must be open and say it is running. If `docker` is not recognized, start Docker Desktop, wait until it is ready, then close this terminal and open a new one.
+
 **macOS: one check before you start.** Terraform looks for Docker at `/var/run/docker.sock`. Docker Desktop on a Mac often puts it somewhere else, and then `terraform apply` says it cannot connect to the Docker daemon. Run this once in every terminal where you use Terraform. It works on any system and does nothing harmful if the default already works:
 
 ```bash
@@ -575,11 +571,8 @@ terraform {
   }
 }
 
-provider "docker" {}
-
 resource "docker_image" "nginx" {
-  name         = "nginx:alpine"
-  keep_locally = true
+  name = "nginx:alpine"
 }
 
 resource "docker_container" "web" {
@@ -597,7 +590,6 @@ EOF
 Read the file in plain words:
 
 - `terraform { ... }`: "I need the Docker plug-in. Version 3.x is fine."
-- `provider "docker" {}`: the **provider**. "Use the Docker on this laptop."
 - `resource "docker_image" "nginx"`: a **resource** is one thing you want to exist. "I want the nginx image." The two words after `resource` are the **type** (`docker_image`) and the **name** you choose (`nginx`).
 - `resource "docker_container" "web"`: "I want a container called `tf-web`, reachable on port 8095 of my laptop."
 - `image = docker_image.nginx.image_id`: this line points at the image above. Because of it, Terraform knows to make the **image first**. You never write the order. Terraform works it out from these pointers.
@@ -698,11 +690,8 @@ terraform {
   }
 }
 
-provider "docker" {}
-
 resource "docker_image" "nginx" {
-  name         = "nginx:alpine"
-  keep_locally = true
+  name = "nginx:alpine"
 }
 
 resource "docker_container" "web" {
@@ -806,9 +795,8 @@ locals {
 }
 
 resource "docker_image" "tier" {
-  for_each     = local.tiers
-  name         = each.value.image
-  keep_locally = true
+  for_each = local.tiers
+  name     = each.value.image
 }
 
 resource "docker_container" "tier" {
@@ -1142,7 +1130,9 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 
 | Message or symptom | Cause and fix |
 |---|---|
-| `Cannot connect to the Docker daemon` | Docker is not running. Start Docker Desktop. |
+| `Cannot connect to the Docker daemon` | Docker is not running. Start Docker Desktop and wait until it says it is running. |
+| `docker: The term 'docker' is not recognized` (Windows) | Docker Desktop is not installed, or this terminal was open during the install. Install it from <https://www.docker.com/products/docker-desktop/>, click **Yes** when Windows asks for permission, start it, then close PowerShell and open a new one. |
+| `winget: The term 'winget' is not recognized` (Windows) | Do not use winget. Install VirtualBox and Vagrant from the download links in this lecture. |
 | `Cannot connect to the Docker daemon at unix:///var/run/docker.sock` (but `docker ps` works) | Docker Desktop keeps its socket somewhere else. Run `export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')` in this terminal, then try again. |
 | `Error: Failed to query available provider packages` | No internet during `init`, or a typo in `source`. Check `kreuzwerker/docker`. |
 | `Error: Failed to install provider` ... `connection reset` | The download was interrupted. Run `terraform init` again. |
