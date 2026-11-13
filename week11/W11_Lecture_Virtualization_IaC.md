@@ -536,7 +536,7 @@ Terraform is a program that runs **on your laptop** (or in Cloud Shell). It talk
 
 **Today the main practice uses the Docker provider.** A "server" is a Docker container on your laptop, because every student has Docker and it costs nothing. The workflow is identical for the cloud: only the provider and the resource types change. At the end you read and validate the Azure version of the same idea.
 
-Windows students run Terraform in the **Ubuntu (WSL 2)** terminal with Docker Desktop's WSL integration on.
+On Windows you can run Terraform in **PowerShell** or in the **Ubuntu (WSL 2)** terminal (with Docker Desktop's WSL integration on). The commands below have a **Windows (PowerShell)** box, which is open by default, and a **macOS / Linux** box.
 
 **Before you start:** Docker Desktop must be open and say it is running. If `docker` is not recognized, start Docker Desktop, wait until it is ready, then close this terminal and open a new one.
 
@@ -555,6 +555,45 @@ You write the **desired state** in `.tf` files: what you want to exist. The lang
 ### Your first infrastructure
 
 Create a folder:
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME\iac-practice\tf" | Out-Null; Set-Location "$HOME\iac-practice\tf"  # Create the Terraform folder and move into it.
+```
+
+```powershell
+@'
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 3.0"
+    }
+  }
+}
+
+resource "docker_image" "nginx" {
+  name = "nginx:alpine"
+}
+
+resource "docker_container" "web" {
+  name  = "tf-web"
+  image = docker_image.nginx.image_id
+
+  ports {
+    internal = 80
+    external = 8095
+  }
+}
+'@ | Set-Content -Encoding ascii main.tf  # Write the file main.tf.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 mkdir -p ~/iac-practice/tf && cd ~/iac-practice/tf  # Create the Terraform folder and move into it.
@@ -587,6 +626,8 @@ resource "docker_container" "web" {
 EOF
 ```
 
+</details>
+
 Read the file in plain words:
 
 - `terraform { ... }`: "I need the Docker plug-in. Version 3.x is fine."
@@ -618,9 +659,23 @@ terraform plan  # Show what Terraform WOULD do. Read it: "+" create, "-" destroy
 terraform apply  # Show the plan again and ask for confirmation. Type yes to create the resources.
 ```
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+curl.exe -s http://localhost:8095 | Select-Object -First 4  # The container Terraform created answers on port 8095.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 curl -s http://localhost:8095 | head -4  # The container Terraform created answers on port 8095.
 ```
+
+</details>
 
 ```bash
 docker ps --filter name=tf-web  # Docker shows the container too. Terraform is only a program that called Docker for you.
@@ -640,13 +695,41 @@ Terraform keeps a notebook of everything it built. This notebook is the **state*
 terraform state list  # List everything Terraform believes it manages.
 ```
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform show | Select-Object -First 30  # Show the stored details of those resources.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 terraform show | head -30  # Show the stored details of those resources.
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+Get-ChildItem -Force  # Look at the folder: terraform.tfstate is the state file, .terraform.lock.hcl pins the provider version.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 ls -la  # Look at the folder: terraform.tfstate is the state file, .terraform.lock.hcl pins the provider version.
 ```
+
+</details>
 
 Which files go into Git?
 
@@ -663,6 +746,30 @@ Hard-coded values are a problem. If the number of servers is typed in the code, 
 
 Create three files:
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@'
+variable "instances" {
+  description = "Number of web containers"
+  type        = number
+  default     = 2
+}
+
+variable "base_port" {
+  description = "Host port of the first container"
+  type        = number
+  default     = 8095
+}
+'@ | Set-Content -Encoding ascii variables.tf  # Write the file variables.tf.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 cat > variables.tf <<'EOF'
 variable "instances" {
@@ -678,6 +785,58 @@ variable "base_port" {
 }
 EOF
 ```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@'
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 3.0"
+    }
+  }
+}
+
+resource "docker_image" "nginx" {
+  name = "nginx:alpine"
+}
+
+resource "docker_container" "web" {
+  count = var.instances
+  name  = "tf-web-${count.index}"
+  image = docker_image.nginx.image_id
+
+  ports {
+    internal = 80
+    external = var.base_port + count.index
+  }
+
+  upload {
+    file    = "/usr/share/nginx/html/index.html"
+    content = "<h1>Container ${count.index}</h1>\n"
+  }
+}
+'@ | Set-Content -Encoding ascii main.tf  # Replace main.tf with the version that uses count.
+```
+
+```powershell
+@'
+output "urls" {
+  description = "Addresses of the web containers"
+  value       = [for c in docker_container.web : "http://localhost:${c.ports[0].external}"]
+}
+'@ | Set-Content -Encoding ascii outputs.tf  # Write the file outputs.tf.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > main.tf <<'EOF'
@@ -721,6 +880,8 @@ output "urls" {
 EOF
 ```
 
+</details>
+
 What is new:
 
 | Syntax | In plain words | Example |
@@ -744,9 +905,23 @@ terraform apply -auto-approve  # Apply without asking (-auto-approve). Only use 
 terraform output  # Print the outputs: the two addresses.
 ```
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+curl.exe -s http://localhost:8095; curl.exe -s http://localhost:8096  # Each container serves its own page.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 curl -s http://localhost:8095 && curl -s http://localhost:8096  # Each container serves its own page.
 ```
+
+</details>
 
 Now change the number of servers **without touching the code**:
 
@@ -784,6 +959,47 @@ This is why you change infrastructure **only through the code**. A hand change i
 
 `count` gives copies a **number** (0, 1, 2). Sometimes the copies have different **names and jobs**: an `app` server and an `api` server. For that use `for_each`. Add them to the same project:
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@'
+locals {
+  project = "iac-practice"
+  tiers = {
+    app = { image = "nginx:alpine", port = 8100 }
+    api = { image = "httpd:alpine", port = 8101 }
+  }
+}
+
+resource "docker_image" "tier" {
+  for_each = local.tiers
+  name     = each.value.image
+}
+
+resource "docker_container" "tier" {
+  for_each = local.tiers
+  name     = "${local.project}-${each.key}"
+  image    = docker_image.tier[each.key].image_id
+
+  ports {
+    internal = 80
+    external = each.value.port
+  }
+
+  labels {
+    label = "owner"
+    value = "student"
+  }
+}
+'@ | Set-Content -Encoding ascii tiers.tf  # Write the file tiers.tf.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 cat > tiers.tf <<'EOF'
 locals {
@@ -817,6 +1033,8 @@ resource "docker_container" "tier" {
 EOF
 ```
 
+</details>
+
 | Syntax | In plain words | Example |
 |---|---|---|
 | `locals { ... }` | Named values used inside the file. They are not inputs. | `project = "iac-practice"` |
@@ -834,9 +1052,23 @@ terraform plan  # Two images and two containers are added. Notice the addresses:
 terraform apply -auto-approve  # Create them.
 ```
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+curl.exe -sI http://localhost:8100 | Select-Object -First 1; curl.exe -sI http://localhost:8101 | Select-Object -First 1  # Both answer with HTTP 200.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 curl -sI http://localhost:8100 | head -1 && curl -sI http://localhost:8101 | head -1  # Both answer with HTTP 200.
 ```
+
+</details>
 
 **Why `for_each` is safer than `count` for named things.** Suppose you have three servers numbered 0, 1 and 2, and you remove server 0. The old 1 becomes the new 0 and the old 2 becomes the new 1: every number changed, so Terraform sees every server as "changed". With names (`app`, `api`), removing `app` only removes `app`.
 
@@ -844,13 +1076,41 @@ curl -sI http://localhost:8100 | head -1 && curl -sI http://localhost:8101 | hea
 
 Always read the plan before you apply. Every line starts with a symbol. Change one setting and see:
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+(Get-Content tiers.tf) -replace 'port = 8101', 'port = 8102' | Set-Content -Encoding ascii tiers.tf  # Change the api port from 8101 to 8102. (You can also open the file and change the number by hand.)
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 sed -i.bak 's/port = 8101/port = 8102/' tiers.tf && rm tiers.tf.bak  # Change the api port from 8101 to 8102. (You can also open the file and change the number by hand.)
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform plan -no-color | Select-String -Pattern "forces replacement|Plan:"  # Show only the important lines. "forces replacement" means Terraform must delete the container and build a new one.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 terraform plan -no-color | grep -E "forces replacement|Plan:"  # Show only the important lines. "forces replacement" means Terraform must delete the container and build a new one.
 ```
+
+</details>
 
 **You should see** `~ external = 8101 -> 8102 # forces replacement` and `Plan: 1 to add, 0 to change, 1 to destroy.` A port cannot change on a running container, so Terraform replaces it. In a full plan this resource is marked `-/+`.
 
@@ -863,23 +1123,182 @@ terraform plan -no-color | grep -E "forces replacement|Plan:"  # Show only the i
 
 A habit professionals use: **save the plan, review it, then apply exactly that plan.** Nothing can change between your review and your apply.
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform plan -out=tfplan -no-color | Select-Object -Last 2  # Save the plan to a file named tfplan.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 terraform plan -out=tfplan -no-color | tail -2  # Save the plan to a file named tfplan.
 ```
+
+</details>
 
 ```bash
 terraform apply tfplan  # Apply exactly what you reviewed. No question is asked because the plan is fixed.
 ```
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+curl.exe -sI http://localhost:8102 | Select-Object -First 1  # The api container now answers on the new port.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 curl -sI http://localhost:8102 | head -1  # The api container now answers on the new port.
 ```
+
+</details>
 
 ### The same workflow in the cloud (read and validate)
 
 Now the same workflow with a cloud provider. You do **not** need an account for this part: you write real Azure code for a network and a VM, and let Terraform **check** it without creating anything. This is like proofreading a letter you do not send.
 
 Make a folder:
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME\iac-practice\cloud" | Out-Null; Set-Location "$HOME\iac-practice\cloud"  # Create the cloud folder and move into it.
+```
+
+```powershell
+@'
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+
+variable "location" {
+  type    = string
+  default = "canadacentral"
+}
+
+variable "vm_size" {
+  type    = string
+  default = "Standard_B1s"
+}
+
+variable "ssh_public_key" {
+  type        = string
+  description = "Contents of your public SSH key file"
+  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLACEHOLDERKEYPLACEHOLDERKEYPLACEHOLDER student"
+}
+
+resource "azurerm_resource_group" "main" {
+  name     = "iac-practice-rg"
+  location = var.location
+  tags     = { Owner = "student" }
+}
+
+resource "azurerm_virtual_network" "main" {
+  name                = "iac-practice-vnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+}
+
+resource "azurerm_subnet" "web" {
+  name                 = "web"
+  resource_group_name  = azurerm_resource_group.main.name
+  virtual_network_name = azurerm_virtual_network.main.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+resource "azurerm_network_security_group" "web" {
+  name                = "iac-practice-nsg"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+
+  security_rule {
+    name                       = "allow-http"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "web" {
+  subnet_id                 = azurerm_subnet.web.id
+  network_security_group_id = azurerm_network_security_group.web.id
+}
+
+resource "azurerm_network_interface" "web" {
+  name                = "iac-practice-nic"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.web.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "web" {
+  name                  = "iac-practice-web"
+  resource_group_name   = azurerm_resource_group.main.name
+  location              = azurerm_resource_group.main.location
+  size                  = var.vm_size
+  admin_username        = "student"
+  network_interface_ids = [azurerm_network_interface.web.id]
+  tags                  = { Owner = "student" }
+
+  admin_ssh_key {
+    username   = "student"
+    public_key = var.ssh_public_key
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "ubuntu-24_04-lts"
+    sku       = "server"
+    version   = "latest"
+  }
+}
+
+output "web_private_ip" {
+  value = azurerm_network_interface.web.private_ip_address
+}
+'@ | Set-Content -Encoding ascii main.tf  # Write the file main.tf.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 mkdir -p ~/iac-practice/cloud && cd ~/iac-practice/cloud  # Create the cloud folder and move into it.
@@ -1004,6 +1423,8 @@ output "web_private_ip" {
 EOF
 ```
 
+</details>
+
 Read it. It looks like the Docker file: a provider, resources, pointers between them, variables and an output. Only the provider and the resource types changed. That is the point: **one skill, many platforms**.
 
 | Resource | In plain words |
@@ -1020,15 +1441,43 @@ The VM points at the network card, which points at the subnet, which points at t
 terraform init  # Download the Azure provider (about a minute).
 ```
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform fmt -check; terraform validate  # Check the formatting and the code. No account is needed. You should see "Success! The configuration is valid."
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 terraform fmt -check && terraform validate  # Check the formatting and the code. No account is needed. You should see "Success! The configuration is valid."
 ```
 
+</details>
+
 Break it on purpose and read the error. Mistakes are the best way to learn:
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+Copy-Item main.tf main.tf.bak; (Get-Content main.tf) -replace 'azurerm_subnet.web.id', 'azurerm_subnet.private.id' | Set-Content -Encoding ascii main.tf; terraform validate; Move-Item -Force main.tf.bak main.tf  # Point at a subnet that does not exist, read the error, then restore the file.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 sed -i.bak 's/azurerm_subnet.web.id/azurerm_subnet.private.id/' main.tf && terraform validate; mv main.tf.bak main.tf  # Point at a subnet that does not exist, read the error, then restore the file.
 ```
+
+</details>
 
 The message `Reference to undeclared resource` names the file and line. A mistake caught by `validate` costs nothing. A mistake caught by the cloud bill costs money.
 
@@ -1143,7 +1592,7 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | `Error: container exited immediately` | The image or command is wrong. `docker logs NAME`. |
 | `Error acquiring the state lock` | A previous run was killed. Wait a minute, or `terraform force-unlock ID` (the ID is in the message). |
 | `terraform: command not found` | Terraform is not installed in this terminal. See [W11_Setup_Terraform.md](W11_Setup_Terraform.md). |
-| Windows: Docker works in Ubuntu but Terraform does not | Run Terraform in the **Ubuntu** terminal, with Docker Desktop's WSL integration on. |
+| Windows: Docker works in one terminal but Terraform does not | Run Terraform in the same terminal where Docker works: **PowerShell** (with Docker Desktop running), or the **Ubuntu** terminal (with Docker Desktop's WSL integration on). |
 | `vagrant up` fails with `platform architecture x86 is not supported on ARM` | You are using an Intel-only box (such as `ubuntu/jammy64`) on an ARM laptop. Run `vagrant destroy -f`, use `bento/ubuntu-24.04` as in this lesson, and run `vagrant up` again. |
 | `vagrant up` cannot start the VM on an Apple silicon Mac | Run `VBoxManage setextradata global "VBoxInternal/Devices/pcbios/0/Config/DebugLevel"` once, then try again. (This clears a VirtualBox setting that HashiCorp's guide says can block ARM VMs.) |
 | Hyper-V: the Ubuntu VM shows a Secure Boot error or will not start | Turn Secure Boot off: VM **Settings > Security**, untick **Enable Secure Boot**. |

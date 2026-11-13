@@ -15,9 +15,16 @@ brew tap hashicorp/tap && brew install hashicorp/tap/terraform
 </details>
 
 <details open>
+<summary>Windows (PowerShell)</summary>
+
+Download Terraform from <https://developer.hashicorp.com/terraform/install> (choose **Windows**). Unzip the file and put `terraform.exe` in a folder that is on your PATH. Close PowerShell, open a new one, and check it with `terraform version` in the check below.
+
+</details>
+
+<details>
 <summary>Windows (Ubuntu terminal) and Ubuntu or Debian Linux</summary>
 
-Windows students run these in the **Ubuntu (WSL 2)** app, not in PowerShell.
+Windows students who use the **Ubuntu (WSL 2)** app run these, not PowerShell.
 
 ```bash
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
