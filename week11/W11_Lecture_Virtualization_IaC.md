@@ -1097,6 +1097,9 @@ terraform apply -auto-approve  # Repair the difference.
 
 This is why you change infrastructure **only through the code**. A hand change is lost at the next `apply`, and nobody will understand why it vanished.
 
+> [!NOTE]
+> Always read the plan before you apply. Each line starts with a symbol: `+` creates something, `~` changes it, `-` deletes it, and `-/+` deletes it and builds it again. Stop and read every `-/+`, because a database rebuilt that way loses its data. To be safe, save the plan to a file and apply exactly that file, so nothing can change between your review and your apply.
+
 ### Names for your copies: `locals` and `for_each`
 
 > **REFERENCE** Not presented in class. Read it on your own.
@@ -1215,9 +1218,6 @@ curl -sI http://localhost:8100 | head -1 && curl -sI http://localhost:8101 | hea
 </details>
 
 **Why `for_each` is safer than `count` for named things.** Suppose you have three servers numbered 0, 1 and 2, and you remove server 0. The old 1 becomes the new 0 and the old 2 becomes the new 1: every number changed, so Terraform sees every server as "changed". With names (`app`, `api`), removing `app` only removes `app`.
-
-> [!NOTE]
-> Always read the plan before you apply. Each line starts with a symbol: `+` creates something, `~` changes it, `-` deletes it, and `-/+` deletes it and builds it again. Stop and read every `-/+`, because a database rebuilt that way loses its data. To be safe, save the plan to a file and apply exactly that file, so nothing can change between your review and your apply.
 
 ### Cleanup
 
