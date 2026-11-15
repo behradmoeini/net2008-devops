@@ -1,5 +1,4 @@
 # Week 11 Lab: Bytown Infrastructure as Code
-**NET2008 DevOps · Algonquin College**
 
 This lab is graded (2% of final grade). You describe a virtual machine with Vagrant and build real infrastructure with Terraform: a network and web containers, changed through code, repaired after drift, and destroyed. You also write and validate Azure (cloud) code. Everything runs on **your own laptop**.
 

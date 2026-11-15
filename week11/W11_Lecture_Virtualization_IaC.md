@@ -1,5 +1,4 @@
 # Week 11 Lecture: Virtualization, Cloud and Infrastructure as Code
-**NET2008 DevOps · Algonquin College**
 
 Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running (see [How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker) in Week 9) and **Terraform** installed (see [Before you start](#before-you-start)). Two parts need extra tools and are optional for some laptops: the VM by hand (VirtualBox or UTM) and the Azure cloud example (a free student account). The guide tells you what to do if you cannot run them.
 
@@ -219,7 +218,7 @@ The names of buttons can change a little between versions. Follow the idea if a 
 8. **Before you start it**, right-click `manual-vm` and open **Settings**. Under **Security**, **untick Enable Secure Boot**, and click **OK**. Ubuntu on ARM does not start with Secure Boot on. Under **Processor**, set **Number of virtual processors** to `1`: some ARM laptops freeze with more.
 9. Double-click `manual-vm`, click **Start**, and the Ubuntu installer appears.
 
-**All tags: the Ubuntu installer.** Use the keyboard. Press Enter on the defaults for language, keyboard and network. When it asks for a profile, set your name, a server name (`manual-vm`), a user name and a password, and tick **Install OpenSSH server** when offered. Skip optional snaps. Wait for the installation to finish and choose **Reboot Now**.
+**The Ubuntu installer.** Use the keyboard. Press Enter on the defaults for language, keyboard and network. When it asks for a profile, set your name, a server name (`manual-vm`), a user name and a password, and tick **Install OpenSSH server** when offered. Skip optional snaps. Wait for the installation to finish and choose **Reboot Now**.
 
 - **Tag B only:** if the installer starts again after the reboot, shut the VM down, open its settings and clear the CD/DVD drive (**Eject**), then start it again.
 
@@ -227,7 +226,7 @@ When you see `manual-vm login:`, type your user name and password.
 
 #### 4. Look inside your VM
 
-**All tags except D.** Run these inside the VM. It is a separate computer with its own system.
+Run these inside the VM. It is a separate computer with its own system.
 
 ```bash
 hostname  # The name you chose.
