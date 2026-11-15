@@ -612,7 +612,7 @@ In this course we use IaaS: we get an empty server and build it up.
 
 ### Hands-on: your first cloud VM (Azure for Students)
 
-**Goal:** create a VM in the Azure portal (the web page), see it there, do a few small things with it from Cloud Shell to show that it works, and delete it. This is a short look, nothing more.
+**Goal:** create a VM in the Azure portal (the web page), see it there, run a few commands on it, and delete it. This is a short look, nothing more.
 
 This part is **optional** because it needs a student account. The lab does not require it. If you cannot get an account, read this section and keep going.
 
@@ -626,25 +626,7 @@ This part is **optional** because it needs a student account. The lab does not r
 
 AWS and Google Cloud offer free tiers too, but they ask for a credit card. That is why we use Azure.
 
-#### 2. Open Cloud Shell
-
-Cloud Shell is a terminal inside your browser, with Azure's command line (`az`) already installed and signed in. It is only a **remote control** that Azure gives you: you type commands in it, and they tell Azure what to build. It is not the VM we create.
-
-1. In the portal, click the **Cloud Shell** icon (`>_`) in the top bar.
-2. Choose **Bash**.
-3. A **Getting started** window opens. Keep **No storage account required** selected. Under **Subscription** choose **Azure for Students**. **Leave "Use an existing private virtual network" unticked.** Click **Apply**.
-
-```bash
-az account show --output table  # Check the Name column: it must say Azure for Students.
-```
-
-If it shows another name (some school accounts also have a school subscription), switch to yours. Otherwise the next step fails with `AuthorizationFailed`:
-
-```bash
-az account set --subscription "Azure for Students"  # Make it the active subscription. Then run az account show again to check.
-```
-
-#### 3. Create the VM in the portal
+#### 2. Create the VM in the portal
 
 Create the VM on the web page. You fill in a form, the same way you would fill in a form on a shopping site.
 
@@ -662,47 +644,46 @@ Create the VM on the web page. You fill in a form, the same way you would fill i
 4. Wait about a minute, then click **Go to resource**.
 
 If Azure says the region or the size is not allowed, the error message says what to change: use another region or another size from the list.
-#### 4. See what you created
 
-```bash
-az vm list --output table  # Your VM, with its name, resource group and location.
-```
+#### 3. See what you created
 
 Now look at it in the portal. Click **Virtual machines** in the left menu. You see **cloud-vm** with the status **Running**. Click **cloud-vm** to see its size, its operating system and its public IP address. The form also made the things a VM needs: a disk, a network, a public IP address and a firewall (network security group). One form created all of them.
 
 ![Azure portal: the Virtual machines list with one running Linux VM](images/azure-vm-list.png)
 
-![One command creates a whole group of resources: you type az commands in Cloud Shell, which is only a remote control and not the VM; Azure creates a resource group iac-practice-rg that holds the VM cloud-vm, its disk, network card, public IP address, virtual network and firewall](images/azure-resource-group.svg)
+#### 4. Run commands on the VM
 
-#### 5. Do a few small things with it
-
-You never logged in to this VM, but you can still control it. Each command below is small: we only want to see that it is a real machine that works.
+You do not log in to the VM for this. Open **cloud-vm** in the portal, go to **Operations**, click **Run command**, then **RunShellScript**. For each box below, paste the command into the script box, click **Run**, and read the output under it. Each command takes about 30 seconds. We only want to see that it is a real machine that works.
 
 ```bash
-az vm show --resource-group iac-practice-rg --name cloud-vm --show-details --query "{Name:name, State:powerState, Size:hardwareProfile.vmSize, PublicIP:publicIps}" --output table  # Its state (VM running), size and public IP address.
+hostname  # The name you chose.
 ```
 
 ```bash
-az vm run-command invoke --resource-group iac-practice-rg --name cloud-vm --command-id RunShellScript --scripts "hostname; cat /etc/os-release | head -2; free -h | head -2" --query "value[0].message" --output tsv  # Run commands inside the VM from here, without logging in. It takes about 30 seconds. You should see its name, Ubuntu, and about 1 GB of memory: the same kind of machine you built by hand.
+cat /etc/os-release | head -2  # The operating system: Ubuntu Server.
 ```
 
 ```bash
-az vm deallocate --resource-group iac-practice-rg --name cloud-vm  # Stop the VM. It takes about a minute. A stopped (deallocated) VM no longer costs for computing time, which is why you stop what you are not using.
+free -h | head -2  # The memory you gave it: about 1 GB.
 ```
 
 ```bash
-az vm show --resource-group iac-practice-rg --name cloud-vm --show-details --query powerState --output tsv  # The state is now: VM deallocated.
+ip -br address  # The VM's address on the Azure network: a private address, usually 10.0.0.x.
 ```
+
+```bash
+ping -c 2 8.8.8.8  # The VM reaches the internet.
+```
+
+#### 5. Stop the VM
+
+When you are done, click **Stop** in the toolbar of **cloud-vm**, wait a minute, and check that the **Status** says **Stopped (deallocated)**. The warning below explains what still costs money.
 
 #### 6. Delete everything
 
-```bash
-az group delete --name iac-practice-rg --yes --no-wait  # Delete the resource group and everything inside it. The VM stops costing money.
-```
+Go to **Resource groups** in the portal, click **iac-practice-rg**, click **Delete resource group**, type `iac-practice-rg`, and click **Delete**. The VM, its disk, its network and its public IP address go with it. Always delete lab resources the same day.
 
-Refresh **All resources** after a minute: everything is gone. Always delete lab resources the same day.
-
-**What did that cost?** About ten minutes of clicking and a few commands, with nothing installed on your laptop. But you clicked through the form once. Next week, who remembers which boxes to tick? Who knows what exists in the account? That is the last problem.
+**What did that cost?** About fifteen minutes of clicking, with nothing installed on your laptop. But you clicked through the form once. Next week, who remembers which boxes to tick? Who knows what exists in the account? That is the last problem.
 
 #### WARNING: shut down your VMs
 
@@ -716,16 +697,12 @@ Refresh **All resources** after a minute: everything is gone. Always delete lab 
 - **The OS disk:** a few cents a day for a small disk.
 - **The public IP address:** it may keep billing. Portal-created public IPs are usually Standard SKU with a static address, and they cost roughly 3 to 4 US dollars a month, even when the VM is off.
 
-Both are small next to compute, so stopping is fine for short breaks. If you are done for a while, delete everything. That stops all the charges:
-
-```bash
-az group delete --name iac-practice-rg --yes --no-wait  # Delete the resource group and everything inside it: the VM, its disk and its public IP address.
-```
+Both are small next to compute, so stopping is fine for short breaks. If you are done for a while, delete the resource group (step 6). That stops all the charges.
 ## Infrastructure as Code with Terraform
 
 ### The problem
 
-Whether you click in VirtualBox or type commands in Cloud Shell, the result lives only in your head and in the provider's account. Three weeks later nobody can say exactly what exists. One teammate fixed something by hand on a server and told nobody. When it breaks, you cannot rebuild it. Such a server is called a **snowflake**: unique and fragile.
+Whether you click in VirtualBox or in the Azure portal, the result lives only in your head and in the provider's account. Three weeks later nobody can say exactly what exists. One teammate fixed something by hand on a server and told nobody. When it breaks, you cannot rebuild it. Such a server is called a **snowflake**: unique and fragile.
 
 ### What is Infrastructure as Code?
 
@@ -743,7 +720,7 @@ Terraform creates the empty servers. Ansible installs the software on them.
 
 ### Where do we run Terraform?
 
-Terraform is a program that runs **on your laptop** (or in Cloud Shell). It talks to a **provider**: a plug-in for one platform. The platform decides what a "server" is.
+Terraform is a program that runs **on your laptop**. It talks to a **provider**: a plug-in for one platform. The platform decides what a "server" is.
 
 ![Where Terraform runs and what it builds: Terraform and your .tf files run on your laptop; the docker provider builds containers (today's practice, free); the azurerm provider builds VMs in the Azure cloud (needs an account); only the provider and resource types change](images/terraform-providers.svg)
 
@@ -1694,21 +1671,7 @@ sed -i.bak 's/azurerm_subnet.web.id/azurerm_subnet.private.id/' main.tf && terra
 
 The message `Reference to undeclared resource` names the file and line. A mistake caught by `validate` costs nothing. A mistake caught by the cloud bill costs money.
 
-**Optional: really create it in Azure.** Only if you made the student account. In **Cloud Shell** (Terraform is already installed there), paste the same file, then run:
-
-```bash
-export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)  # Tell Terraform which subscription to use.
-```
-
-```bash
-terraform init && terraform apply -var="ssh_public_key=$(cat ~/.ssh/id_rsa.pub)"  # Read the plan, type yes. Cloud Shell made ~/.ssh/id_rsa.pub when you ran az vm create with --generate-ssh-keys.
-```
-
-```bash
-terraform destroy -var="ssh_public_key=$(cat ~/.ssh/id_rsa.pub)"  # Delete everything the moment you have looked at it. Do not leave it running.
-```
-
-On a student subscription some sizes or regions may be refused. The error message names the problem: change `location` or `vm_size`.
+You do not need an Azure account for this lecture. The lab only checks the Azure code.
 
 ### State in a team
 
@@ -1775,8 +1738,7 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 |---|---|
 | `vagrant up` / `ssh` / `halt` / `destroy` | Create, log in to, stop, delete a VM |
 | `vagrant validate` | Check a Vagrantfile (works on every system) |
-| `az group create` / `az group delete` | Make or delete a resource group (Azure) |
-| `az vm create` | Create a cloud VM (Azure) |
+| Azure portal: **+ Create**, then **Azure virtual machine** | Create a cloud VM (Azure) |
 | `terraform init` | Download providers (first, and after adding one) |
 | `terraform fmt` | Format the code |
 | `terraform validate` | Check the code |
@@ -1811,9 +1773,9 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | Hyper-V: the Ubuntu VM shows a Secure Boot error or will not start | Turn Secure Boot off: VM **Settings > Security**, untick **Enable Secure Boot**. |
 | Hyper-V: the VM freezes while installing | VM **Settings > Processor**: set the number of virtual processors to 1. |
 | Docker stops working after installing VirtualBox (Windows) | They can conflict. Uninstall VirtualBox and skip the VM hands-on. |
-| `az vm create` says the size or region is not available | Try `--size Standard_B2s`, or another region from the error message. |
+| Azure says the size or region is not available | Pick another size (for example Standard_B2s) or another region from the list in the form. |
 | Azure says the subscription cannot use that region | The error lists the allowed regions. Use one of them. |
-| `AuthorizationFailed` when you create a resource group | You are probably using the wrong subscription (a school one, not Azure for Students). Run `az account show --output table`: if the Name is not Azure for Students, run `az account set --subscription "Azure for Students"` and try again. If that subscription is not in `az account list --all`, or you still get the error, skip the Azure hands-on: the lab does not need an account. |
+| The portal says `AuthorizationFailed` | You are probably using a different subscription (a school one). On the **Basics** tab, set **Subscription** to **Azure for Students**. If it is not in the list, skip the Azure hands-on: the lab does not need an account. |
 | Azure student sign-up refuses your email | Use your school email. If it still fails, skip the Azure parts: the lab does not need an account. |
 
 ## Summary
