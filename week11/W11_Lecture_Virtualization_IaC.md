@@ -61,17 +61,25 @@ VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. I
 
 </details>
 
-**Tag B (UTM):**
+<details>
+<summary>Tag B (UTM)</summary>
 
 ```bash
 brew install --cask utm  # Install UTM.
 ```
 
-**Tag C (Hyper-V):** open **PowerShell as Administrator**:
+</details>
+
+<details>
+<summary>Tag C (Hyper-V)</summary>
+
+Open **PowerShell as Administrator**:
 
 ```powershell
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All  # Turn on Hyper-V, Windows' built-in hypervisor. Restart when it asks.
 ```
+
+</details>
 
 #### Create the VM and install Ubuntu
 
@@ -86,7 +94,8 @@ The names of buttons can change a little between versions. Follow the idea if a 
 5. **Virtual Hard disk:** **20 GB**. Click **Next**, then **Finish**.
 6. Select `manual-vm` and click **Start**. A window opens with the Ubuntu installer.
 
-**Tag B (UTM):**
+<details>
+<summary>Tag B (UTM)</summary>
 
 1. Open **UTM** and click **Create a New Virtual Machine**.
 2. Choose **Virtualize**, then **Linux**.
@@ -94,7 +103,12 @@ The names of buttons can change a little between versions. Follow the idea if a 
 4. **Memory:** 2048 MB, **CPU Cores:** 2. **Storage:** 20 GB. Skip the shared directory. Name it `manual-vm` and click **Save**.
 5. Click the **Play** button to start the VM.
 
-**Tag C (Hyper-V):** do not use **Quick Create**: it does not work for Linux on ARM.
+</details>
+
+<details>
+<summary>Tag C (Hyper-V)</summary>
+
+Do not use **Quick Create**: it does not work for Linux on ARM.
 
 1. Open **Hyper-V Manager** from the Start menu. Right-click your computer's name on the left, choose **New > Virtual Machine**, and click **Next**.
 2. **Name:** `manual-vm`. Click **Next**.
@@ -105,6 +119,8 @@ The names of buttons can change a little between versions. Follow the idea if a 
 7. **Installation options:** choose **Install an operating system from a bootable image file**, browse to the **arm64** Ubuntu Server ISO, and click **Finish**.
 8. **Before you start it**, right-click `manual-vm` and open **Settings**. Under **Security**, **untick Enable Secure Boot**, and click **OK**. Ubuntu on ARM does not start with Secure Boot on. Under **Processor**, set **Number of virtual processors** to `1`: some ARM laptops freeze with more.
 9. Double-click `manual-vm`, click **Start**, and the Ubuntu installer appears.
+
+</details>
 
 ### 2. Terraform
 
