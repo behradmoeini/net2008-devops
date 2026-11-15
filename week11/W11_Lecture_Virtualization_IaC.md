@@ -1,15 +1,21 @@
 # Week 11 Lecture: Virtualization, Cloud and Infrastructure as Code
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running (see [How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker) in Week 9) and **Terraform** installed (see [Before you start](#before-you-start)). Two parts need extra tools and are optional for some laptops: the VM by hand (VirtualBox or UTM) and the Azure cloud example (a free student account). The guide tells you what to do if you cannot run them.
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS or Linux, PowerShell on Windows). You need Docker running (see [How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker) in Week 9) and **Terraform** installed (see [Before you start](#before-you-start)). Two parts need extra tools and are optional for some laptops: the VM by hand (VirtualBox or UTM) and the Azure cloud example (a free student account). The guide tells you what to do if you cannot run them.
 
 ## Before you start
 
-Install Terraform once. Windows students can use PowerShell or the **Ubuntu (WSL 2)** app.
+Install Terraform once.
 
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-Download Terraform from <https://developer.hashicorp.com/terraform/install> (choose **Windows**). Unzip the file and put `terraform.exe` in a folder that is on your PATH. Close PowerShell and open a new one.
+Download Terraform from <https://developer.hashicorp.com/terraform/install> (choose **Windows**, then the zip for your computer: AMD64 for most laptops, ARM64 for Windows on ARM). Unzip it and move `terraform.exe` into a folder named `C:\terraform`. Then add that folder to your PATH, so PowerShell can find `terraform` from any folder:
+
+```powershell
+New-Item -ItemType Directory -Force C:\terraform | Out-Null; [Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path','User') + ';C:\terraform', 'User')  # Add C:\terraform to your user PATH.
+```
+
+Close PowerShell, open a new one, and check with `terraform version`.
 
 </details>
 
@@ -23,7 +29,7 @@ brew tap hashicorp/tap && brew install hashicorp/tap/terraform  # Add the HashiC
 </details>
 
 <details>
-<summary>Windows (Ubuntu terminal) and Ubuntu or Debian Linux</summary>
+<summary>Ubuntu or Debian Linux (Terminal)</summary>
 
 ```bash
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg  # Download the HashiCorp signing key.
@@ -43,6 +49,11 @@ sudo apt update && sudo apt install -y terraform  # Install Terraform.
 terraform version  # Terraform must answer with a version number.
 ```
 
+**macOS: if Terraform cannot find Docker.** If `terraform apply` later says it cannot connect to the Docker daemon at `/var/run/docker.sock` while `docker ps` works, run this in the same terminal:
+
+```bash
+export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')
+```n
 The VM tools (VirtualBox, UTM, Vagrant) and the Azure account are installed later, in the sections that use them. The graded lab needs only Docker and Terraform.
 
 ## How to follow this guide
@@ -53,58 +64,9 @@ The VM tools (VirtualBox, UTM, Vagrant) and the Azure account are installed late
 
 ## Setup (do this once)
 
-Do this setup **once**, before the rest of the guide. It assumes you finished the [Week 9 lecture: How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker): a working terminal (Ubuntu on WSL 2 for Windows, or PowerShell) and Docker running.
+Do this setup **once**, before the rest of the guide. It assumes you finished the [Week 9 lecture: How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker): a working terminal (Terminal on macOS or Linux, or PowerShell on Windows) and Docker running.
 
-### 1. Terraform
-
-<details>
-<summary>macOS (Terminal)</summary>
-
-```bash
-brew tap hashicorp/tap && brew install hashicorp/tap/terraform
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-Download Terraform from <https://developer.hashicorp.com/terraform/install> (choose **Windows**). Unzip the file and put `terraform.exe` in a folder that is on your PATH. Close PowerShell, open a new one, and check it with `terraform version` in the check below.
-
-</details>
-
-<details>
-<summary>Windows (Ubuntu terminal) and Ubuntu or Debian Linux</summary>
-
-Windows students who use the **Ubuntu (WSL 2)** app run these, not PowerShell.
-
-```bash
-wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-```
-
-```bash
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-```
-
-```bash
-sudo apt update && sudo apt install -y terraform
-```
-
-</details>
-
-**Check** (in the same terminal):
-
-```bash
-terraform version
-```
-
-**macOS: if Terraform cannot find Docker.** If `terraform apply` later says it cannot connect to the Docker daemon at `/var/run/docker.sock` while `docker ps` works, run this in the same terminal:
-
-```bash
-export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')
-```
-
-### 2. A hypervisor and Vagrant (optional)
+### 1. A hypervisor and Vagrant (optional)
 
 Virtual machines on a laptop depend on the processor. The Week 11 lab is written so that you finish **without** a virtual machine. Install these only if your laptop can run them.
 
@@ -139,7 +101,7 @@ Mac with Apple silicon:
 brew install --cask utm virtualbox vagrant
 ```
 
-Ubuntu or Debian Linux on Intel or AMD (the HashiCorp repository from section 1 must be added first):
+Ubuntu or Debian Linux on Intel or AMD (the HashiCorp repository from [Before you start](#before-you-start) must be added first):
 
 ```bash
 sudo apt update && sudo apt install -y virtualbox vagrant
@@ -150,7 +112,7 @@ sudo apt update && sudo apt install -y virtualbox vagrant
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-**Vagrant must be installed in Windows, not in Ubuntu.** Download and run the installers (click **Yes** if Windows asks for permission):
+**Vagrant must be installed on Windows with the Windows installer.** Download and run the installers (click **Yes** if Windows asks for permission):
 
 - VirtualBox: <https://www.virtualbox.org/wiki/Downloads> (click **Windows hosts**)
 - Vagrant: <https://developer.hashicorp.com/vagrant/install> (click the **Windows** installer)
@@ -165,7 +127,7 @@ vagrant --version
 
 You also need an Ubuntu Server ISO for the VM by hand. The lecture links to it.
 
-### 3. A free Azure student account (optional)
+### 2. A free Azure student account (optional)
 
 The cloud hands-on in the lecture needs an Azure account. **Azure for Students** gives 100 US dollars of credit for 12 months and does not ask for a credit card. Go to <https://azure.microsoft.com/free/students> and sign in with your **school email**. If it refuses your email, skip the Azure parts. The graded lab does not need an account.
 
@@ -400,7 +362,7 @@ Vagrant needs two things that match your processor: **VirtualBox**, and a **box*
 
 | Tag | Your computer | Can you run `vagrant up`? |
 |---|---|---|
-| **A** | Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | Yes, with VirtualBox. On Windows install Vagrant in **Windows**, not in the Ubuntu terminal. |
+| **A** | Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | Yes, with VirtualBox. On Windows use the Windows installer. |
 | **B** | Mac with Apple silicon | Yes, with VirtualBox 7.2 and the ARM version of the box. Tested on an M-series Mac. |
 | **C** | Windows with an ARM chip | Maybe. VirtualBox 7.2 runs on Windows on ARM (marked experimental by Oracle) and the box exists for ARM, but we have not tested it. Try it. If `vagrant up` fails, stop at `vagrant validate`. |
 
@@ -428,7 +390,7 @@ sudo apt update && sudo apt install -y vagrant  # Install Vagrant.
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-Vagrant must be installed in **Windows**, not in the Ubuntu terminal.
+Vagrant must be installed on **Windows**, with the Windows installer.
 
 Download Vagrant from <https://developer.hashicorp.com/vagrant/install>. Click the **Windows** installer, run the file, click **Next** and keep the defaults. Click **Yes** if Windows asks for permission.
 
@@ -736,7 +698,7 @@ Terraform is a program that runs **on your laptop** (or in Cloud Shell). It talk
 
 **Today the main practice uses the Docker provider.** A "server" is a Docker container on your laptop, because every student has Docker and it costs nothing. The workflow is identical for the cloud: only the provider and the resource types change. At the end you read and validate the Azure version of the same idea.
 
-On Windows you can run Terraform in **PowerShell** or in the **Ubuntu (WSL 2)** terminal (with Docker Desktop's WSL integration on). The commands below have a **Windows (PowerShell)** box, which is open by default, and a **macOS / Linux** box.
+The commands below have a **Windows (PowerShell)** box, which is open by default, and a **macOS / Linux** box.
 
 **Before you start:** Docker Desktop must be open and say it is running. If `docker` is not recognized, start Docker Desktop, wait until it is ready, then close this terminal and open a new one.
 
@@ -1792,7 +1754,7 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | `Error: container exited immediately` | The image or command is wrong. `docker logs NAME`. |
 | `Error acquiring the state lock` | A previous run was killed. Wait a minute, or `terraform force-unlock ID` (the ID is in the message). |
 | `terraform: command not found` | Terraform is not installed in this terminal. See [Before you start](#before-you-start). |
-| Windows: Docker works in one terminal but Terraform does not | Run Terraform in the same terminal where Docker works: **PowerShell** (with Docker Desktop running), or the **Ubuntu** terminal (with Docker Desktop's WSL integration on). |
+| Windows: Docker works in one window but Terraform does not | Run Terraform in the same PowerShell window where `docker ps` works, with Docker Desktop running. |
 | `vagrant up` fails with `platform architecture x86 is not supported on ARM` | You are using an Intel-only box (such as `ubuntu/jammy64`) on an ARM laptop. Run `vagrant destroy -f`, use `bento/ubuntu-24.04` as in this lesson, and run `vagrant up` again. |
 | `vagrant up` cannot start the VM on an Apple silicon Mac | Run `VBoxManage setextradata global "VBoxInternal/Devices/pcbios/0/Config/DebugLevel"` once, then try again. (This clears a VirtualBox setting that HashiCorp's guide says can block ARM VMs.) |
 | Hyper-V: the Ubuntu VM shows a Secure Boot error or will not start | Turn Secure Boot off: VM **Settings > Security**, untick **Enable Secure Boot**. |
