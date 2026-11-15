@@ -612,7 +612,7 @@ In this course we use IaaS: we get an empty server and build it up.
 
 ### Hands-on: your first cloud VM (Azure for Students)
 
-**Goal:** create a VM in the cloud with two commands, see it in the Azure portal, do a few small things with it to show that it works, and delete it. This is a short look, nothing more.
+**Goal:** create a VM in the Azure portal (the web page), see it there, do a few small things with it from Cloud Shell to show that it works, and delete it. This is a short look, nothing more.
 
 This part is **optional** because it needs a student account. The lab does not require it. If you cannot get an account, read this section and keep going.
 
@@ -644,25 +644,33 @@ If it shows another name (some school accounts also have a school subscription),
 az account set --subscription "Azure for Students"  # Make it the active subscription. Then run az account show again to check.
 ```
 
-#### 3. Create a VM
+#### 3. Create the VM in the portal
 
-```bash
-az group create --name iac-practice-rg --location canadacentral  # Create a resource group: a folder for everything we make.
-```
+Create the VM on the web page. You fill in a form, the same way you would fill in a form on a shopping site.
 
-```bash
-az vm create --resource-group iac-practice-rg --name cloud-vm --image Ubuntu2204 --size Standard_B1s --admin-username student --generate-ssh-keys --output table  # Create the VM. It takes about a minute.
-```
+1. In the portal, search for **Virtual machines** in the top bar and click it. Then click **+ Create**, then **Azure virtual machine**.
+2. On the **Basics** tab, fill in:
+   - **Subscription:** Azure for Students.
+   - **Resource group:** click **Create new** and type `iac-practice-rg`. A resource group is a folder for everything we make.
+   - **Virtual machine name:** `cloud-vm`.
+   - **Region:** Canada Central.
+   - **Image:** Ubuntu Server 24.04 LTS.
+   - **Size:** Standard_B1s (1 vCPU and 1 GB of memory). If Azure does not offer it in your region, pick another small size from the list.
+   - **Authentication type:** SSH public key. **Username:** `student`. **SSH public key source:** Generate new key pair.
+   - **Inbound port rules:** Allow selected ports, and tick **SSH (22)**.
+3. Click **Review + create**, then **Create**. When Azure asks, click **Download private key and create resource**, and keep the `.pem` file.
+4. Wait about a minute, then click **Go to resource**.
 
-If Azure says the region or the size is not allowed, the error message says what to change: use another region it lists, or `--size Standard_B2s`.
-
+If Azure says the region or the size is not allowed, the error message says what to change: use another region or another size from the list.
 #### 4. See what you created
 
 ```bash
 az vm list --output table  # Your VM, with its name, resource group and location.
 ```
 
-Now look at it in the portal. Click **All resources** (or **View all resources** on the home page). You see the VM, and also the things Azure made for it: a disk, a network, a public IP address and a firewall (network security group). One command created all of them. Click **cloud-vm** to see its size, its operating system and its public IP address.
+Now look at it in the portal. Click **Virtual machines** in the left menu. You see **cloud-vm** with the status **Running**. Click **cloud-vm** to see its size, its operating system and its public IP address. The form also made the things a VM needs: a disk, a network, a public IP address and a firewall (network security group). One form created all of them.
+
+![Azure portal: the Virtual machines list with one running Linux VM](images/azure-vm-list.png)
 
 ![One command creates a whole group of resources: you type az commands in Cloud Shell, which is only a remote control and not the VM; Azure creates a resource group iac-practice-rg that holds the VM cloud-vm, its disk, network card, public IP address, virtual network and firewall](images/azure-resource-group.svg)
 
@@ -694,8 +702,25 @@ az group delete --name iac-practice-rg --yes --no-wait  # Delete the resource gr
 
 Refresh **All resources** after a minute: everything is gone. Always delete lab resources the same day.
 
-**What did that cost?** About two minutes and two commands, with nothing installed on your laptop. But you typed those commands by hand once. Next week, who remembers them? Who knows what exists in the account? That is the last problem.
+**What did that cost?** About ten minutes of clicking and a few commands, with nothing installed on your laptop. But you clicked through the form once. Next week, who remembers which boxes to tick? Who knows what exists in the account? That is the last problem.
 
+#### WARNING: shut down your VMs
+
+**Make sure to shut down your VMs when you are done.** A running VM uses your free student credit every hour, even when you are not using it. If you forget, the credit runs out, you can be charged, and your free student account stops working.
+
+- **Stop it from the portal.** Open **cloud-vm**, click **Stop** in the toolbar, wait a minute, and check that the **Status** says **Stopped (deallocated)**. Stopping from the portal does this by default.
+- **Do not shut it down from inside the VM** with `sudo shutdown`. The status then shows **Stopped**, but the VM keeps billing for compute.
+
+**What still costs money while it is deallocated:**
+
+- **The OS disk:** a few cents a day for a small disk.
+- **The public IP address:** it may keep billing. Portal-created public IPs are usually Standard SKU with a static address, and they cost roughly 3 to 4 US dollars a month, even when the VM is off.
+
+Both are small next to compute, so stopping is fine for short breaks. If you are done for a while, delete everything. That stops all the charges:
+
+```bash
+az group delete --name iac-practice-rg --yes --no-wait  # Delete the resource group and everything inside it: the VM, its disk and its public IP address.
+```
 ## Infrastructure as Code with Terraform
 
 ### The problem
