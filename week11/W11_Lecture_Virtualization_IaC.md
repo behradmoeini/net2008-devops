@@ -6,7 +6,74 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 
 Do this setup **once**, before the rest of the guide. It assumes you finished the [Week 9 lecture: How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker): a working terminal (Terminal on macOS or Linux, or PowerShell on Windows) and Docker running.
 
-### 1. Terraform
+### 1. Ubuntu ISO and hypervisor (for the VM by hand)
+
+You need this for the VM by hand in the Virtualization part. Vagrant (step 3) also needs VirtualBox on most laptops.
+
+#### Find your tag
+
+The processor of your laptop decides which tool you use. Find your row and remember your **tag** (A, B or C). Every step below tells you what each tag does.
+
+| Tag | Your computer | Tool you use | Ubuntu ISO you need |
+|---|---|---|---|
+| **A** | Windows with an Intel or AMD chip, Mac with an Intel chip, Linux on Intel or AMD | **VirtualBox** | amd64 |
+| **B** | Mac with Apple silicon (M1, M2, M3, M4) | **UTM** | arm64 |
+| **C** | Windows with an ARM chip (for example Snapdragon), **Windows 11 Pro or Enterprise** | **Hyper-V** (built into Windows) | arm64 |
+
+How to check your chip: on a Mac open the Apple menu > **About This Mac** and read **Chip**. On Windows open **Settings > System > About** and read **System type**. On Linux run `uname -m`: `x86_64` means Intel or AMD, `aarch64` or `arm64` means ARM.
+
+**Why different tools?** A VM must match the processor of the host. An ARM laptop can only run ARM systems, so it needs the **arm64** Ubuntu ISO. VirtualBox on an Apple silicon Mac does run Ubuntu for ARM (Vagrant uses it below), but installing from an ISO there is not an officially supported route, so for the VM by hand those Macs use UTM, which is built for Apple silicon. Windows on ARM uses Hyper-V.
+
+#### Download the Ubuntu Server ISO
+
+An **ISO** is a disk image of the Ubuntu installer, like a virtual DVD. Save it in your Downloads folder. It is about 2 GB, so start it now.
+
+- **Tag A:** download the **amd64** Ubuntu Server (LTS) from <https://ubuntu.com/download/server>.
+- **Tag B and Tag C:** download the **arm64** Ubuntu Server (LTS) from <https://ubuntu.com/download/server/arm>.
+
+#### Install the hypervisor
+
+**Tag A (VirtualBox):** use the commands for your system.
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
+Mac with an Intel chip:
+
+```bash
+brew install --cask virtualbox  # Install VirtualBox. macOS asks you to allow its system extension in System Settings > Privacy & Security. Allow it and restart.
+```
+
+Linux on Intel or AMD (Ubuntu or Debian):
+
+```bash
+sudo apt update && sudo apt install -y virtualbox  # Install VirtualBox.
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+Download VirtualBox from <https://www.virtualbox.org/wiki/Downloads>. Click **Windows hosts** and run the file you downloaded. Click **Next** and keep the default options. Click **Yes** if Windows asks for permission. When it finishes, click **Finish**.
+
+VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox and read the rest of this section without doing the hands-on.
+
+</details>
+
+**Tag B (UTM):**
+
+```bash
+brew install --cask utm  # Install UTM.
+```
+
+**Tag C (Hyper-V):** open **PowerShell as Administrator**:
+
+```powershell
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All  # Turn on Hyper-V, Windows' built-in hypervisor. Restart when it asks.
+```
+
+### 2. Terraform
 
 <details open>
 <summary>Windows (PowerShell)</summary>
@@ -57,7 +124,7 @@ sudo apt update && sudo apt install -y terraform  # Install Terraform.
 terraform version  # Terraform must answer with a version number.
 ```
 
-### 2. Vagrant
+### 3. Vagrant
 
 Virtual machines on a laptop depend on the processor. The Week 11 lab is written so that you finish **without** a virtual machine. Install these only if your laptop can run them.
 
@@ -67,35 +134,25 @@ Virtual machines on a laptop depend on the processor. The Week 11 lab is written
 | Mac with Apple silicon (M1 to M4) | **UTM** | Yes, with VirtualBox 7.2 and the ARM version of the box |
 | Windows with an ARM chip, Windows 11 **Pro or Enterprise** | **Hyper-V** (built into Windows; the lecture shows the steps) | Maybe: VirtualBox 7.2 on Windows ARM is experimental and untested here. If it fails, run `vagrant validate`. |
 
-VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox.
-
-First check your processor (macOS or Linux):
-
-```bash
-uname -m  # x86_64 means Intel or AMD. arm64 or aarch64 means Apple silicon or ARM.
-```
-
 <details>
 <summary>macOS / Linux (Terminal)</summary>
 
 Mac with an Intel chip:
 
 ```bash
-brew install --cask virtualbox vagrant
+brew install --cask vagrant
 ```
-
-macOS asks you to allow the VirtualBox system extension in System Settings > Privacy & Security. Allow it and restart.
 
 Mac with Apple silicon:
 
 ```bash
-brew install --cask utm virtualbox vagrant
+brew install --cask virtualbox vagrant
 ```
 
 Ubuntu or Debian Linux on Intel or AMD (the HashiCorp repository from [Setup](#setup) must be added first):
 
 ```bash
-sudo apt update && sudo apt install -y virtualbox vagrant
+sudo apt update && sudo apt install -y vagrant
 ```
 
 </details>
@@ -103,9 +160,8 @@ sudo apt update && sudo apt install -y virtualbox vagrant
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-**Vagrant must be installed on Windows with the Windows installer.** Download and run the installers (click **Yes** if Windows asks for permission):
+**Vagrant must be installed on Windows with the Windows installer.** Download and run it (click **Yes** if Windows asks for permission). Install VirtualBox first, in step 1 (Tag A):
 
-- VirtualBox: <https://www.virtualbox.org/wiki/Downloads> (click **Windows hosts**)
 - Vagrant: <https://developer.hashicorp.com/vagrant/install> (click the **Windows** installer)
 
 Close PowerShell, open a new one, and check:
@@ -116,9 +172,7 @@ vagrant --version
 
 </details>
 
-You also need an Ubuntu Server ISO for the VM by hand. The lecture links to it.
-
-### 3. Azure for Students (optional)
+### 4. Azure for Students (optional)
 
 The cloud hands-on in the lecture needs an Azure account. **Azure for Students** gives 100 US dollars of credit for 12 months and does not ask for a credit card. Go to <https://azure.microsoft.com/free/students> and sign in with your **school email**. If it refuses your email, skip the Azure parts. The graded lab does not need an account.
 
@@ -193,70 +247,9 @@ A VM has a virtual network card. You choose how it connects:
 
 **Goal:** create an Ubuntu Server VM manually, so you feel what Vagrant will remove later. It takes about 25 minutes, and most of that is the Ubuntu installer.
 
-#### Find your tag
+Before you start, complete **[Setup, step 1](#setup)**: find your tag, download the Ubuntu ISO and install the hypervisor. Then come back here.
 
-The processor of your laptop decides which tool you use. Find your row and remember your **tag** (A, B or C). Every step below tells you what each tag does.
-
-| Tag | Your computer | Tool you use | Ubuntu ISO you need |
-|---|---|---|---|
-| **A** | Windows with an Intel or AMD chip, Mac with an Intel chip, Linux on Intel or AMD | **VirtualBox** | amd64 |
-| **B** | Mac with Apple silicon (M1, M2, M3, M4) | **UTM** | arm64 |
-| **C** | Windows with an ARM chip (for example Snapdragon), **Windows 11 Pro or Enterprise** | **Hyper-V** (built into Windows) | arm64 |
-
-How to check your chip: on a Mac open the Apple menu > **About This Mac** and read **Chip**. On Windows open **Settings > System > About** and read **System type**. On Linux run `uname -m`: `x86_64` means Intel or AMD, `aarch64` or `arm64` means ARM.
-
-**Why different tools?** A VM must match the processor of the host. An ARM laptop can only run ARM systems, so it needs the **arm64** Ubuntu ISO. VirtualBox on an Apple silicon Mac does run Ubuntu for ARM (Vagrant uses it below), but installing from an ISO there is not an officially supported route, so for the VM by hand those Macs use UTM, which is built for Apple silicon. Windows on ARM uses Hyper-V.
-
-#### 1. Download the Ubuntu Server ISO
-
-An **ISO** is a disk image of the Ubuntu installer, like a virtual DVD. Save it in your Downloads folder. It is about 2 GB, so start it now.
-
-- **Tag A:** download the **amd64** Ubuntu Server (LTS) from <https://ubuntu.com/download/server>.
-- **Tag B and Tag C:** download the **arm64** Ubuntu Server (LTS) from <https://ubuntu.com/download/server/arm>.
-
-#### 2. Install the hypervisor
-
-**Tag A (VirtualBox):** use the commands for your system.
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-Mac with an Intel chip:
-
-```bash
-brew install --cask virtualbox  # Install VirtualBox. macOS asks you to allow its system extension in System Settings > Privacy & Security. Allow it and restart.
-```
-
-Linux on Intel or AMD (Ubuntu or Debian):
-
-```bash
-sudo apt update && sudo apt install -y virtualbox  # Install VirtualBox.
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-Download VirtualBox from <https://www.virtualbox.org/wiki/Downloads>. Click **Windows hosts** and run the file you downloaded. Click **Next** and keep the default options. Click **Yes** if Windows asks for permission. When it finishes, click **Finish**.
-
-VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox and read the rest of this section without doing the hands-on.
-
-</details>
-
-**Tag B (UTM):**
-
-```bash
-brew install --cask utm  # Install UTM.
-```
-
-**Tag C (Hyper-V):** open **PowerShell as Administrator**:
-
-```powershell
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All  # Turn on Hyper-V, Windows' built-in hypervisor. Restart when it asks.
-```
-
-#### 3. Create the VM and install Ubuntu
+#### 1. Create the VM and install Ubuntu
 
 The names of buttons can change a little between versions. Follow the idea if a label looks different.
 
@@ -289,7 +282,7 @@ The names of buttons can change a little between versions. Follow the idea if a 
 8. **Before you start it**, right-click `manual-vm` and open **Settings**. Under **Security**, **untick Enable Secure Boot**, and click **OK**. Ubuntu on ARM does not start with Secure Boot on. Under **Processor**, set **Number of virtual processors** to `1`: some ARM laptops freeze with more.
 9. Double-click `manual-vm`, click **Start**, and the Ubuntu installer appears.
 
-#### 4. Look inside your VM
+#### 2. Look inside your VM
 
 Run these inside the VM. It is a separate computer with its own system.
 
@@ -313,7 +306,7 @@ ip -br address  # The VM's network address. With NAT it is a private address: us
 ping -c 2 8.8.8.8  # NAT lets the VM reach the internet.
 ```
 
-#### 5. Change the network mode
+#### 3. Change the network mode
 
 Shut the VM down with `sudo poweroff`. Then change how the network card connects:
 
@@ -323,7 +316,7 @@ Shut the VM down with `sudo poweroff`. Then change how the network card connects
 
 Log in and run `ip -br address`. The VM now has an address on your **real network**, like a separate computer. Run `ping -c 2` followed by that address from your laptop terminal: it answers. With NAT it would not.
 
-#### 6. Delete the VM
+#### 4. Delete the VM
 
 Shut the VM down with `sudo poweroff`. Then:
 
