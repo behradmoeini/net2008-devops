@@ -51,6 +51,124 @@ The VM tools (VirtualBox, UTM, Vagrant) and the Azure account are installed late
 - Some boxes come in two versions, **macOS / Linux** and **Windows**. Open the one for your system. The Windows one is open by default.
 - Do the sections in order. Terraform practice work happens in one folder, `~/iac-practice`.
 
+## Setup (do this once)
+
+Do this setup **once**, before the rest of the guide. It assumes you finished the [Week 9 lecture: How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker): a working terminal (Ubuntu on WSL 2 for Windows, or PowerShell) and Docker running.
+
+### 1. Terraform
+
+<details>
+<summary>macOS (Terminal)</summary>
+
+```bash
+brew tap hashicorp/tap && brew install hashicorp/tap/terraform
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+Download Terraform from <https://developer.hashicorp.com/terraform/install> (choose **Windows**). Unzip the file and put `terraform.exe` in a folder that is on your PATH. Close PowerShell, open a new one, and check it with `terraform version` in the check below.
+
+</details>
+
+<details>
+<summary>Windows (Ubuntu terminal) and Ubuntu or Debian Linux</summary>
+
+Windows students who use the **Ubuntu (WSL 2)** app run these, not PowerShell.
+
+```bash
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+```
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+```
+
+```bash
+sudo apt update && sudo apt install -y terraform
+```
+
+</details>
+
+**Check** (in the same terminal):
+
+```bash
+terraform version
+```
+
+**macOS: if Terraform cannot find Docker.** If `terraform apply` later says it cannot connect to the Docker daemon at `/var/run/docker.sock` while `docker ps` works, run this in the same terminal:
+
+```bash
+export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')
+```
+
+### 2. A hypervisor and Vagrant (optional)
+
+Virtual machines on a laptop depend on the processor. The Week 11 lab is written so that you finish **without** a virtual machine. Install these only if your laptop can run them.
+
+| Your computer | VM by hand | `vagrant up` |
+|---|---|---|
+| Windows (Intel or AMD), Mac with an Intel chip, Linux on Intel or AMD | VirtualBox | Yes |
+| Mac with Apple silicon (M1 to M4) | **UTM** | Yes, with VirtualBox 7.2 and the ARM version of the box |
+| Windows with an ARM chip, Windows 11 **Pro or Enterprise** | **Hyper-V** (built into Windows; the lecture shows the steps) | Maybe: VirtualBox 7.2 on Windows ARM is experimental and untested here. If it fails, run `vagrant validate`. |
+
+VirtualBox can conflict with WSL 2 and Docker Desktop on some Windows laptops. If Docker stops working after you install it, uninstall VirtualBox.
+
+First check your processor (macOS or Linux):
+
+```bash
+uname -m  # x86_64 means Intel or AMD. arm64 or aarch64 means Apple silicon or ARM.
+```
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
+Mac with an Intel chip:
+
+```bash
+brew install --cask virtualbox vagrant
+```
+
+macOS asks you to allow the VirtualBox system extension in System Settings > Privacy & Security. Allow it and restart.
+
+Mac with Apple silicon:
+
+```bash
+brew install --cask utm virtualbox vagrant
+```
+
+Ubuntu or Debian Linux on Intel or AMD (the HashiCorp repository from section 1 must be added first):
+
+```bash
+sudo apt update && sudo apt install -y virtualbox vagrant
+```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+**Vagrant must be installed in Windows, not in Ubuntu.** Download and run the installers (click **Yes** if Windows asks for permission):
+
+- VirtualBox: <https://www.virtualbox.org/wiki/Downloads> (click **Windows hosts**)
+- Vagrant: <https://developer.hashicorp.com/vagrant/install> (click the **Windows** installer)
+
+Close PowerShell, open a new one, and check:
+
+```powershell
+vagrant --version
+```
+
+</details>
+
+You also need an Ubuntu Server ISO for the VM by hand. The lecture links to it.
+
+### 3. A free Azure student account (optional)
+
+The cloud hands-on in the lecture needs an Azure account. **Azure for Students** gives 100 US dollars of credit for 12 months and does not ask for a credit card. Go to <https://azure.microsoft.com/free/students> and sign in with your **school email**. If it refuses your email, skip the Azure parts. The graded lab does not need an account.
+
 ## The big picture
 
 In Week 9 you ran programs in containers. In Week 10 you ran many containers on a cluster. Both assumed one thing: **a computer to run them on**. This week asks where those computers come from, and how to create them quickly and the same way every time.
@@ -334,9 +452,11 @@ Vagrant.configure("2") do |config|
   config.vm.box_version = "202510.26.0"
   config.vm.hostname = "demo-vm"
   config.vm.network "private_network", ip: "192.168.56.20"
+  config.vm.boot_timeout = 600
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = 1024
-    vb.cpus = 1
+    vb.gui = true
+    vb.memory = "2048"
+    vb.cpus = 2
   end
   config.vm.provision "shell", inline: "echo hello > /etc/demo-greeting"
 end
@@ -348,7 +468,9 @@ end
 | `config.vm.box_version` | Use exactly this version of the box, so everyone gets the same VM |
 | `config.vm.hostname` | Name the VM `demo-vm` |
 | `config.vm.network "private_network"` | A host-only network (see the networking table) with this address |
-| `vb.memory`, `vb.cpus` | 1 GB of memory and 1 CPU |
+| `config.vm.boot_timeout` | Seconds Vagrant waits for the VM to start before it gives up. 600 gives a slow laptop time to finish. |
+| `vb.gui` | Open the VM in its own VirtualBox window |
+| `vb.memory`, `vb.cpus` | 2 GB of memory and 2 CPUs |
 | `config.vm.provision "shell"` | Run this one command inside the VM the first time it starts |
 
 Compare it with what you clicked: the name, the memory, the CPUs and the network mode were all choices in the VirtualBox windows. Now they are lines in a file.
@@ -375,11 +497,54 @@ New-Item -ItemType Directory -Force ~/iac-practice/vm | Out-Null; Set-Location ~
 
 </details>
 
-The commands below are the same on every system.
+Back up any Vagrantfile you already have, then write the Vagrantfile below into this folder. Do not use `vagrant init` here: it creates a different template.
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
-vagrant init bento/ubuntu-24.04 --box-version 202510.26.0  # Create a Vagrantfile for that box. Open it and compare with the one above.
+cp Vagrantfile Vagrantfile.bak 2>/dev/null; cat > Vagrantfile <<'EOF'
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.box_version = "202510.26.0"
+
+  config.vm.boot_timeout = 600
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+end
+EOF
 ```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+Copy-Item Vagrantfile Vagrantfile.bak
+@'
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.box_version = "202510.26.0"
+
+  config.vm.boot_timeout = 600
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+end
+'@ | Set-Content Vagrantfile
+```
+
+</details>
+
+The commands below are the same on every system.
 
 ```bash
 vagrant validate  # Check that the Vagrantfile is correct. It does not start anything. Everyone can run this one.
