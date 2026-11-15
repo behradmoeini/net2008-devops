@@ -676,19 +676,21 @@ Go to **Resource groups** in the portal, click **iac-practice-rg**, click **Dele
 
 **What did that cost?** About fifteen minutes of clicking, with nothing installed on your laptop. But you clicked through the form once. Next week, who remembers which boxes to tick? Who knows what exists in the account? That is the last problem.
 
-#### WARNING: shut down your VMs
+> [!CAUTION]
+> **WARNING: shut down your VMs**
+>
+> **Make sure to shut down your VMs when you are done.** A running VM uses your free student credit every hour, even when you are not using it. If you forget, the credit runs out, you can be charged, and your free student account stops working.
+>
+> - **Stop it from the portal.** Open **cloud-vm**, click **Stop** in the toolbar, wait a minute, and check that the **Status** says **Stopped (deallocated)**. Stopping from the portal does this by default.
+> - **Do not shut it down from inside the VM** with `sudo shutdown`. The status then shows **Stopped**, but the VM keeps billing for compute.
+>
+> **What still costs money while it is deallocated:**
+>
+> - **The OS disk:** a few cents a day for a small disk.
+> - **The public IP address:** it may keep billing. Portal-created public IPs are usually Standard SKU with a static address, and they cost roughly 3 to 4 US dollars a month, even when the VM is off.
+>
+> Both are small next to compute, so stopping is fine for short breaks. If you are done for a while, delete the resource group (step 6). That stops all the charges.
 
-**Make sure to shut down your VMs when you are done.** A running VM uses your free student credit every hour, even when you are not using it. If you forget, the credit runs out, you can be charged, and your free student account stops working.
-
-- **Stop it from the portal.** Open **cloud-vm**, click **Stop** in the toolbar, wait a minute, and check that the **Status** says **Stopped (deallocated)**. Stopping from the portal does this by default.
-- **Do not shut it down from inside the VM** with `sudo shutdown`. The status then shows **Stopped**, but the VM keeps billing for compute.
-
-**What still costs money while it is deallocated:**
-
-- **The OS disk:** a few cents a day for a small disk.
-- **The public IP address:** it may keep billing. Portal-created public IPs are usually Standard SKU with a static address, and they cost roughly 3 to 4 US dollars a month, even when the VM is off.
-
-Both are small next to compute, so stopping is fine for short breaks. If you are done for a while, delete the resource group (step 6). That stops all the charges.
 ## Infrastructure as Code with Terraform
 
 ### The problem
@@ -886,7 +888,9 @@ terraform apply  # Run apply again. It says "No changes". Applying twice is safe
 
 **"Idempotent"** is a big word for a simple idea: doing it twice gives the same result as doing it once. Running `apply` twice does not create four web servers.
 
-### State (reference)
+### State
+
+> **REFERENCE** Not presented in class. Read it on your own.
 
 Terraform keeps a notebook of everything it built. This notebook is the **state**. Read it, but never edit it by hand.
 
@@ -903,6 +907,7 @@ Terraform keeps a notebook of everything it built. This notebook is the **state*
 | `terraform show` | The stored details of those resources |
 
 **Rules:** never edit `terraform.tfstate` by hand, and never commit it. A hand change to the real server causes drift, and `apply` repairs it. Teams keep the state in a shared place (see "State in a team" below).
+
 ### Variables, outputs and `count`
 
 Hard-coded values are a problem. If the number of servers is typed in the code, you must edit the code every time you need more or fewer servers. A **variable** fixes that: you name the value once, and change it from outside. **`count`** makes that many copies. An **output** prints a useful result (like web addresses) at the end.
