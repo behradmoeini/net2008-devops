@@ -73,6 +73,39 @@ brew install --cask utm  # Install UTM.
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All  # Turn on Hyper-V, Windows' built-in hypervisor. Restart when it asks.
 ```
 
+#### Create the VM and install Ubuntu
+
+The names of buttons can change a little between versions. Follow the idea if a label looks different.
+
+**Tag A (VirtualBox):**
+
+1. Open **VirtualBox** and click **New**.
+2. **Name:** `manual-vm`. **ISO Image:** choose the Ubuntu Server ISO you downloaded. Click **Next**.
+3. If VirtualBox shows **Unattended Install**, you can type a user name and password there and it installs Ubuntu for you. Otherwise you answer the Ubuntu installer questions yourself.
+4. **Hardware:** Base Memory **2048 MB**, Processors **2**. Click **Next**.
+5. **Virtual Hard disk:** **20 GB**. Click **Next**, then **Finish**.
+6. Select `manual-vm` and click **Start**. A window opens with the Ubuntu installer.
+
+**Tag B (UTM):**
+
+1. Open **UTM** and click **Create a New Virtual Machine**.
+2. Choose **Virtualize**, then **Linux**.
+3. **Boot ISO Image:** click **Browse** and choose the arm64 Ubuntu Server ISO.
+4. **Memory:** 2048 MB, **CPU Cores:** 2. **Storage:** 20 GB. Skip the shared directory. Name it `manual-vm` and click **Save**.
+5. Click the **Play** button to start the VM.
+
+**Tag C (Hyper-V):** do not use **Quick Create**: it does not work for Linux on ARM.
+
+1. Open **Hyper-V Manager** from the Start menu. Right-click your computer's name on the left, choose **New > Virtual Machine**, and click **Next**.
+2. **Name:** `manual-vm`. Click **Next**.
+3. **Generation:** choose **Generation 2**. Click **Next**.
+4. **Startup memory:** `2048` MB. Click **Next**.
+5. **Networking:** choose **Default Switch** (this is NAT). Click **Next**.
+6. **Virtual hard disk:** `20` GB. Click **Next**.
+7. **Installation options:** choose **Install an operating system from a bootable image file**, browse to the **arm64** Ubuntu Server ISO, and click **Finish**.
+8. **Before you start it**, right-click `manual-vm` and open **Settings**. Under **Security**, **untick Enable Secure Boot**, and click **OK**. Ubuntu on ARM does not start with Secure Boot on. Under **Processor**, set **Number of virtual processors** to `1`: some ARM laptops freeze with more.
+9. Double-click `manual-vm`, click **Start**, and the Ubuntu installer appears.
+
 ### 2. Terraform
 
 <details open>
@@ -245,44 +278,11 @@ A VM has a virtual network card. You choose how it connects:
 
 ### Hands-on: build a VM by hand
 
-**Goal:** create an Ubuntu Server VM manually, so you feel what Vagrant will remove later. It takes about 25 minutes, and most of that is the Ubuntu installer.
+**Goal:** look inside the Ubuntu Server VM you built by hand, change its network, and delete it, so you feel what Vagrant will remove later. Building it in Setup takes about 25 minutes, and most of that is the Ubuntu installer.
 
-Before you start, complete **[Setup, step 1](#setup)**: find your tag, download the Ubuntu ISO and install the hypervisor. Then come back here.
+Before you start, complete **[Setup, step 1](#setup)**: find your tag, download the Ubuntu ISO, install the hypervisor and create the VM. Then come back here.
 
-#### 1. Create the VM and install Ubuntu
-
-The names of buttons can change a little between versions. Follow the idea if a label looks different.
-
-**Tag A (VirtualBox):**
-
-1. Open **VirtualBox** and click **New**.
-2. **Name:** `manual-vm`. **ISO Image:** choose the Ubuntu Server ISO you downloaded. Click **Next**.
-3. If VirtualBox shows **Unattended Install**, you can type a user name and password there and it installs Ubuntu for you. Otherwise you answer the Ubuntu installer questions yourself.
-4. **Hardware:** Base Memory **2048 MB**, Processors **2**. Click **Next**.
-5. **Virtual Hard disk:** **20 GB**. Click **Next**, then **Finish**.
-6. Select `manual-vm` and click **Start**. A window opens with the Ubuntu installer.
-
-**Tag B (UTM):**
-
-1. Open **UTM** and click **Create a New Virtual Machine**.
-2. Choose **Virtualize**, then **Linux**.
-3. **Boot ISO Image:** click **Browse** and choose the arm64 Ubuntu Server ISO.
-4. **Memory:** 2048 MB, **CPU Cores:** 2. **Storage:** 20 GB. Skip the shared directory. Name it `manual-vm` and click **Save**.
-5. Click the **Play** button to start the VM.
-
-**Tag C (Hyper-V):** do not use **Quick Create**: it does not work for Linux on ARM.
-
-1. Open **Hyper-V Manager** from the Start menu. Right-click your computer's name on the left, choose **New > Virtual Machine**, and click **Next**.
-2. **Name:** `manual-vm`. Click **Next**.
-3. **Generation:** choose **Generation 2**. Click **Next**.
-4. **Startup memory:** `2048` MB. Click **Next**.
-5. **Networking:** choose **Default Switch** (this is NAT). Click **Next**.
-6. **Virtual hard disk:** `20` GB. Click **Next**.
-7. **Installation options:** choose **Install an operating system from a bootable image file**, browse to the **arm64** Ubuntu Server ISO, and click **Finish**.
-8. **Before you start it**, right-click `manual-vm` and open **Settings**. Under **Security**, **untick Enable Secure Boot**, and click **OK**. Ubuntu on ARM does not start with Secure Boot on. Under **Processor**, set **Number of virtual processors** to `1`: some ARM laptops freeze with more.
-9. Double-click `manual-vm`, click **Start**, and the Ubuntu installer appears.
-
-#### 2. Look inside your VM
+#### 1. Look inside your VM
 
 Run these inside the VM. It is a separate computer with its own system.
 
@@ -306,7 +306,7 @@ ip -br address  # The VM's network address. With NAT it is a private address: us
 ping -c 2 8.8.8.8  # NAT lets the VM reach the internet.
 ```
 
-#### 3. Change the network mode
+#### 2. Change the network mode
 
 Shut the VM down with `sudo poweroff`. Then change how the network card connects:
 
@@ -316,7 +316,7 @@ Shut the VM down with `sudo poweroff`. Then change how the network card connects
 
 Log in and run `ip -br address`. The VM now has an address on your **real network**, like a separate computer. Run `ping -c 2` followed by that address from your laptop terminal: it answers. With NAT it would not.
 
-#### 4. Delete the VM
+#### 3. Delete the VM
 
 Shut the VM down with `sudo poweroff`. Then:
 
