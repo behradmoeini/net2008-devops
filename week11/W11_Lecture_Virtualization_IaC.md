@@ -145,7 +145,7 @@ There are three problems. Each section of today's class solves one.
 
 ![Three problems and three ideas: virtualization (VirtualBox, Vagrant) answers "I need another Linux system but I have one laptop"; the cloud (Azure) answers "I do not want to own servers"; Infrastructure as Code (Terraform) answers "clicking is slow and nobody can repeat it exactly"](images/three-problems.svg)
 
-Ansible, the tool that configures the **inside** of a server, is next week (Week 12). Today we only create the servers.
+Ansible, the tool that configures the **inside** of a server and installs the services on it, is next week (Week 12). Today we only create the servers.
 
 ## Virtualization
 
@@ -713,14 +713,14 @@ Three tools, three jobs:
 | Tool | Job | Today |
 |---|---|---|
 | **Vagrant** | A VM on your own computer | You already used it |
-| **Terraform** | Creates infrastructure: VMs, networks, containers, in any cloud or on your laptop | The rest of this class |
-| **Ansible** | Configures the **inside** of a server: packages, files, services | Week 12 |
+| **Terraform** | Creates infrastructure: VMs, networks, containers, in any cloud, on your laptop (or in your server) | The rest of this class |
+| **Ansible** | Configures the **inside** of a server and installs the services on it: packages, files, services | Week 12 |
 
-Terraform creates the empty servers. Ansible installs the software on them.
+Terraform creates the empty servers. Ansible configures them and installs the services on them.
 
 ### Where do we run Terraform?
 
-Terraform is a program that runs **on your laptop**. It talks to a **provider**: a plug-in for one platform. The platform decides what a "server" is.
+Terraform is a program that runs **on your laptop (or in your server)**. It talks to a **provider**: a plug-in for one platform. The platform decides what a "server" is.
 
 ![Where Terraform runs and what it builds: Terraform and your .tf files run on your laptop; the docker provider builds containers (today's practice, free); the azurerm provider builds VMs in the Azure cloud (needs an account); only the provider and resource types change](images/terraform-providers.svg)
 
