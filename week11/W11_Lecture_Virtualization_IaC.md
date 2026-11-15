@@ -213,6 +213,8 @@ sudo apt update && sudo apt install -y vagrant
 
 - Vagrant: <https://developer.hashicorp.com/vagrant/install> (click the **Windows** installer)
 
+**Tag C** (Windows on ARM): Vagrant also needs VirtualBox 7.2. Download it from <https://www.virtualbox.org/wiki/Downloads> (click **Windows hosts**), the same way as in step 1.
+
 Close PowerShell, open a new one, and check:
 
 ```powershell
@@ -368,41 +370,7 @@ Vagrant needs two things that match your processor: **VirtualBox**, and a **box*
 
 **Everyone writes the Vagrantfile and runs `vagrant validate`**, which works on every system once Vagrant is installed. `vagrant up` is not graded: if it does not work on your laptop, you lose no marks.
 
-#### Install Vagrant
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-Mac (Intel or Apple silicon):
-
-```bash
-brew install --cask virtualbox vagrant  # Install VirtualBox (Vagrant uses it) and Vagrant. On a Mac, VirtualBox asks you to allow its system extension in System Settings > Privacy & Security. Allow it and restart.
-```
-
-Linux (Ubuntu or Debian), after adding the HashiCorp package source from [Setup](#setup):
-
-```bash
-sudo apt update && sudo apt install -y vagrant  # Install Vagrant.
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-Vagrant must be installed on **Windows**, with the Windows installer.
-
-Download Vagrant from <https://developer.hashicorp.com/vagrant/install>. Click the **Windows** installer, run the file, click **Next** and keep the defaults. Click **Yes** if Windows asks for permission.
-
-**Tag C** (Windows on ARM): Vagrant also needs VirtualBox. Download it from <https://www.virtualbox.org/wiki/Downloads> (click **Windows hosts**), the same way as in the hypervisor section above.
-
-Close PowerShell and open a new one. Installers change PATH, and an old window will still say the command is not recognized.
-
-</details>
-
-```bash
-vagrant --version  # Vagrant must answer with a version number. (On Windows run this in PowerShell.)
-```
+Vagrant is installed in [Setup, step 3](#setup).
 
 #### Read a Vagrantfile
 
