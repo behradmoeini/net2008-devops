@@ -218,12 +218,6 @@ The names of buttons can change a little between versions. Follow the idea if a 
 8. **Before you start it**, right-click `manual-vm` and open **Settings**. Under **Security**, **untick Enable Secure Boot**, and click **OK**. Ubuntu on ARM does not start with Secure Boot on. Under **Processor**, set **Number of virtual processors** to `1`: some ARM laptops freeze with more.
 9. Double-click `manual-vm`, click **Start**, and the Ubuntu installer appears.
 
-**The Ubuntu installer.** Use the keyboard. Press Enter on the defaults for language, keyboard and network. When it asks for a profile, set your name, a server name (`manual-vm`), a user name and a password, and tick **Install OpenSSH server** when offered. Skip optional snaps. Wait for the installation to finish and choose **Reboot Now**.
-
-- **Tag B only:** if the installer starts again after the reboot, shut the VM down, open its settings and clear the CD/DVD drive (**Eject**), then start it again.
-
-When you see `manual-vm login:`, type your user name and password.
-
 #### 4. Look inside your VM
 
 Run these inside the VM. It is a separate computer with its own system.
