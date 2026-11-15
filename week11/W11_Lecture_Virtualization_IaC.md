@@ -497,13 +497,13 @@ New-Item -ItemType Directory -Force ~/iac-practice/vm | Out-Null; Set-Location ~
 
 </details>
 
-Back up any Vagrantfile you already have, then write the Vagrantfile below into this folder. Do not use `vagrant init` here: it creates a different template.
+Write the Vagrantfile below into this folder. Do not use `vagrant init` here: it creates a different template.
 
 <details>
 <summary>macOS / Linux (Terminal)</summary>
 
 ```bash
-cp Vagrantfile Vagrantfile.bak 2>/dev/null; cat > Vagrantfile <<'EOF'
+cat > Vagrantfile <<'EOF'
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202510.26.0"
@@ -525,7 +525,6 @@ EOF
 <summary>Windows (PowerShell)</summary>
 
 ```powershell
-Copy-Item Vagrantfile Vagrantfile.bak
 @'
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
