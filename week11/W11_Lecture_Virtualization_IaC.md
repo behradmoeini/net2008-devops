@@ -1,10 +1,12 @@
 # Week 11 Lecture: Virtualization, Cloud and Infrastructure as Code
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS or Linux, PowerShell on Windows). You need Docker running (see [How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker) in Week 9) and **Terraform** installed (see [Before you start](#before-you-start)). Two parts need extra tools and are optional for some laptops: the VM by hand (VirtualBox or UTM) and the Azure cloud example (a free student account). The guide tells you what to do if you cannot run them.
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS or Linux, PowerShell on Windows). You need Docker running (see [How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker) in Week 9) and **Terraform** installed (see [Setup](#setup)). Two parts need extra tools and are optional for some laptops: the VM by hand (VirtualBox or UTM) and the Azure cloud example (a free student account). The guide tells you what to do if you cannot run them.
 
-## Before you start
+## Setup
 
-Install Terraform once.
+Do this setup **once**, before the rest of the guide. It assumes you finished the [Week 9 lecture: How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker): a working terminal (Terminal on macOS or Linux, or PowerShell on Windows) and Docker running.
+
+### 1. Terraform
 
 <details open>
 <summary>Windows (PowerShell)</summary>
@@ -55,19 +57,9 @@ sudo apt update && sudo apt install -y terraform  # Install Terraform.
 terraform version  # Terraform must answer with a version number.
 ```
 
-The VM tools (VirtualBox, UTM, Vagrant) and the Azure account are installed later, in the sections that use them. The graded lab needs only Docker and Terraform.
+Vagrant and Azure are optional. The graded lab needs only Docker and Terraform.
 
-## How to follow this guide
-
-- Every grey box is **one command** (or one file you create). Everything after the `#` on the first line is a comment that says what the command does. Copy the whole box, paste it into the terminal, press Enter, then go to the next box.
-- Some boxes come in two versions, **macOS / Linux** and **Windows**. Open the one for your system. The Windows one is open by default.
-- Do the sections in order. Terraform practice work happens in one folder, `~/iac-practice`.
-
-## Setup (do this once)
-
-Do this setup **once**, before the rest of the guide. It assumes you finished the [Week 9 lecture: How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker): a working terminal (Terminal on macOS or Linux, or PowerShell on Windows) and Docker running.
-
-### 1. A hypervisor and Vagrant (optional)
+### 2. Vagrant (optional)
 
 Virtual machines on a laptop depend on the processor. The Week 11 lab is written so that you finish **without** a virtual machine. Install these only if your laptop can run them.
 
@@ -102,7 +94,7 @@ Mac with Apple silicon:
 brew install --cask utm virtualbox vagrant
 ```
 
-Ubuntu or Debian Linux on Intel or AMD (the HashiCorp repository from [Before you start](#before-you-start) must be added first):
+Ubuntu or Debian Linux on Intel or AMD (the HashiCorp repository from [Setup](#setup) must be added first):
 
 ```bash
 sudo apt update && sudo apt install -y virtualbox vagrant
@@ -128,7 +120,7 @@ vagrant --version
 
 You also need an Ubuntu Server ISO for the VM by hand. The lecture links to it.
 
-### 2. A free Azure student account (optional)
+### 3. Azure for Students (optional)
 
 The cloud hands-on in the lecture needs an Azure account. **Azure for Students** gives 100 US dollars of credit for 12 months and does not ask for a credit card. Go to <https://azure.microsoft.com/free/students> and sign in with your **school email**. If it refuses your email, skip the Azure parts. The graded lab does not need an account.
 
@@ -380,7 +372,7 @@ Mac (Intel or Apple silicon):
 brew install --cask virtualbox vagrant  # Install VirtualBox (Vagrant uses it) and Vagrant. On a Mac, VirtualBox asks you to allow its system extension in System Settings > Privacy & Security. Allow it and restart.
 ```
 
-Linux (Ubuntu or Debian), after adding the HashiCorp package source from [Before you start](#before-you-start):
+Linux (Ubuntu or Debian), after adding the HashiCorp package source from [Setup](#setup):
 
 ```bash
 sudo apt update && sudo apt install -y vagrant  # Install Vagrant.
@@ -1749,7 +1741,7 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | `Error: Unsupported argument` | A typo in an attribute name, or the wrong block type. Read the line and column in the message. |
 | `Error: container exited immediately` | The image or command is wrong. `docker logs NAME`. |
 | `Error acquiring the state lock` | A previous run was killed. Wait a minute, or `terraform force-unlock ID` (the ID is in the message). |
-| `terraform: command not found` | Terraform is not installed in this terminal. See [Before you start](#before-you-start). |
+| `terraform: command not found` | Terraform is not installed in this terminal. See [Setup](#setup). |
 | Windows: Docker works in one window but Terraform does not | Run Terraform in the same PowerShell window where `docker ps` works, with Docker Desktop running. |
 | `vagrant up` fails with `platform architecture x86 is not supported on ARM` | You are using an Intel-only box (such as `ubuntu/jammy64`) on an ARM laptop. Run `vagrant destroy -f`, use `bento/ubuntu-24.04` as in this lesson, and run `vagrant up` again. |
 | `vagrant up` cannot start the VM on an Apple silicon Mac | Run `VBoxManage setextradata global "VBoxInternal/Devices/pcbios/0/Config/DebugLevel"` once, then try again. (This clears a VirtualBox setting that HashiCorp's guide says can block ARM VMs.) |

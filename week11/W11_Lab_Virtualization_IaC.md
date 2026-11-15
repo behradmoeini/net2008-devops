@@ -4,10 +4,10 @@ This lab is graded (2% of final grade). You describe a virtual machine with Vagr
 
 **Rules**
 
-- Work in a real terminal: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Docker must be running and Terraform installed (see [Before you start](W11_Lecture_Virtualization_IaC.md#before-you-start) in the lecture).
+- Work in a real terminal: **PowerShell** on Windows, or **Terminal** on macOS or Linux. Docker must be running and Terraform installed (see [Setup](W11_Lecture_Virtualization_IaC.md#setup) in the lecture).
 - Do the parts in order. Each part builds on the one before.
 - Use the **exact** names and file names given here. The self-check and your instructor look for them.
-- Every command is one grey box. Run it, read the output, then go on. Do not copy-paste the whole lab at once.
+- Every command is one grey box. Some boxes come in two versions, **Windows (PowerShell)** and **macOS / Linux (Terminal)**. Open the one for your system. Run it, read the output, then go on. Do not copy-paste the whole lab at once.
 - If you get stuck, use the lecture and the "If something goes wrong" table at the end. Search the error message. Do not ask someone to type the commands for you.
 - **Late policy:** submissions received after the deadline receive a grade of 0.
 
@@ -16,42 +16,122 @@ This lab is graded (2% of final grade). You describe a virtual machine with Vagr
 
 Your numbers come from your student ID. **Seed** = the sum of the last four digits of your student ID. For example, ID `040112348` gives `2+3+4+8 = 17`. Replace `17` with **your** seed:
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+$SEED = 17  # Remember your seed in a variable. Replace 17 with your own number.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 export SEED=17  # Remember your seed in a shell variable. Replace 17 with your own number.
 ```
+
+</details>
 
 ```bash
 echo "My seed is $SEED"  # Print the seed to check it.
 ```
 
 ```bash
-terraform version  # Terraform must answer. If not, see [Before you start](W11_Lecture_Virtualization_IaC.md#before-you-start) in the lecture.
+terraform version  # Terraform must answer. If not, see [Setup](W11_Lecture_Virtualization_IaC.md#setup) in the lecture.
 ```
 
 ```bash
 docker run --rm hello-world  # Check that Docker works.
 ```
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$HOME\bytown-iac\vagrant", "$HOME\bytown-iac\terraform", "$HOME\bytown-iac\evidence" | Out-Null; cd "$HOME\bytown-iac"; git init -b main  # Create the lab repository with a folder for each tool and a folder for proof.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 mkdir -p ~/bytown-iac/vagrant ~/bytown-iac/terraform ~/bytown-iac/evidence && cd ~/bytown-iac && git init -b main  # Create the lab repository with a folder for each tool and a folder for proof.
 ```
 
+</details>
+
 Create `.gitignore` **before** you create any Terraform state, so state is never committed:
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+Set-Content -Encoding ascii .gitignore -Value '.terraform/', '*.tfstate', '*.tfstate.*', '.vagrant/'  # Never commit downloaded plug-ins, state files or Vagrant's hidden folder.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 printf '.terraform/\n*.tfstate\n*.tfstate.*\n.vagrant/\n' > .gitignore  # Never commit downloaded plug-ins, state files or Vagrant's hidden folder.
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+git add .gitignore; git commit -m "Add .gitignore"  # Commit number 1.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 git add .gitignore && git commit -m "Add .gitignore"  # Commit number 1.
 ```
 
-**If you close the terminal**, the variable is lost. Open a new terminal, run `export SEED=...` again and `cd ~/bytown-iac`.
+</details>
+
+**If you close the terminal**, the variable is lost. Open a new terminal, set the seed again (`$SEED = ...` in PowerShell, `export SEED=...` on macOS or Linux), and go back to the lab folder (`cd $HOME\bytown-iac` in PowerShell, `cd ~/bytown-iac` on macOS or Linux).
 
 ---
 ## Part 1. A virtual machine as code (3 points)
 
 Your VM has a host name and an address that use your seed. The address is `192.168.56.(10 + seed)`.
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@"
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.box_version = "202510.26.0"
+  config.vm.hostname = "bytown-vm-$SEED"
+  config.vm.network "private_network", ip: "192.168.56.$(10 + $SEED)"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 1024
+    vb.cpus = 1
+  end
+  config.vm.provision "shell", inline: "echo seed=$SEED > /etc/bytown-seed"
+end
+"@ | Set-Content -Encoding ascii vagrant\Vagrantfile
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > vagrant/Vagrantfile <<EOF
@@ -69,28 +149,101 @@ end
 EOF
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+Get-Content vagrant\Vagrantfile  # Check that your seed appears in the host name, the address and the provisioning line.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 cat vagrant/Vagrantfile  # Check that your seed appears in the host name, the address and the provisioning line.
 ```
 
-**If Vagrant is installed in this terminal** (macOS and Linux, including Apple silicon), validate the file. On Windows, Vagrant is installed in Windows: open PowerShell, go to the `vagrant` folder of this lab and run `vagrant validate` there.
+</details>
+
+**If Vagrant is installed** (see the lecture), validate the file. The result is saved in the `evidence` folder. You must see "Vagrantfile validated successfully."
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+cd vagrant; vagrant validate | Out-File -Encoding ascii ..\evidence\part1-validate.txt; Get-Content ..\evidence\part1-validate.txt; cd ..  # Check the Vagrantfile and save the result.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cd vagrant && vagrant validate | tee ../evidence/part1-validate.txt; cd ..  # Check the Vagrantfile and save the result. You must see "Vagrantfile validated successfully."
 ```
 
+</details>
+
 Starting the VM (`vagrant up`) is **optional** and not graded. It works with VirtualBox on Windows, Mac (Intel and Apple silicon) and Linux. It may not work on a Windows laptop with an ARM chip. If you do it, run `vagrant destroy -f` afterwards.
 
 **If you did not install Vagrant**, skip the validate command. Your Vagrantfile is checked by reading it, and you lose no marks.
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+git add vagrant; git commit -m "Add Vagrantfile for the Bytown VM"  # Commit number 2.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 git add vagrant && git commit -m "Add Vagrantfile for the Bytown VM"  # Commit number 2.
 ```
 
+</details>
+
 ---
 ## Part 2. Terraform: network and web containers (5 points)
 
 Create three files in the `terraform` folder. First the **variables**:
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@'
+variable "seed" {
+  description = "Sum of the last four digits of your student ID"
+  type        = number
+}
+
+variable "instances" {
+  description = "Number of web containers"
+  type        = number
+  default     = 2
+}
+
+variable "base_port" {
+  description = "Host ports start here, plus your seed"
+  type        = number
+  default     = 8500
+}
+'@ | Set-Content -Encoding ascii terraform\variables.tf
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > terraform/variables.tf <<'EOF'
@@ -113,7 +266,61 @@ variable "base_port" {
 EOF
 ```
 
+</details>
+
 Then the **main** file. It creates a network, an image and `instances` containers:
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@'
+terraform {
+  required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 3.0"
+    }
+  }
+}
+
+provider "docker" {}
+
+resource "docker_network" "lab" {
+  name = "bytown-net-${var.seed}"
+}
+
+resource "docker_image" "nginx" {
+  name         = "nginx:alpine"
+  keep_locally = true
+}
+
+resource "docker_container" "web" {
+  count = var.instances
+  name  = "bytown-tf-${var.seed}-${count.index}"
+  image = docker_image.nginx.image_id
+
+  ports {
+    internal = 80
+    external = var.base_port + var.seed + count.index
+  }
+
+  networks_advanced {
+    name = docker_network.lab.name
+  }
+
+  upload {
+    file    = "/usr/share/nginx/html/index.html"
+    content = "<h1>Bytown NetOps</h1><p>Seed: ${var.seed}, instance: ${count.index}</p>\n"
+  }
+}
+'@ | Set-Content -Encoding ascii terraform\main.tf
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > terraform/main.tf <<'EOF'
@@ -159,7 +366,26 @@ resource "docker_container" "web" {
 EOF
 ```
 
+</details>
+
 Then the **outputs** and **your values**:
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@'
+output "urls" {
+  description = "Addresses of the web containers"
+  value       = [for c in docker_container.web : "http://localhost:${c.ports[0].external}"]
+}
+'@ | Set-Content -Encoding ascii terraform\outputs.tf
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > terraform/outputs.tf <<'EOF'
@@ -170,9 +396,25 @@ output "urls" {
 EOF
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+Set-Content -Encoding ascii terraform\terraform.tfvars -Value "seed      = $SEED", "instances = 2"  # Write your seed and the number of containers. Terraform reads this file by itself.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 printf 'seed      = %s\ninstances = 2\n' "$SEED" > terraform/terraform.tfvars  # Write your seed and the number of containers. Terraform reads this file by itself.
 ```
+
+</details>
 
 ```bash
 cd terraform  # Move into the Terraform folder. Every Terraform command from here on runs in this folder.
@@ -182,33 +424,117 @@ cd terraform  # Move into the Terraform folder. Every Terraform command from her
 terraform init  # Download the Docker provider.
 ```
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform fmt -check; terraform validate  # The formatting must be correct (no output) and the code valid. If fmt -check lists a file, run terraform fmt.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 terraform fmt -check && terraform validate  # The formatting must be correct (no output) and the code valid. If fmt -check lists a file, run terraform fmt.
 ```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform plan -no-color | Select-Object -Last 3  # Read the end of the plan. You must see: Plan: 4 to add, 0 to change, 0 to destroy.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 terraform plan -no-color | tail -3  # Read the end of the plan. You must see: Plan: 4 to add, 0 to change, 0 to destroy.
 ```
 
+</details>
+
 ```bash
 terraform apply -auto-approve  # Create the network, the image and two containers.
 ```
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform output | Out-File -Encoding ascii ..\evidence\part2-output.txt; Get-Content ..\evidence\part2-output.txt  # Print and save the two addresses. Your ports are 8500 + seed and 8501 + seed.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 terraform output | tee ../evidence/part2-output.txt  # Print and save the two addresses. Your ports are 8500 + seed and 8501 + seed.
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+curl.exe -s "http://localhost:$(8500 + $SEED)" | Out-File -Encoding ascii ..\evidence\part2-curl0.txt; Get-Content ..\evidence\part2-curl0.txt  # Container 0 answers with your seed and instance 0.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 curl -s http://localhost:$((8500 + SEED)) | tee ../evidence/part2-curl0.txt  # Container 0 answers with your seed and instance 0.
 ```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+curl.exe -s "http://localhost:$(8501 + $SEED)" | Out-File -Encoding ascii ..\evidence\part2-curl1.txt; Get-Content ..\evidence\part2-curl1.txt  # Container 1 answers with your seed and instance 1.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 curl -s http://localhost:$((8501 + SEED)) | tee ../evidence/part2-curl1.txt  # Container 1 answers with your seed and instance 1.
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+cd ..; git add -A; git commit -m "Add Terraform for network and web containers"  # Commit number 3. Check git status: no .tfstate file may be listed.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 cd .. && git add -A && git commit -m "Add Terraform for network and web containers"  # Commit number 3. Check git status: no .tfstate file may be listed.
 ```
+
+</details>
 
 ---
 ## Part 3. Change and drift (3 points)
@@ -216,12 +542,26 @@ cd .. && git add -A && git commit -m "Add Terraform for network and web containe
 **3a. Drift.** Delete one container behind Terraform's back, and watch Terraform notice:
 
 ```bash
-docker rm -f bytown-tf-$SEED-1  # Delete container 1 by hand.
+docker rm -f "bytown-tf-$SEED-1"  # Delete container 1 by hand.
 ```
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+cd terraform; terraform plan -no-color | Out-File -Encoding ascii ..\evidence\part3-plan.txt; Select-String "Plan:" ..\evidence\part3-plan.txt  # Save the plan. You must see: Plan: 1 to add, 0 to change, 0 to destroy.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cd terraform && terraform plan -no-color > ../evidence/part3-plan.txt; grep "Plan:" ../evidence/part3-plan.txt  # Save the plan. You must see: Plan: 1 to add, 0 to change, 0 to destroy.
 ```
+
+</details>
 
 ```bash
 terraform apply -auto-approve  # Repair the difference. The container comes back.
@@ -229,29 +569,99 @@ terraform apply -auto-approve  # Repair the difference. The container comes back
 
 **3b. Change by code.** Raise the number of containers to 3 by editing the **values file**, not the code:
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+Set-Content -Encoding ascii terraform.tfvars -Value "seed      = $SEED", "instances = 3"  # Ask for three containers.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 printf 'seed      = %s\ninstances = 3\n' "$SEED" > terraform.tfvars  # Ask for three containers.
 ```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform plan -no-color | Select-String "Plan:"  # Read the plan. Terraform adds exactly one container.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 terraform plan -no-color | grep "Plan:"  # Read the plan. Terraform adds exactly one container.
 ```
 
+</details>
+
 ```bash
 terraform apply -auto-approve  # Create it.
 ```
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform state list | Out-File -Encoding ascii ..\evidence\part3-state.txt; Get-Content ..\evidence\part3-state.txt  # Save the list of managed resources. Three containers must be there.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 terraform state list | tee ../evidence/part3-state.txt  # Save the list of managed resources. Three containers must be there.
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+curl.exe -s "http://localhost:$(8502 + $SEED)" | Out-File -Encoding ascii ..\evidence\part3-curl2.txt; Get-Content ..\evidence\part3-curl2.txt  # The third container answers.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 curl -s http://localhost:$((8502 + SEED)) | tee ../evidence/part3-curl2.txt  # The third container answers.
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+cd ..; git add -A; git commit -m "Scale to three web containers"  # Commit number 4.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 cd .. && git add -A && git commit -m "Scale to three web containers"  # Commit number 4.
 ```
+
+</details>
 
 ---
 ## Part 4. Lock file, state and destroy (3 points)
@@ -262,32 +672,191 @@ git ls-files terraform  # The files Git tracks. You must see .terraform.lock.hcl
 
 If `.terraform.lock.hcl` is **not** listed, add and commit it:
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+git add terraform/.terraform.lock.hcl; git commit -m "Pin the provider version"  # Commit the lock file if it is not tracked yet.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 git add terraform/.terraform.lock.hcl && git commit -m "Pin the provider version" || true  # Commit the lock file if it is not tracked yet.
 ```
 
+</details>
+
 Destroy everything:
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+cd terraform; terraform destroy -auto-approve  # Delete the containers, the image reference and the network.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cd terraform && terraform destroy -auto-approve  # Delete the containers, the image reference and the network.
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+docker ps -a --filter "name=bytown-tf-$SEED" | Out-File -Encoding ascii ..\evidence\part4-after-destroy.txt; Get-Content ..\evidence\part4-after-destroy.txt  # Save the proof: only the header line remains.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 docker ps -a --filter name=bytown-tf-$SEED | tee ../evidence/part4-after-destroy.txt  # Save the proof: only the header line remains.
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+cd ..; git add -A; git commit -m "Record the destroyed state"  # Commit number 5.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 cd .. && git add -A && git commit -m "Record the destroyed state"  # Commit number 5.
 ```
+
+</details>
 
 ---
 ## Part 5. Terraform for the cloud (3 points)
 
 You write Azure code and let Terraform **check** it. Nothing is created and no account is needed. Use your seed in the names.
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$HOME\bytown-iac\cloud" | Out-Null; cd "$HOME\bytown-iac\cloud"  # Create the cloud folder and move into it.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 mkdir -p ~/bytown-iac/cloud && cd ~/bytown-iac/cloud  # Create the cloud folder and move into it.
 ```
+
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@"
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+
+variable "ssh_public_key" {
+  type    = string
+  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLACEHOLDERKEYPLACEHOLDERKEYPLACEHOLDER student"
+}
+
+resource "azurerm_resource_group" "bytown" {
+  name     = "bytown-rg-$SEED"
+  location = "canadacentral"
+  tags     = { Owner = "student" }
+}
+
+resource "azurerm_virtual_network" "bytown" {
+  name                = "bytown-vnet-$SEED"
+  address_space       = ["10.${SEED}.0.0/16"]
+  location            = azurerm_resource_group.bytown.location
+  resource_group_name = azurerm_resource_group.bytown.name
+}
+
+resource "azurerm_subnet" "web" {
+  name                 = "web"
+  resource_group_name  = azurerm_resource_group.bytown.name
+  virtual_network_name = azurerm_virtual_network.bytown.name
+  address_prefixes     = ["10.${SEED}.1.0/24"]
+}
+
+resource "azurerm_network_interface" "web" {
+  name                = "bytown-nic-$SEED"
+  location            = azurerm_resource_group.bytown.location
+  resource_group_name = azurerm_resource_group.bytown.name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.web.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "web" {
+  name                  = "bytown-web-$SEED"
+  resource_group_name   = azurerm_resource_group.bytown.name
+  location              = azurerm_resource_group.bytown.location
+  size                  = "Standard_B1s"
+  admin_username        = "student"
+  network_interface_ids = [azurerm_network_interface.web.id]
+  tags                  = { Owner = "student" }
+
+  admin_ssh_key {
+    username   = "student"
+    public_key = var.ssh_public_key
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "ubuntu-24_04-lts"
+    sku       = "server"
+    version   = "latest"
+  }
+}
+"@ | Set-Content -Encoding ascii main.tf
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cat > main.tf <<EOF
@@ -370,23 +939,67 @@ resource "azurerm_linux_virtual_machine" "web" {
 EOF
 ```
 
+</details>
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+Select-String -Pattern "$SEED" main.tf  # Check that your seed appears in the network address and the names.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 grep -n "$SEED" main.tf  # Check that your seed appears in the network address and the names.
 ```
+
+</details>
 
 ```bash
 terraform init  # Download the Azure provider (about a minute).
 ```
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+terraform fmt -check; terraform validate | Out-File -Encoding ascii ..\evidence\part5-validate.txt; Get-Content ..\evidence\part5-validate.txt  # You must see "Success! The configuration is valid."
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 terraform fmt -check && terraform validate | tee ../evidence/part5-validate.txt  # You must see "Success! The configuration is valid."
 ```
 
+</details>
+
 **Do not run `terraform apply` in this folder.** You have no credentials, and nothing here is meant to be created.
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+cd ..; git add -A; git commit -m "Add Azure Terraform code, validated"  # Commit number 6. Check that no .terraform folder is listed.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
 
 ```bash
 cd .. && git add -A && git commit -m "Add Azure Terraform code, validated"  # Commit number 6. Check that no .terraform folder is listed.
 ```
+
+</details>
 
 ---
 ## Part 6. Answers (3 points)
@@ -398,6 +1011,23 @@ Answer in a file named `answers.txt`, one answer per line, in the form `Q1: your
 3. What is the difference between what Terraform does and what Ansible (Week 12) will do?
 4. In the shared responsibility model, name one thing the cloud provider secures and one thing you secure on a cloud VM.
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+@'
+Q1: replace this with your answer
+Q2: replace this with your answer
+Q3: replace this with your answer
+Q4: replace this with your answer
+'@ | Set-Content -Encoding ascii answers.txt
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 cat > answers.txt <<'EOF'
 Q1: replace this with your answer
@@ -407,6 +1037,8 @@ Q4: replace this with your answer
 EOF
 ```
 
+</details>
+
 Open `answers.txt` in an editor and replace each placeholder.
 
 ---
@@ -414,9 +1046,23 @@ Open `answers.txt` in an editor and replace each placeholder.
 
 The self-check reads your repository and your proof files. It runs `terraform fmt -check` and `validate` on your code. It changes nothing. Run it from your lab folder, **after** Part 5:
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+python "$HOME\net2008-devops\week11\W11_Lab_selfcheck.py" --seed $SEED  # Check your work against the lab.
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 python3 ~/net2008-devops/week11/W11_Lab_selfcheck.py --seed "$SEED"  # Check your work against the lab.
 ```
+
+</details>
 
 Fix every `FAIL` line, then run it again.
 
@@ -424,9 +1070,23 @@ Fix every `FAIL` line, then run it again.
 
 1. Commit everything and push to a **public** GitHub repository named `bytown-iac` (the same steps as Week 6, Part 4). Create the empty repository on GitHub first, then:
 
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+```powershell
+git add -A; git commit -m "Week 11 lab: infrastructure as code"; git remote add origin git@github.com:YOUR-USERNAME/bytown-iac.git  # Save and link your empty GitHub repository. Use your own user name. (If git says nothing to commit, that is fine.)
+```
+
+</details>
+
+<details>
+<summary>macOS / Linux (Terminal)</summary>
+
 ```bash
 git add -A && git commit -m "Week 11 lab: infrastructure as code" ; git remote add origin git@github.com:YOUR-USERNAME/bytown-iac.git  # Save and link your empty GitHub repository. Use your own user name. (If git says nothing to commit, that is fine.)
 ```
+
+</details>
 
 ```bash
 git push -u origin main  # Upload to GitHub.
