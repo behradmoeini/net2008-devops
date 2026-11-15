@@ -717,7 +717,7 @@ Terraform is a program that runs **on your laptop (or in your server)**. It talk
 
 ![Where Terraform runs and what it builds: Terraform and your .tf files run on your laptop; the docker provider builds containers (today's practice, free); the azurerm provider builds VMs in the Azure cloud (needs an account); only the provider and resource types change](images/terraform-providers.svg)
 
-**Today the main practice uses the Docker provider.** In this part a "server" is the Docker container we use on your laptop (the same Docker you already have from Week 9). Every student has Docker and it costs nothing. The workflow is identical for the cloud: only the provider and the resource types change. At the end you read and validate the Azure version of the same idea.
+**Today the main practice uses the Docker provider.** In this part a "server" is the Docker container we use on your laptop (the same Docker you already have from Week 9). Every student has Docker and it costs nothing. The workflow is identical for the cloud: only the provider and the resource types change.
 
 The commands below have a **Windows (PowerShell)** box, which is open by default, and a **macOS / Linux** box.
 
@@ -906,7 +906,7 @@ Terraform keeps a notebook of everything it built. This notebook is the **state*
 | `terraform state list` | Everything Terraform believes it manages |
 | `terraform show` | The stored details of those resources |
 
-**Rules:** never edit `terraform.tfstate` by hand, and never commit it. A hand change to the real server causes drift, and `apply` repairs it. Teams keep the state in a shared place (see "State in a team" below).
+**Rules:** never edit `terraform.tfstate` by hand, and never commit it. A hand change to the real server causes drift, and `apply` repairs it.
 
 ### Variables, outputs and `count`
 
@@ -1069,10 +1069,6 @@ terraform plan  # Read the plan. The old tf-web is destroyed (its name changed) 
 terraform apply -auto-approve  # Apply without asking (-auto-approve). Only use this when you already read the plan.
 ```
 
-```bash
-terraform output  # Print the outputs: the two addresses.
-```
-
 <details open>
 <summary>Windows (PowerShell)</summary>
 
@@ -1124,6 +1120,8 @@ terraform apply -auto-approve  # Repair the difference.
 This is why you change infrastructure **only through the code**. A hand change is lost at the next `apply`, and nobody will understand why it vanished.
 
 ### Names for your copies: `locals` and `for_each`
+
+> **REFERENCE** Not presented in class. Read it on your own.
 
 `count` gives copies a **number** (0, 1, 2). Sometimes the copies have different **names and jobs**: an `app` server and an `api` server. For that use `for_each`. Add them to the same project:
 
@@ -1240,441 +1238,10 @@ curl -sI http://localhost:8100 | head -1 && curl -sI http://localhost:8101 | hea
 
 **Why `for_each` is safer than `count` for named things.** Suppose you have three servers numbered 0, 1 and 2, and you remove server 0. The old 1 becomes the new 0 and the old 2 becomes the new 1: every number changed, so Terraform sees every server as "changed". With names (`app`, `api`), removing `app` only removes `app`.
 
-### Read the plan like a careful person
+> [!NOTE]
+> Always read the plan before you apply. Each line starts with a symbol: `+` creates something, `~` changes it, `-` deletes it, and `-/+` deletes it and builds it again. Stop and read every `-/+`, because a database rebuilt that way loses its data. To be safe, save the plan to a file and apply exactly that file, so nothing can change between your review and your apply.
 
-Always read the plan before you apply. Every line starts with a symbol. Change one setting and see:
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-(Get-Content tiers.tf) -replace 'port = 8101', 'port = 8102' | Set-Content -Encoding ascii tiers.tf  # Change the api port from 8101 to 8102. (You can also open the file and change the number by hand.)
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-sed -i.bak 's/port = 8101/port = 8102/' tiers.tf && rm tiers.tf.bak  # Change the api port from 8101 to 8102. (You can also open the file and change the number by hand.)
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-terraform plan -no-color | Select-String -Pattern "forces replacement|Plan:"  # Show only the important lines. "forces replacement" means Terraform must delete the container and build a new one.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-terraform plan -no-color | grep -E "forces replacement|Plan:"  # Show only the important lines. "forces replacement" means Terraform must delete the container and build a new one.
-```
-
-</details>
-
-**You should see** `~ external = 8101 -> 8102 # forces replacement` and `Plan: 1 to add, 0 to change, 1 to destroy.` A port cannot change on a running container, so Terraform replaces it. In a full plan this resource is marked `-/+`.
-
-| Symbol | Meaning | Example | Risk |
-|---|---|---|---|
-| `+` | Create something new | Add a third web server | Low |
-| `~` | Change something without deleting it | Change the label on a server | Usually low |
-| `-/+` | Delete it and build it again | Change the port of a server. If this were a database, **all the data in it would be lost.** | **High. Stop and read.** |
-| `-` | Delete | Remove a web server you no longer need | Check it is what you wanted |
-
-A habit professionals use: **save the plan, review it, then apply exactly that plan.** Nothing can change between your review and your apply.
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-terraform plan -out=tfplan -no-color | Select-Object -Last 2  # Save the plan to a file named tfplan.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-terraform plan -out=tfplan -no-color | tail -2  # Save the plan to a file named tfplan.
-```
-
-</details>
-
-```bash
-terraform apply tfplan  # Apply exactly what you reviewed. No question is asked because the plan is fixed.
-```
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-curl.exe -sI http://localhost:8102 | Select-Object -First 1  # The api container now answers on the new port.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-curl -sI http://localhost:8102 | head -1  # The api container now answers on the new port.
-```
-
-</details>
-
-### The same workflow in the cloud (read and validate)
-
-Now the same workflow with a cloud provider. You do **not** need an account for this part: you write real Azure code for a network and a VM, and let Terraform **check** it without creating anything. This is like proofreading a letter you do not send.
-
-Make a folder:
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-New-Item -ItemType Directory -Force "$HOME\iac-practice\cloud" | Out-Null; Set-Location "$HOME\iac-practice\cloud"  # Create the cloud folder and move into it.
-```
-
-```powershell
-@'
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-variable "location" {
-  type    = string
-  default = "canadacentral"
-}
-
-variable "vm_size" {
-  type    = string
-  default = "Standard_B1s"
-}
-
-variable "ssh_public_key" {
-  type        = string
-  description = "Contents of your public SSH key file"
-  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLACEHOLDERKEYPLACEHOLDERKEYPLACEHOLDER student"
-}
-
-resource "azurerm_resource_group" "main" {
-  name     = "iac-practice-rg"
-  location = var.location
-  tags     = { Owner = "student" }
-}
-
-resource "azurerm_virtual_network" "main" {
-  name                = "iac-practice-vnet"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-}
-
-resource "azurerm_subnet" "web" {
-  name                 = "web"
-  resource_group_name  = azurerm_resource_group.main.name
-  virtual_network_name = azurerm_virtual_network.main.name
-  address_prefixes     = ["10.0.1.0/24"]
-}
-
-resource "azurerm_network_security_group" "web" {
-  name                = "iac-practice-nsg"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-
-  security_rule {
-    name                       = "allow-http"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-}
-
-resource "azurerm_subnet_network_security_group_association" "web" {
-  subnet_id                 = azurerm_subnet.web.id
-  network_security_group_id = azurerm_network_security_group.web.id
-}
-
-resource "azurerm_network_interface" "web" {
-  name                = "iac-practice-nic"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.web.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-resource "azurerm_linux_virtual_machine" "web" {
-  name                  = "iac-practice-web"
-  resource_group_name   = azurerm_resource_group.main.name
-  location              = azurerm_resource_group.main.location
-  size                  = var.vm_size
-  admin_username        = "student"
-  network_interface_ids = [azurerm_network_interface.web.id]
-  tags                  = { Owner = "student" }
-
-  admin_ssh_key {
-    username   = "student"
-    public_key = var.ssh_public_key
-  }
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "ubuntu-24_04-lts"
-    sku       = "server"
-    version   = "latest"
-  }
-}
-
-output "web_private_ip" {
-  value = azurerm_network_interface.web.private_ip_address
-}
-'@ | Set-Content -Encoding ascii main.tf  # Write the file main.tf.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-mkdir -p ~/iac-practice/cloud && cd ~/iac-practice/cloud  # Create the cloud folder and move into it.
-```
-
-```bash
-cat > main.tf <<'EOF'
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-variable "location" {
-  type    = string
-  default = "canadacentral"
-}
-
-variable "vm_size" {
-  type    = string
-  default = "Standard_B1s"
-}
-
-variable "ssh_public_key" {
-  type        = string
-  description = "Contents of your public SSH key file"
-  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLACEHOLDERKEYPLACEHOLDERKEYPLACEHOLDER student"
-}
-
-resource "azurerm_resource_group" "main" {
-  name     = "iac-practice-rg"
-  location = var.location
-  tags     = { Owner = "student" }
-}
-
-resource "azurerm_virtual_network" "main" {
-  name                = "iac-practice-vnet"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-}
-
-resource "azurerm_subnet" "web" {
-  name                 = "web"
-  resource_group_name  = azurerm_resource_group.main.name
-  virtual_network_name = azurerm_virtual_network.main.name
-  address_prefixes     = ["10.0.1.0/24"]
-}
-
-resource "azurerm_network_security_group" "web" {
-  name                = "iac-practice-nsg"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-
-  security_rule {
-    name                       = "allow-http"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-}
-
-resource "azurerm_subnet_network_security_group_association" "web" {
-  subnet_id                 = azurerm_subnet.web.id
-  network_security_group_id = azurerm_network_security_group.web.id
-}
-
-resource "azurerm_network_interface" "web" {
-  name                = "iac-practice-nic"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.web.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-resource "azurerm_linux_virtual_machine" "web" {
-  name                  = "iac-practice-web"
-  resource_group_name   = azurerm_resource_group.main.name
-  location              = azurerm_resource_group.main.location
-  size                  = var.vm_size
-  admin_username        = "student"
-  network_interface_ids = [azurerm_network_interface.web.id]
-  tags                  = { Owner = "student" }
-
-  admin_ssh_key {
-    username   = "student"
-    public_key = var.ssh_public_key
-  }
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "ubuntu-24_04-lts"
-    sku       = "server"
-    version   = "latest"
-  }
-}
-
-output "web_private_ip" {
-  value = azurerm_network_interface.web.private_ip_address
-}
-EOF
-```
-
-</details>
-
-Read it. It looks like the Docker file: a provider, resources, pointers between them, variables and an output. Only the provider and the resource types changed. That is the point: **one skill, many platforms**.
-
-| Resource | In plain words |
-|---|---|
-| `azurerm_resource_group` | The folder for everything below. Delete it and all is deleted. |
-| `azurerm_virtual_network`, `azurerm_subnet` | Your private network and a slice of it |
-| `azurerm_network_security_group` | The firewall: let web visitors in on port 80 |
-| `azurerm_network_interface` | The VM's network card |
-| `azurerm_linux_virtual_machine` | The VM. The SSH key is a variable, because you never put real keys in code. |
-
-The VM points at the network card, which points at the subnet, which points at the network, so Terraform creates them in that order.
-
-```bash
-terraform init  # Download the Azure provider (about a minute).
-```
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-terraform fmt -check; terraform validate  # Check the formatting and the code. No account is needed. You should see "Success! The configuration is valid."
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-terraform fmt -check && terraform validate  # Check the formatting and the code. No account is needed. You should see "Success! The configuration is valid."
-```
-
-</details>
-
-Break it on purpose and read the error. Mistakes are the best way to learn:
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-Copy-Item main.tf main.tf.bak; (Get-Content main.tf) -replace 'azurerm_subnet.web.id', 'azurerm_subnet.private.id' | Set-Content -Encoding ascii main.tf; terraform validate; Move-Item -Force main.tf.bak main.tf  # Point at a subnet that does not exist, read the error, then restore the file.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-sed -i.bak 's/azurerm_subnet.web.id/azurerm_subnet.private.id/' main.tf && terraform validate; mv main.tf.bak main.tf  # Point at a subnet that does not exist, read the error, then restore the file.
-```
-
-</details>
-
-The message `Reference to undeclared resource` names the file and line. A mistake caught by `validate` costs nothing. A mistake caught by the cloud bill costs money.
-
-You do not need an Azure account for this lecture. The lab only checks the Azure code.
-
-### State in a team
-
-On your laptop the state notebook is one file. But a team cannot share a file on one laptop. Real projects keep the state in a **shared safe place** called a **remote backend**, for example a storage container in Azure. While one teammate runs `apply`, the state is **locked**, so two teammates never change the servers at the same time.
-
-The setting looks like this (read only, do not run it):
-
-```hcl
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "team-state-rg"
-    storage_account_name = "teamterraformstate"
-    container_name       = "tfstate"
-    key                  = "web.tfstate"
-  }
-}
-```
-
-| Question | Answer |
-|---|---|
-| Why not keep state in Git? | It can contain passwords, and two people can overwrite each other's version. |
-| What does the lock do? | A second `apply` has to wait, instead of corrupting the state. |
-| What if the state is lost? | Terraform forgets what it built and tries to create everything again. So back it up. |
-
-### Destroy
+### Cleanup
 
 Clean up. One command removes everything Terraform created.
 
@@ -1692,24 +1259,6 @@ docker ps -a --filter name=tf-web --filter name=iac-practice  # Nothing is left.
 
 The `.tf` files are all you need to build it again. That is the point of IaC: **delete is safe, because the recipe is saved.**
 
-## Practice questions
-
-Answer these in your head or on paper before the lab. Open the answers only after you tried.
-
-1. You need a Windows system for one hour, and you only have a Mac. Would you use a VM or a container? Why?
-2. What does Vagrant give you that clicking in VirtualBox does not?
-3. A colleague logs in to a server and edits a config file by hand. Which two IaC problems does that cause?
-4. What is the difference between `plan` and `apply`?
-5. Your plan shows `-/+` on a database. What do you do?
-6. A teammate says "the cloud is just someone else's computer, so security is their job". Which idea says this is wrong?
-
-<details>
-<summary>Show the answers (try the questions first)</summary>
-
-(1) A VM: a container shares the host's kernel, so it cannot run a different operating system. (2) The VM is described in a file: it is repeatable, shareable through Git, and can be deleted and rebuilt with one command. (3) Drift (the real server no longer matches the code) and a snowflake that nobody can rebuild. (4) `plan` only shows a preview; `apply` really makes the changes. (5) Stop and read why it is replaced; it means the data is destroyed. Change the code so the resource is updated in place, or back up first. (6) The shared responsibility model: the provider secures the data centre, you secure what you put in it.
-
-</details>
-
 ## Cheat sheet
 
 | Command | What it does |
@@ -1723,7 +1272,6 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | `terraform plan` | Preview changes |
 | `terraform apply` | Make the changes (asks first) |
 | `terraform destroy` | Delete everything it manages |
-| `terraform output` | Show the outputs |
 | `terraform state list` | List managed resources |
 | `terraform plan -out=FILE` | Save a reviewed plan |
 | `terraform apply FILE` | Apply exactly that plan |

@@ -1,6 +1,6 @@
 # Week 11 Lab: Bytown Infrastructure as Code
 
-This lab is graded (2% of final grade). You describe a virtual machine with Vagrant and build real infrastructure with Terraform: a network and web containers, changed through code, repaired after drift, and destroyed. You also write and validate Azure (cloud) code. Everything runs on **your own laptop**.
+This lab is graded (2% of final grade). You describe a virtual machine with Vagrant and build real infrastructure with Terraform: a network and web containers, changed through code, repaired after drift, and destroyed. Everything runs on **your own laptop**.
 
 **Rules**
 
@@ -747,262 +747,28 @@ cd .. && git add -A && git commit -m "Record the destroyed state"  # Commit numb
 </details>
 
 ---
-## Part 5. Terraform for the cloud (3 points)
+## Practice questions (not graded)
 
-You write Azure code and let Terraform **check** it. Nothing is created and no account is needed. Use your seed in the names.
+Use these to check yourself before the graded answers. Do not hand them in.
 
-<details open>
-<summary>Windows (PowerShell)</summary>
+Answer these in your head or on paper. Open the answers only after you tried.
 
-```powershell
-New-Item -ItemType Directory -Force -Path "$HOME\bytown-iac\cloud" | Out-Null; cd "$HOME\bytown-iac\cloud"  # Create the cloud folder and move into it.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-mkdir -p ~/bytown-iac/cloud && cd ~/bytown-iac/cloud  # Create the cloud folder and move into it.
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-@"
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-variable "ssh_public_key" {
-  type    = string
-  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLACEHOLDERKEYPLACEHOLDERKEYPLACEHOLDER student"
-}
-
-resource "azurerm_resource_group" "bytown" {
-  name     = "bytown-rg-$SEED"
-  location = "canadacentral"
-  tags     = { Owner = "student" }
-}
-
-resource "azurerm_virtual_network" "bytown" {
-  name                = "bytown-vnet-$SEED"
-  address_space       = ["10.${SEED}.0.0/16"]
-  location            = azurerm_resource_group.bytown.location
-  resource_group_name = azurerm_resource_group.bytown.name
-}
-
-resource "azurerm_subnet" "web" {
-  name                 = "web"
-  resource_group_name  = azurerm_resource_group.bytown.name
-  virtual_network_name = azurerm_virtual_network.bytown.name
-  address_prefixes     = ["10.${SEED}.1.0/24"]
-}
-
-resource "azurerm_network_interface" "web" {
-  name                = "bytown-nic-$SEED"
-  location            = azurerm_resource_group.bytown.location
-  resource_group_name = azurerm_resource_group.bytown.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.web.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-resource "azurerm_linux_virtual_machine" "web" {
-  name                  = "bytown-web-$SEED"
-  resource_group_name   = azurerm_resource_group.bytown.name
-  location              = azurerm_resource_group.bytown.location
-  size                  = "Standard_B1s"
-  admin_username        = "student"
-  network_interface_ids = [azurerm_network_interface.web.id]
-  tags                  = { Owner = "student" }
-
-  admin_ssh_key {
-    username   = "student"
-    public_key = var.ssh_public_key
-  }
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "ubuntu-24_04-lts"
-    sku       = "server"
-    version   = "latest"
-  }
-}
-"@ | Set-Content -Encoding ascii main.tf
-```
-
-</details>
+1. You need a Windows system for one hour, and you only have a Mac. Would you use a VM or a container? Why?
+2. What does Vagrant give you that clicking in VirtualBox does not?
+3. A colleague logs in to a server and edits a config file by hand. Which two IaC problems does that cause?
+4. What is the difference between `plan` and `apply`?
+5. Your plan shows `-/+` on a database. What do you do?
+6. A teammate says "the cloud is just someone else's computer, so security is their job". Which idea says this is wrong?
 
 <details>
-<summary>macOS / Linux (Terminal)</summary>
+<summary>Show the answers (try the questions first)</summary>
 
-```bash
-cat > main.tf <<EOF
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-variable "ssh_public_key" {
-  type    = string
-  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPLACEHOLDERKEYPLACEHOLDERKEYPLACEHOLDER student"
-}
-
-resource "azurerm_resource_group" "bytown" {
-  name     = "bytown-rg-$SEED"
-  location = "canadacentral"
-  tags     = { Owner = "student" }
-}
-
-resource "azurerm_virtual_network" "bytown" {
-  name                = "bytown-vnet-$SEED"
-  address_space       = ["10.$SEED.0.0/16"]
-  location            = azurerm_resource_group.bytown.location
-  resource_group_name = azurerm_resource_group.bytown.name
-}
-
-resource "azurerm_subnet" "web" {
-  name                 = "web"
-  resource_group_name  = azurerm_resource_group.bytown.name
-  virtual_network_name = azurerm_virtual_network.bytown.name
-  address_prefixes     = ["10.$SEED.1.0/24"]
-}
-
-resource "azurerm_network_interface" "web" {
-  name                = "bytown-nic-$SEED"
-  location            = azurerm_resource_group.bytown.location
-  resource_group_name = azurerm_resource_group.bytown.name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.web.id
-    private_ip_address_allocation = "Dynamic"
-  }
-}
-
-resource "azurerm_linux_virtual_machine" "web" {
-  name                  = "bytown-web-$SEED"
-  resource_group_name   = azurerm_resource_group.bytown.name
-  location              = azurerm_resource_group.bytown.location
-  size                  = "Standard_B1s"
-  admin_username        = "student"
-  network_interface_ids = [azurerm_network_interface.web.id]
-  tags                  = { Owner = "student" }
-
-  admin_ssh_key {
-    username   = "student"
-    public_key = var.ssh_public_key
-  }
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "ubuntu-24_04-lts"
-    sku       = "server"
-    version   = "latest"
-  }
-}
-EOF
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-Select-String -Pattern "$SEED" main.tf  # Check that your seed appears in the network address and the names.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-grep -n "$SEED" main.tf  # Check that your seed appears in the network address and the names.
-```
-
-</details>
-
-```bash
-terraform init  # Download the Azure provider (about a minute).
-```
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-terraform fmt -check; terraform validate | Out-File -Encoding ascii ..\evidence\part5-validate.txt; Get-Content ..\evidence\part5-validate.txt  # You must see "Success! The configuration is valid."
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-terraform fmt -check && terraform validate | tee ../evidence/part5-validate.txt  # You must see "Success! The configuration is valid."
-```
-
-</details>
-
-**Do not run `terraform apply` in this folder.** You have no credentials, and nothing here is meant to be created.
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-cd ..; git add -A; git commit -m "Add Azure Terraform code, validated"  # Commit number 6. Check that no .terraform folder is listed.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-cd .. && git add -A && git commit -m "Add Azure Terraform code, validated"  # Commit number 6. Check that no .terraform folder is listed.
-```
+(1) A VM: a container shares the host's kernel, so it cannot run a different operating system. (2) The VM is described in a file: it is repeatable, shareable through Git, and can be deleted and rebuilt with one command. (3) Drift (the real server no longer matches the code) and a snowflake that nobody can rebuild. (4) `plan` only shows a preview; `apply` really makes the changes. (5) Stop and read why it is replaced; it means the data is destroyed. Change the code so the resource is updated in place, or back up first. (6) The shared responsibility model: the provider secures the data centre, you secure what you put in it.
 
 </details>
 
 ---
-## Part 6. Answers (3 points)
+## Part 5. Answers (3 points)
 
 Answer in a file named `answers.txt`, one answer per line, in the form `Q1: your answer` (at least 20 characters each):
 
@@ -1096,7 +862,7 @@ git push -u origin main  # Upload to GitHub.
 3. Open **Week 11 Lab Submission** on Brightspace and submit **only the URL** of the repository.
 4. Do not push after the deadline.
 
-## Marking (20 points = 2%)
+## Marking (17 points = 2%)
 
 | Part | What | Points |
 |---|---|---|
@@ -1104,8 +870,7 @@ git push -u origin main  # Upload to GitHub.
 | 2 | Terraform code formatted and valid, network and two containers created, both pages show your seed | 5 |
 | 3 | Drift shown in a plan and repaired, scaled to three by the values file | 3 |
 | 4 | State never committed, lock file committed, everything destroyed | 3 |
-| 5 | Azure code with your seed, formatted and valid (nothing created) | 3 |
-| 6 | `answers.txt` (read by your instructor) | 3 |
+| 5 | `answers.txt` (read by your instructor) | 3 |
 
 ## If something goes wrong
 
