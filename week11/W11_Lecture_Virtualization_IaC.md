@@ -6,7 +6,7 @@ Follow this guide from top to bottom. You type every command in a real terminal 
 
 Do this setup **once**, before the rest of the guide. It assumes you finished the [Week 9 lecture: How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker): a working terminal (Terminal on macOS or Linux, or PowerShell on Windows) and Docker running.
 
-### 1. Ubuntu ISO and hypervisor (for the VM by hand)
+### 1. VM (Ubuntu ISO and hypervisor)
 
 You need this for the VM by hand in the Virtualization part. Vagrant (step 3) also needs VirtualBox on most laptops.
 
