@@ -1303,13 +1303,3 @@ The `.tf` files are all you need to build it again. That is the point of IaC: **
 | Azure says the subscription cannot use that region | The error lists the allowed regions. Use one of them. |
 | The portal says `AuthorizationFailed` | You are probably using a different subscription (a school one). On the **Basics** tab, set **Subscription** to **Azure for Students**. If it is not in the list, skip the Azure hands-on: the lab does not need an account. |
 | Azure student sign-up refuses your email | Use your school email. If it still fails, skip the Azure parts: the lab does not need an account. |
-
-## Summary
-
-- **Virtualization:** one computer runs several complete virtual computers (VMs) through a hypervisor. A VM has its own OS; a container shares the host's kernel. Vagrant describes a VM in a file so it can be rebuilt with one command.
-- **Cloud:** rented computers, billed by the hour. A cloud VM is the same kind of VM, in the provider's data centre. You secure what you put in it, and you delete what you do not need.
-- **Infrastructure as Code:** you write the infrastructure you want in text files in Git, and a tool builds it. That makes it reviewable and repeatable.
-- **Terraform:** workflow `init`, `plan`, `apply`, `destroy`. Always read the plan. State is Terraform's notebook: never edit it, never commit it. A hand change causes drift, and `apply` repairs it.
-- The same workflow works for Docker on your laptop and for Azure in the cloud. Only the provider and the resource types change.
-
-**Next:** the Week 11 lab (graded) builds a Vagrantfile, a Terraform project with your own seed, and Azure code that you validate. Week 12 uses Ansible to set up the servers that Terraform creates.
