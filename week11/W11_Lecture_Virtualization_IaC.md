@@ -1,7 +1,50 @@
 # Week 11 Lecture: Virtualization, Cloud and Infrastructure as Code
 **NET2008 DevOps · Algonquin College**
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running and **Terraform** installed (see [W11_Setup_Terraform.md](W11_Setup_Terraform.md)). Two parts need extra tools and are optional for some laptops: the VM by hand (VirtualBox or UTM) and the Azure cloud example (a free student account). The guide tells you what to do if you cannot run them.
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop** (Terminal on macOS, your Linux terminal, the **Ubuntu (WSL 2) app** on Windows). You need Docker running (see [How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker) in Week 9) and **Terraform** installed (see [Before you start](#before-you-start)). Two parts need extra tools and are optional for some laptops: the VM by hand (VirtualBox or UTM) and the Azure cloud example (a free student account). The guide tells you what to do if you cannot run them.
+
+## Before you start
+
+Install Terraform once. Windows students can use PowerShell or the **Ubuntu (WSL 2)** app.
+
+<details open>
+<summary>Windows (PowerShell)</summary>
+
+Download Terraform from <https://developer.hashicorp.com/terraform/install> (choose **Windows**). Unzip the file and put `terraform.exe` in a folder that is on your PATH. Close PowerShell and open a new one.
+
+</details>
+
+<details>
+<summary>macOS (Terminal)</summary>
+
+```bash
+brew tap hashicorp/tap && brew install hashicorp/tap/terraform  # Add the HashiCorp package source and install Terraform.
+```
+
+</details>
+
+<details>
+<summary>Windows (Ubuntu terminal) and Ubuntu or Debian Linux</summary>
+
+```bash
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg  # Download the HashiCorp signing key.
+```
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list  # Add the HashiCorp package source.
+```
+
+```bash
+sudo apt update && sudo apt install -y terraform  # Install Terraform.
+```
+
+</details>
+
+```bash
+terraform version  # Terraform must answer with a version number.
+```
+
+The VM tools (VirtualBox, UTM, Vagrant) and the Azure account are installed later, in the sections that use them. The graded lab needs only Docker and Terraform.
 
 ## How to follow this guide
 
@@ -263,7 +306,7 @@ Mac (Intel or Apple silicon):
 brew install --cask virtualbox vagrant  # Install VirtualBox (Vagrant uses it) and Vagrant. On a Mac, VirtualBox asks you to allow its system extension in System Settings > Privacy & Security. Allow it and restart.
 ```
 
-Linux (Ubuntu or Debian), after adding the HashiCorp repository from the [setup guide](W11_Setup_Terraform.md):
+Linux (Ubuntu or Debian), after adding the HashiCorp package source from [Before you start](#before-you-start):
 
 ```bash
 sudo apt update && sudo apt install -y vagrant  # Install Vagrant.
@@ -1591,7 +1634,7 @@ Answer these in your head or on paper before the lab. Open the answers only afte
 | `Error: Unsupported argument` | A typo in an attribute name, or the wrong block type. Read the line and column in the message. |
 | `Error: container exited immediately` | The image or command is wrong. `docker logs NAME`. |
 | `Error acquiring the state lock` | A previous run was killed. Wait a minute, or `terraform force-unlock ID` (the ID is in the message). |
-| `terraform: command not found` | Terraform is not installed in this terminal. See [W11_Setup_Terraform.md](W11_Setup_Terraform.md). |
+| `terraform: command not found` | Terraform is not installed in this terminal. See [Before you start](#before-you-start). |
 | Windows: Docker works in one terminal but Terraform does not | Run Terraform in the same terminal where Docker works: **PowerShell** (with Docker Desktop running), or the **Ubuntu** terminal (with Docker Desktop's WSL integration on). |
 | `vagrant up` fails with `platform architecture x86 is not supported on ARM` | You are using an Intel-only box (such as `ubuntu/jammy64`) on an ARM laptop. Run `vagrant destroy -f`, use `bento/ubuntu-24.04` as in this lesson, and run `vagrant up` again. |
 | `vagrant up` cannot start the VM on an Apple silicon Mac | Run `VBoxManage setextradata global "VBoxInternal/Devices/pcbios/0/Config/DebugLevel"` once, then try again. (This clears a VirtualBox setting that HashiCorp's guide says can block ARM VMs.) |
