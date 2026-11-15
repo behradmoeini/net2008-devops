@@ -49,11 +49,16 @@ sudo apt update && sudo apt install -y terraform  # Install Terraform.
 terraform version  # Terraform must answer with a version number.
 ```
 
-**macOS: if Terraform cannot find Docker.** If `terraform apply` later says it cannot connect to the Docker daemon at `/var/run/docker.sock` while `docker ps` works, run this in the same terminal:
-
-```bash
-export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')
-```n
+<details>
+<summary>macOS (Terminal): if Terraform cannot find Docker</summary>
+
+If `terraform apply` later says it cannot connect to the Docker daemon at `/var/run/docker.sock` while `docker ps` works, run this in the same terminal:
+
+```bash
+export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')
+```
+
+</details>
 The VM tools (VirtualBox, UTM, Vagrant) and the Azure account are installed later, in the sections that use them. The graded lab needs only Docker and Terraform.
 
 ## How to follow this guide
@@ -724,18 +729,22 @@ Terraform is a program that runs **on your laptop (or in your server)**. It talk
 
 ![Where Terraform runs and what it builds: Terraform and your .tf files run on your laptop; the docker provider builds containers (today's practice, free); the azurerm provider builds VMs in the Azure cloud (needs an account); only the provider and resource types change](images/terraform-providers.svg)
 
-**Today the main practice uses the Docker provider.** A "server" is a Docker container on your laptop, because every student has Docker and it costs nothing. The workflow is identical for the cloud: only the provider and the resource types change. At the end you read and validate the Azure version of the same idea.
+**Today the main practice uses the Docker provider.** In this part a "server" is the Docker container we use on your laptop (the same Docker you already have from Week 9). Every student has Docker and it costs nothing. The workflow is identical for the cloud: only the provider and the resource types change. At the end you read and validate the Azure version of the same idea.
 
 The commands below have a **Windows (PowerShell)** box, which is open by default, and a **macOS / Linux** box.
 
 **Before you start:** Docker Desktop must be open and say it is running. If `docker` is not recognized, start Docker Desktop, wait until it is ready, then close this terminal and open a new one.
 
-**macOS: one check before you start.** Terraform looks for Docker at `/var/run/docker.sock`. Docker Desktop on a Mac often puts it somewhere else, and then `terraform apply` says it cannot connect to the Docker daemon. Run this once in every terminal where you use Terraform. It works on any system and does nothing harmful if the default already works:
-
-```bash
-export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')  # Tell Terraform where Docker really is.
-```
-
+<details>
+<summary>macOS (Terminal): one check before you start</summary>
+
+Terraform looks for Docker at `/var/run/docker.sock`. Docker Desktop on a Mac often puts it somewhere else, and then `terraform apply` says it cannot connect to the Docker daemon. Run this once in every terminal where you use Terraform. It works on any system and does nothing harmful if the default already works:
+
+```bash
+export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')  # Tell Terraform where Docker really is.
+```
+
+</details>
 **The words to know in this part:**
 
 | Word | Meaning | Example |
