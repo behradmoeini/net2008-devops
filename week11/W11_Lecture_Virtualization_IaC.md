@@ -900,59 +900,23 @@ terraform apply  # Run apply again. It says "No changes". Applying twice is safe
 
 **"Idempotent"** is a big word for a simple idea: doing it twice gives the same result as doing it once. Running `apply` twice does not create four web servers.
 
-### State
+### State (reference)
 
-Terraform keeps a notebook of everything it built. This notebook is the **state**. **Never edit it by hand.**
+Terraform keeps a notebook of everything it built. This notebook is the **state**. Read it, but never edit it by hand.
 
-```bash
-terraform state list  # List everything Terraform believes it manages.
-```
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-terraform show | Select-Object -First 30  # Show the stored details of those resources.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-terraform show | head -30  # Show the stored details of those resources.
-```
-
-</details>
-
-<details open>
-<summary>Windows (PowerShell)</summary>
-
-```powershell
-Get-ChildItem -Force  # Look at the folder: terraform.tfstate is the state file, .terraform.lock.hcl pins the provider version.
-```
-
-</details>
-
-<details>
-<summary>macOS / Linux (Terminal)</summary>
-
-```bash
-ls -la  # Look at the folder: terraform.tfstate is the state file, .terraform.lock.hcl pins the provider version.
-```
-
-</details>
-
-Which files go into Git?
-
-| File or folder | Commit to Git? | Why |
+| File | What it is | Commit to Git? |
 |---|---|---|
-| `*.tf` | **Yes** | Your code |
-| `.terraform.lock.hcl` | **Yes** | Makes everyone use the same plug-in version |
-| `terraform.tfstate`, `terraform.tfstate.backup` | **No** | The notebook can contain passwords, and it belongs to one real environment. Teams keep it in a shared safe place. |
-| `.terraform/` | **No** | Downloaded plug-ins. `terraform init` makes it again. |
+| `*.tf` | Your code | **Yes** |
+| `.terraform.lock.hcl` | Pins the exact provider version, so everyone uses the same plug-in | **Yes** |
+| `terraform.tfstate`, `terraform.tfstate.backup` | The notebook of what exists. It can contain secrets and belongs to one environment. | **No** |
+| `.terraform/` | Downloaded plug-ins. `terraform init` creates it again. | **No** |
 
+| Command | What it shows |
+|---|---|
+| `terraform state list` | Everything Terraform believes it manages |
+| `terraform show` | The stored details of those resources |
+
+**Rules:** never edit `terraform.tfstate` by hand, and never commit it. A hand change to the real server causes drift, and `apply` repairs it. Teams keep the state in a shared place (see "State in a team" below).
 ### Variables, outputs and `count`
 
 Hard-coded values are a problem. If the number of servers is typed in the code, you must edit the code every time you need more or fewer servers. A **variable** fixes that: you name the value once, and change it from outside. **`count`** makes that many copies. An **output** prints a useful result (like web addresses) at the end.
