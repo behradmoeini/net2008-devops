@@ -710,7 +710,8 @@ export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}
 ```
 
 </details>
-**The words to know in this part:**
+
+**Terminology:**
 
 | Word | Meaning | Example |
 |---|---|---|
