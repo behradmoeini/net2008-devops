@@ -1259,8 +1259,6 @@ docker ps -a --filter name=tf-web --filter name=iac-practice  # Nothing is left.
 
 The `.tf` files are all you need to build it again. That is the point of IaC: **delete is safe, because the recipe is saved.**
 
-## Cheat sheet
-
 | Command | What it does |
 |---|---|
 | `vagrant up` / `ssh` / `halt` / `destroy` | Create, log in to, stop, delete a VM |
