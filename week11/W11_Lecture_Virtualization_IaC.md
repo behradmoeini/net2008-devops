@@ -57,9 +57,7 @@ sudo apt update && sudo apt install -y terraform  # Install Terraform.
 terraform version  # Terraform must answer with a version number.
 ```
 
-Vagrant and Azure are optional. The graded lab needs only Docker and Terraform.
-
-### 2. Vagrant (optional)
+### 2. Vagrant
 
 Virtual machines on a laptop depend on the processor. The Week 11 lab is written so that you finish **without** a virtual machine. Install these only if your laptop can run them.
 
