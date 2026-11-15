@@ -26,6 +26,12 @@ Close PowerShell, open a new one, and check with `terraform version`.
 brew tap hashicorp/tap && brew install hashicorp/tap/terraform  # Add the HashiCorp package source and install Terraform.
 ```
 
+**If Terraform cannot find Docker:** if `terraform apply` later says it cannot connect to the Docker daemon at `/var/run/docker.sock` while `docker ps` works, run this in the same terminal:
+
+```bash
+export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')
+```
+
 </details>
 
 <details>
@@ -49,16 +55,6 @@ sudo apt update && sudo apt install -y terraform  # Install Terraform.
 terraform version  # Terraform must answer with a version number.
 ```
 
-<details>
-<summary>macOS (Terminal): if Terraform cannot find Docker</summary>
-
-If `terraform apply` later says it cannot connect to the Docker daemon at `/var/run/docker.sock` while `docker ps` works, run this in the same terminal:
-
-```bash
-export DOCKER_HOST=$(docker context inspect --format '{{.Endpoints.docker.Host}}')
-```
-
-</details>
 The VM tools (VirtualBox, UTM, Vagrant) and the Azure account are installed later, in the sections that use them. The graded lab needs only Docker and Terraform.
 
 ## How to follow this guide
