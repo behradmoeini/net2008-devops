@@ -537,7 +537,7 @@ A **cloud provider** (Microsoft Azure, AWS, Google Cloud) owns huge data centres
 
 **Note:** A VM you forget keeps costing money every hour. Always tag what you create with an owner, set a budget alert, and **delete lab resources the same day**.
 
-**Three ways to rent:**
+**Three ways to rent**
 
 | Model | You get | You manage | The provider manages | Example |
 |---|---|---|---|---|
@@ -547,7 +547,8 @@ A **cloud provider** (Microsoft Azure, AWS, Google Cloud) owns huge data centres
 
 In this course we use IaaS: we get an empty server and build it up.
 
-**Cloud terminology.** The names below are Azure's. AWS and Google use similar ideas with different names.
+**Cloud terminology** 
+The names below are Azure's. AWS and Google use similar ideas with different names.
 
 | Word | Meaning | Example |
 |---|---|---|
