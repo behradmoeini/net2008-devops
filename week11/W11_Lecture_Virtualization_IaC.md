@@ -209,13 +209,9 @@ sudo apt update && sudo apt install -y vagrant
 <details open>
 <summary>Windows (PowerShell)</summary>
 
-**Vagrant must be installed on Windows with the Windows installer.** Download and run it (click **Yes** if Windows asks for permission). Install VirtualBox first, in step 1 (Tag A):
+**Vagrant must be installed on Windows with the Windows installer.** Download and run it (click **Yes** if Windows asks for permission). Install VirtualBox first, in step 1 then install Vagrant from <https://developer.hashicorp.com/vagrant/install> (click the **Windows** installer)
 
-- Vagrant: <https://developer.hashicorp.com/vagrant/install> (click the **Windows** installer)
-
-**Tag C** (Windows on ARM): Vagrant also needs VirtualBox 7.2. Download it from <https://www.virtualbox.org/wiki/Downloads> (click **Windows hosts**), the same way as in step 1.
-
-Close PowerShell, open a new one, and check:
+Onced installed, close PowerShell, open a new one, and check:
 
 ```powershell
 vagrant --version
