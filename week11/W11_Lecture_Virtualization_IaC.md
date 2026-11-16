@@ -221,7 +221,9 @@ vagrant --version
 
 ### 4. Azure for Students (optional)
 
-The cloud hands-on in the lecture needs an Azure account. **Azure for Students** gives 100 US dollars of credit for 12 months and does not ask for a credit card. Go to <https://azure.microsoft.com/free/students> and sign in with your **school email**. If it refuses your email, skip the Azure parts. The graded lab does not need an account.
+The cloud hands-on in the lecture needs an Azure account. **Azure for Students** gives 100 US dollars of credit for 12 months and does not ask for a credit card. Go to <https://azure.microsoft.com/free/students> and sign in with your **school email**. When it finishes, open the Azure portal at <https://portal.azure.com>.
+
+**Note:** The graded lab does not need an cloud account. AWS and Google Cloud offer free tiers too, but they ask for a credit card. That is why we prefer Azure.
 
 ## The big picture
 
@@ -568,17 +570,7 @@ The names below are Azure's. AWS and Google use similar ideas with different nam
 
 This part is **optional** because it needs a student account. The lab does not require it. If you cannot get an account, read this section and keep going.
 
-#### 1. Get a free student account
-
-**Azure for Students** gives you 100 US dollars of credit for 12 months and does **not** ask for a credit card. It checks that you are a student through your school email.
-
-1. Go to <https://azure.microsoft.com/free/students>.
-2. Sign in with your **school email address** and follow the steps to verify that you are a student.
-3. When it finishes, open the Azure portal at <https://portal.azure.com>.
-
-AWS and Google Cloud offer free tiers too, but they ask for a credit card. That is why we use Azure.
-
-#### 2. Create the VM in the portal
+#### 1. Create the VM in the portal
 
 Create the VM on the web page. You fill in a form, the same way you would fill in a form on a shopping site.
 
@@ -597,13 +589,13 @@ Create the VM on the web page. You fill in a form, the same way you would fill i
 
 If Azure says the region or the size is not allowed, the error message says what to change: use another region or another size from the list.
 
-#### 3. See what you created
+#### 2. See what you created
 
 Now look at it in the portal. Click **Virtual machines** in the left menu. You see **cloud-vm** with the status **Running**. Click **cloud-vm** to see its size, its operating system and its public IP address. The form also made the things a VM needs: a disk, a network, a public IP address and a firewall (network security group). One form created all of them.
 
 ![Azure portal: the Virtual machines list with one running Linux VM](images/azure-vm-list.png)
 
-#### 4. Run commands on the VM
+#### 3. Run commands on the VM
 
 You do not log in to the VM for this. Open **cloud-vm** in the portal, go to **Operations**, click **Run command**, then **RunShellScript**. For each box below, paste the command into the script box, click **Run**, and read the output under it. Each command takes about 30 seconds. We only want to see that it is a real machine that works.
 
@@ -627,11 +619,11 @@ ip -br address  # The VM's address on the Azure network: a private address, usua
 ping -c 2 8.8.8.8  # The VM reaches the internet.
 ```
 
-#### 5. Stop the VM
+#### 4. Stop the VM
 
 When you are done, click **Stop** in the toolbar of **cloud-vm**, wait a minute, and check that the **Status** says **Stopped (deallocated)**. The warning below explains what still costs money.
 
-#### 6. Delete everything
+#### 5. Delete everything
 
 Go to **Resource groups** in the portal, click **iac-practice-rg**, click **Delete resource group**, type `iac-practice-rg`, and click **Delete**. The VM, its disk, its network and its public IP address go with it. Always delete lab resources the same day.
 
