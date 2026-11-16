@@ -255,6 +255,18 @@ Ansible, the tool that configures the **inside** of a server and installs the se
 
 The cloud uses type 1. Today you use a type 2 hypervisor on your laptop.
 
+### VM networking
+
+A VM has a virtual network card. You choose how it connects:
+
+| Mode | How it works | What the VM can reach | Who can reach the VM | Use it for |
+|---|---|---|---|---|
+| **NAT** (Network Address Translation) | The hypervisor runs a virtual router/DHCP server. | The internet and LAN resources, through the host's IP | Nobody, unless you set up port forwarding. The host can usually reach it only through forwarded ports. | Default desktop use: browsing, downloading updates, and keeping the VM hidden from the LAN |
+| **Bridged** | The VM's virtual NIC is connected directly to the host's physical NIC, so the VM appears as a separate device on the physical network. | The real network, like a separate computer, with its own IP and MAC address | Anyone on that network, plus the host and other VMs | Servers, services other machines must reach, or network testing. It may be blocked on corporate or Wi-Fi networks. |
+| **Host-only** (private network) | A private virtual network between the host and its VMs only. | The host and other VMs on the same private network. There is no internet or LAN access. | The host and other VMs only | An isolated lab, malware analysis, or secure testing. Add a second NAT adapter if the VM also needs internet. |
+
+![Three ways to connect a VM to the network: with NAT the VM reaches the internet through your laptop and nobody can reach the VM; with host-only the VM talks only to your laptop and other VMs; with bridged the VM gets its own address on your real network](images/vm-networking.svg)
+
 **How is a VM different from a container?**
 
 Containers solve a similar problem in a different way.
@@ -278,7 +290,7 @@ VMs and containers are often used together. In the cloud, your containers usuall
 
 Before you start, complete **[Setup, step 1](#setup)**: find your tag, download the Ubuntu ISO, install the hypervisor and create the VM. Then come back here.
 
-#### 1. Look inside your VM
+**1. Look inside your VM**
 
 Run these inside the VM. It is a separate computer with its own system.
 
@@ -302,7 +314,7 @@ ip -br address  # The VM's network address. With NAT it is a private address: us
 ping -c 2 8.8.8.8  # NAT lets the VM reach the internet.
 ```
 
-#### 2. Change the network mode
+**2. Change the network mode**
 
 Shut the VM down with `sudo poweroff`. Then change how the network card connects:
 
@@ -312,7 +324,7 @@ Shut the VM down with `sudo poweroff`. Then change how the network card connects
 
 Log in and run `ip -br address`. The VM now has an address on your **real network**, like a separate computer. Run `ping -c 2` followed by that address from your laptop terminal: it answers. With NAT it would not.
 
-#### 3. Delete the VM
+**3. Delete the VM**
 
 Shut the VM down with `sudo poweroff`. Then:
 
