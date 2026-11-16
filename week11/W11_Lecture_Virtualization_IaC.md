@@ -473,6 +473,7 @@ vagrant validate  # Check that the Vagrantfile is correct. It does not start any
 
 ```bash
 vagrant up  # Download the box, create the VM and start it. The first time takes several minutes.
+vagrant status  # Check the status of the vagrant instacnes
 ```
 
 ```bash
@@ -483,28 +484,20 @@ Now you are inside the VM. Run these one at a time and read the output:
 
 ```bash
 hostname  # The name you chose.
-```
-
-```bash
 cat /etc/os-release | head -2  # The operating system: Ubuntu Server.
-```
-
-```bash
 free -h | head -2  # The memory you gave it: about 2 GB.
-```
-
-```bash
 ip -br address  # The VM's network address. With NAT it is a private address: usually 10.0.2.15 for Tag A, and a 192.168.x.x address for Tag B.
-```
-
-```bash
 ping -c 2 8.8.8.8  # NAT lets the VM reach the internet.
-```
-
-```bash
 exit  # Leave the VM and go back to your laptop's terminal.
 ```
 
+If you decide to stop the VM, you can halt it:
+
+```bash
+vagrant halt
+```
+
+Otherwise, you can remove the VM with `destro` command:
 ```bash
 vagrant destroy -f  # Delete the VM. The Vagrantfile stays: you can rebuild it any time.
 ```
