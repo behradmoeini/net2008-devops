@@ -572,7 +572,7 @@ This part is **optional** because it needs a student account. The lab does not r
 
 #### 1. Create the VM in the portal
 
-Create the VM on the web page. You fill in a form, the same way you would fill in a form on a shopping site.
+Create the VM on the portal at https://portal.azure.com>. You fill in a form, the same way you would fill in a form on a shopping site.
 
 1. In the portal, search for **Virtual machines** in the top bar and click it. Then click **+ Create**, then **Azure virtual machine**.
 2. On the **Basics** tab, fill in:
