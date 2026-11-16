@@ -522,6 +522,12 @@ A **cloud provider** (Microsoft Azure, AWS, Google Cloud) owns huge data centres
 
 **A cloud VM is the same kind of VM you just built.** The difference is where it runs (the provider's data centre, on type 1 hypervisors) and who owns the hardware (the provider).
 
+**Shared responsibility:** The provider secures the data centre and the hypervisor. **You** secure what you put inside: operating-system updates, firewall rules, passwords and data. Most cloud break-ins are the customer's mistake, for example a storage bucket left open to the world, or a key pasted into a public GitHub repository.
+
+![Shared responsibility: you secure your data and users, your passwords, keys and firewall rules, and the operating system with its updates; the provider secures the hypervisor, the servers, storage and network, and the data centre building](images/shared-responsibility.svg)
+
+**Note:** A VM you forget keeps costing money every hour. Always tag what you create with an owner, set a budget alert, and **delete lab resources the same day**.
+
 | | VM on your laptop | Container | Cloud VM |
 |---|---|---|---|
 | Where it runs | Your laptop | Your laptop or any server | The provider's data centre |
@@ -554,12 +560,6 @@ In this course we use IaaS: we get an empty server and build it up.
 | **VM size** | How big the VM is | `Standard_B1s` is small and cheap (1 CPU, 1 GB of memory) |
 | **Image** | The starting disk of a VM | Ubuntu Server |
 | **SSH key** | How you log in, instead of a password | You keep the private half |
-
-**Shared responsibility.** The provider secures the data centre and the hypervisor. **You** secure what you put inside: operating-system updates, firewall rules, passwords and data. Most cloud break-ins are the customer's mistake, for example a storage bucket left open to the world, or a key pasted into a public GitHub repository.
-
-![Shared responsibility: you secure your data and users, your passwords, keys and firewall rules, and the operating system with its updates; the provider secures the hypervisor, the servers, storage and network, and the data centre building](images/shared-responsibility.svg)
-
-**Money.** A VM you forget keeps costing money every hour. Always tag what you create with an owner, set a budget alert, and **delete lab resources the same day**.
 
 ### Hands-on: your first cloud VM (Azure for Students)
 
