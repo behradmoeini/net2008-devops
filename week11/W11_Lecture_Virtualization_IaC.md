@@ -272,18 +272,6 @@ Containers solve a similar problem in a different way.
 
 VMs and containers are often used together. In the cloud, your containers usually run **inside** VMs.
 
-### VM networking
-
-A VM has a virtual network card. You choose how it connects:
-
-| Mode | What the VM can reach | Who can reach the VM | Use it for |
-|---|---|---|---|
-| **NAT (Network Address Translation)** | The internet, through your laptop | Nobody (unless you forward a port) | Downloading updates. This is the default. |
-| **Host-only** (private network) | Your laptop and other VMs only | Your laptop and other VMs | A private lab with a fixed address |
-| **Bridged** | The real network, like a separate computer | Anyone on that network | A VM that your phone or a classmate must reach |
-
-![Three ways to connect a VM to the network: with NAT the VM reaches the internet through your laptop and nobody can reach the VM; with host-only the VM talks only to your laptop and other VMs; with bridged the VM gets its own address on your real network](images/vm-networking.svg)
-
 ### Hands-on: build a VM by hand
 
 **Goal:** look inside the Ubuntu Server VM you built by hand, change its network, and delete it, so you feel what Vagrant will remove later. Building it in Setup takes about 25 minutes, and most of that is the Ubuntu installer.
