@@ -672,8 +672,6 @@ Terraform is a program that runs **on your laptop (or in your server)**. It talk
 
 **Today the main practice uses the Docker provider.** In this part a "server" is the Docker container we use on your laptop (the same Docker you already have from Week 9). Every student has Docker and it costs nothing. The workflow is identical for the cloud: only the provider and the resource types change.
 
-The commands below have a **Windows (PowerShell)** box, which is open by default, and a **macOS / Linux** box.
-
 **Before you start:** Docker Desktop must be open and say it is running. If `docker` is not recognized, start Docker Desktop, wait until it is ready, then close this terminal and open a new one.
 
 <details>
