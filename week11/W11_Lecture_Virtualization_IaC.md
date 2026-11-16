@@ -243,9 +243,17 @@ Ansible, the tool that configures the **inside** of a server and installs the se
 
 ### What is virtualization?
 
-**Virtualization** means software splits one physical computer into several **virtual machines (VMs)**. Each VM behaves like a complete separate computer: it has its own operating system, its own disk, its own memory and its own network card. The program that creates and runs VMs is called a **hypervisor**.
+**Virtualization** means software splits one physical computer into several **virtual machines (VMs)**. Each VM behaves like a complete separate computer: it has its own operating system, its own disk, its own memory and its own network card. The program that creates and runs VMs is called a **hypervisor**. There are two kinds, and the only difference is **where the hypervisor sits**. Both are ordinary software.
 
-**Example:** your laptop runs macOS or Windows. With a hypervisor you start Ubuntu Linux in a window, log in, install software, break it, and delete it. Your real system is not touched.
+| | Type 1 ("bare metal") | Type 2 ("hosted") |
+|---|---|---|
+| Runs on | Directly on the hardware, with no normal OS underneath | A normal operating system (macOS, Windows, Linux) |
+| Where you meet it | Data centres (cloud providers) | Your laptop |
+| Examples | KVM, VMware ESXi, Microsoft Hyper-V | VirtualBox, UTM, VMware Workstation, Parallels |
+
+![Two kinds of hypervisor: type 1 runs directly on the hardware of a cloud server and hosts several VMs; type 2 is an app (such as VirtualBox) on top of macOS, Windows or Linux on your laptop and hosts VMs](images/hypervisor-types.svg)
+
+The cloud uses type 1. Today you use a type 2 hypervisor on your laptop.
 
 **How is a VM different from a container?**
 
@@ -264,27 +272,13 @@ Containers solve a similar problem in a different way.
 
 VMs and containers are often used together. In the cloud, your containers usually run **inside** VMs.
 
-### Hypervisors
-
-A **hypervisor** is the program that creates and runs VMs. There are two kinds, and the only difference is **where the hypervisor sits**. Both are ordinary software.
-
-| | Type 1 ("bare metal") | Type 2 ("hosted") |
-|---|---|---|
-| Runs on | Directly on the hardware, with no normal OS underneath | A normal operating system (macOS, Windows, Linux) |
-| Where you meet it | Data centres (cloud providers) | Your laptop |
-| Examples | KVM, VMware ESXi, Microsoft Hyper-V | VirtualBox, UTM, VMware Workstation, Parallels |
-
-![Two kinds of hypervisor: type 1 runs directly on the hardware of a cloud server and hosts several VMs; type 2 is an app (such as VirtualBox) on top of macOS, Windows or Linux on your laptop and hosts VMs](images/hypervisor-types.svg)
-
-The cloud uses type 1. Today you use a type 2 hypervisor on your laptop.
-
 ### VM networking
 
 A VM has a virtual network card. You choose how it connects:
 
 | Mode | What the VM can reach | Who can reach the VM | Use it for |
 |---|---|---|---|
-| **NAT** | The internet, through your laptop | Nobody (unless you forward a port) | Downloading updates. This is the default. |
+| **NAT (Network Address Translation)** | The internet, through your laptop | Nobody (unless you forward a port) | Downloading updates. This is the default. |
 | **Host-only** (private network) | Your laptop and other VMs only | Your laptop and other VMs | A private lab with a fixed address |
 | **Bridged** | The real network, like a separate computer | Anyone on that network | A VM that your phone or a classmate must reach |
 
