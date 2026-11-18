@@ -98,8 +98,8 @@ def main():
             gv = {}
     check(3, f"group_vars/all.yml has seed: {seed} and a site", gv.get("seed") == seed and bool(gv.get("site")), 1)
     tpl = read("templates/index.html.j2")
-    check(3, "templates/index.html.j2 uses the variables seed, site and the fact ansible_distribution",
-          "{{ seed }}" in tpl and "{{ site }}" in tpl and "ansible_distribution" in tpl, 1)
+    check(3, "templates/index.html.j2 uses the variables seed, site and the fact ansible_facts (distribution)",
+          "{{ seed }}" in tpl and "{{ site }}" in tpl and ("ansible_facts" in tpl or "ansible_distribution" in tpl), 1)
     plays = []
     if yaml:
         try:

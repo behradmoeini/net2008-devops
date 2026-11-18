@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 360" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="358" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Idempotent: run it again and nothing changes</text>
+<rect x="30" y="80" width="360" height="190" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="30" y="80" width="360" height="36" fill="#f2c200"/>
+<text x="210" y="104" font-size="16" fill="#33475b">First run</text>
+<text x="210" y="148" font-size="14" font-weight="400" fill="#33475b">The server is empty.</text>
+<g font-family="Consolas, Menlo, monospace" font-size="13" font-weight="400" fill="#33475b">
+<text x="210" y="180">Install nginx ....... changed</text>
+<text x="210" y="202">Publish page ........ changed</text>
+<text x="210" y="236" font-weight="700">PLAY RECAP: changed=2</text>
+</g>
+<path d="M394 175 H446" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="450" y="80" width="370" height="190" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="450" y="80" width="370" height="36" fill="#78b83e"/>
+<text x="635" y="104" font-size="16" fill="#fff">Second run</text>
+<text x="635" y="148" font-size="14" font-weight="400" fill="#33475b">The server is already correct.</text>
+<g font-family="Consolas, Menlo, monospace" font-size="13" font-weight="400" fill="#33475b">
+<text x="635" y="180">Install nginx ....... ok</text>
+<text x="635" y="202">Publish page ........ ok</text>
+<text x="635" y="236" font-weight="700">PLAY RECAP: changed=0</text>
+</g>
+<text x="425" y="316" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">You describe the state you want ("nginx is installed"), not the steps. Ansible only acts if the server differs.</text>
+<text x="425" y="338" font-size="13" font-weight="400" fill="#4a6178">Colours in the terminal: green = already correct, yellow = changed, red = failed.</text>
+</svg>

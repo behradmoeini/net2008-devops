@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 330" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="328" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Terraform builds the server. Ansible sets it up.</text>
+<rect x="30" y="80" width="220" height="150" fill="#cdeaf8" stroke="#4ab8e8"/>
+<rect x="30" y="80" width="220" height="36" fill="#4ab8e8"/>
+<text x="140" y="104" font-size="16" fill="#fff">Terraform (Week 11)</text>
+<text x="140" y="150" font-size="14" font-weight="400" fill="#33475b">creates VMs,</text>
+<text x="140" y="170" font-size="14" font-weight="400" fill="#33475b">networks, containers</text>
+<text x="140" y="205" font-size="13" font-style="italic" font-weight="400" fill="#4a6178">Provisioning</text>
+<path d="M250 155 H316" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="320" y="100" width="210" height="110" fill="#fff" stroke="#2d526e" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="425" y="138" font-size="16" fill="#33475b">An empty server</text>
+<text x="425" y="162" font-size="13" font-weight="400" fill="#33475b">It exists and has an address.</text>
+<text x="425" y="182" font-size="13" font-weight="400" fill="#33475b">Nothing is installed.</text>
+<path d="M530 155 H596" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="600" y="80" width="220" height="150" fill="#78b83e"/>
+<text x="710" y="106" font-size="16" fill="#fff">Ansible (today)</text>
+<text x="710" y="146" font-size="14" font-weight="400" fill="#fff">installs packages,</text>
+<text x="710" y="166" font-size="14" font-weight="400" fill="#fff">copies files, creates users,</text>
+<text x="710" y="186" font-size="14" font-weight="400" fill="#fff">starts services</text>
+<text x="710" y="214" font-size="13" font-style="italic" font-weight="400" fill="#fff">Configuration management</text>
+<text x="425" y="280" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">Terraform remembers what it built (a state file). Ansible remembers nothing: it asks the server each time.</text>
+</svg>

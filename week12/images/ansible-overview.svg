@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 400" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker></defs>
+<rect x="1" y="1" width="848" height="398" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Ansible: one laptop configures many servers</text>
+<rect x="30" y="80" width="270" height="230" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="30" y="80" width="270" height="38" fill="#2d526e"/>
+<text x="165" y="105" font-size="17" fill="#fff">Control node (your laptop)</text>
+<rect x="55" y="140" width="220" height="50" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="165" y="162" font-size="14" fill="#33475b">Inventory</text>
+<text x="165" y="180" font-size="12" font-weight="400" fill="#33475b">which servers, in which groups</text>
+<rect x="55" y="205" width="220" height="50" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="165" y="227" font-size="14" fill="#33475b">Playbook</text>
+<text x="165" y="245" font-size="12" font-weight="400" fill="#33475b">what each server must look like</text>
+<text x="165" y="285" font-size="13" font-weight="400" fill="#4a6178">Ansible is installed only here</text>
+<path d="M300 195 H436" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<text x="368" y="180" font-size="13" fill="#33475b">ansible-playbook</text>
+<text x="368" y="220" font-size="12" font-weight="400" fill="#4a6178">(SSH or Docker)</text>
+<rect x="440" y="80" width="380" height="230" fill="#f6fbff" stroke="#d3e3ee" stroke-width="2"/>
+<text x="630" y="104" font-size="15" fill="#33475b">Managed nodes (the servers)</text>
+<rect x="460" y="120" width="340" height="86" fill="#fff" stroke="#78b83e" stroke-width="2"/>
+<text x="480" y="140" font-size="13" fill="#33475b" text-anchor="start">group: web</text>
+<rect x="480" y="150" width="140" height="42" fill="#78b83e"/>
+<text x="550" y="176" font-size="15" fill="#fff">web1</text>
+<rect x="640" y="150" width="140" height="42" fill="#78b83e"/>
+<text x="710" y="176" font-size="15" fill="#fff">web2</text>
+<rect x="460" y="218" width="340" height="80" fill="#fff" stroke="#4ab8e8" stroke-width="2"/>
+<text x="480" y="238" font-size="13" fill="#33475b" text-anchor="start">group: db</text>
+<rect x="480" y="248" width="140" height="42" fill="#4ab8e8"/>
+<text x="550" y="274" font-size="15" fill="#fff">db1</text>
+<text x="425" y="352" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">No agent to install. The servers only need Python. Ansible pushes small programs (modules), runs them, and removes them.</text>
+<text x="425" y="376" font-size="14" font-style="italic" font-weight="400" fill="#4a6178">In today's practice the three servers are Docker containers on your laptop.</text>
+</svg>

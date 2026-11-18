@@ -1,18 +1,16 @@
 # Week 12 Lab: Configure the Bytown Servers with Ansible
-**NET2008 DevOps · Algonquin College**
 
 This lab is graded (2% of final grade). You create three servers (Docker containers) on **your own laptop**, and configure them with an inventory, ad hoc commands and a playbook with variables, a template and a handler. You prove the playbook is idempotent and preview a change.
 
 **Rules**
 
-- Work in a real terminal: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Ansible does not run in plain PowerShell. Docker must be running and Ansible installed (see [W12_Setup_Ansible.md](W12_Setup_Ansible.md)).
+- Work in a real terminal: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Ansible does not run in plain PowerShell. Docker must be running and Ansible installed (see [Before you start](W12_Lecture_Ansible.md#before-you-start) in the lecture).
 - Do the parts in order. Each part builds on the one before.
 - Use the **exact** names and file names given here. The self-check and your instructor look for them.
 - Every command is one grey box. Run it, read the output, then go on. Do not copy-paste the whole lab at once.
 - If you get stuck, use the lecture and the "If something goes wrong" table at the end. Search the error message. Do not ask someone to type the commands for you.
 - **Late policy:** submissions received after the deadline receive a grade of 0.
 
----
 ## Part 0. Personalize and set up
 
 Your numbers come from your student ID. **Seed** = the sum of the last four digits of your student ID. For example, ID `040112348` gives `2+3+4+8 = 17`. Replace `17` with **your** seed:
@@ -39,7 +37,6 @@ mkdir -p ~/bytown-ansible/evidence && cd ~/bytown-ansible && git init -b main  #
 
 **If you close the terminal**, the variable and the virtual environment are lost. Open a new terminal, run `export SEED=...`, `source ~/netops-venv/bin/activate` and `cd ~/bytown-ansible`.
 
----
 ## Part 1. Servers and inventory (4 points)
 
 Your three servers carry your seed in their names:
@@ -91,7 +88,6 @@ ansible all -m raw -a "apt-get update -qq && apt-get install -y -qq python3 pyth
 ansible all -m ping | tee evidence/part1-ping.txt  # Every server must answer SUCCESS with "pong". The output is saved.
 ```
 
----
 ## Part 2. Ad hoc commands (4 points)
 
 ```bash
@@ -110,7 +106,6 @@ ansible db -m apt -a "name=tree state=present update_cache=yes" > /dev/null  # I
 ansible db -m apt -a "name=tree state=present" | tee evidence/part2-idempotent.txt  # Run the same command again. It must say "changed": false. The output is saved.
 ```
 
----
 ## Part 3. The playbook (6 points)
 
 **3a. Variables.** They hold your seed and your site name:
@@ -134,7 +129,7 @@ cat > templates/index.html.j2 <<'EOF'
 <h1>{{ page_title }}</h1>
 <p>Site: {{ site }}</p>
 <p>Seed: {{ seed }}</p>
-<p>Served by: {{ inventory_hostname }} ({{ ansible_distribution }} {{ ansible_distribution_version }})</p>
+<p>Served by: {{ inventory_hostname }} ({{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }})</p>
 EOF
 ```
 
@@ -224,7 +219,6 @@ ansible-playbook site.yml | tee evidence/part3-run2.txt  # Second run. The PLAY 
 ansible web -m uri -a "url=http://localhost return_content=yes" | tee evidence/part3-page.txt  # Fetch the page from inside each web server and save it. It must show your seed.
 ```
 
----
 ## Part 4. Preview a change (3 points)
 
 Preview a change of the site name. **Nothing is applied.**
@@ -243,7 +237,6 @@ Prove that nothing was applied:
 ansible web -m uri -a "url=http://localhost return_content=yes" | grep "Site:"  # Still ott-dc1.
 ```
 
----
 ## Part 5. Answers (3 points)
 
 Answer in a file named `answers.txt`, one answer per line, in the form `Q1: your answer` (at least 20 characters each):
@@ -262,7 +255,6 @@ EOF
 
 Open `answers.txt` in an editor and replace each placeholder.
 
----
 ## Check your work
 
 The self-check reads your files and your proof. It runs `ansible-playbook --syntax-check` on your playbook. It changes nothing. Run it from your lab folder:
