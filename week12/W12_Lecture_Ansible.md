@@ -1,20 +1,32 @@
 # Week 12 Lecture: Configuration Management with Ansible
 
-Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop**: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Ansible does not run in plain Windows PowerShell. You need Docker running (see [How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker) in Week 9) and Ansible installed (see [Before you start](#before-you-start)).
+Follow this guide from top to bottom. You type every command in a real terminal **on your own laptop**: Terminal on macOS, your Linux terminal, or the **Ubuntu (WSL 2) app** on Windows. Ansible does not run in plain Windows PowerShell. You need Docker running (see [How to install Docker](../week09/W09_Lecture_Containers.md#how-to-install-docker) in Week 9) and Ansible installed (see [Setup](#setup)).
 
-## Before you start
+## Setup
 
-Install Ansible once. It goes in a **Python virtual environment**: a private folder of Python packages that does not disturb the rest of your system.
+Install Ansible once. It goes in a **Python virtual environment**: a private folder of Python packages that does not disturb the rest of your system. Open the block for your system:
 
-On Ubuntu, Debian or in the Ubuntu (WSL 2) app, install the tools first:
+<details open>
+<summary>Windows: Ubuntu (WSL 2) app, or Ubuntu / Debian Linux</summary>
 
 ```bash
 sudo apt update && sudo apt install -y python3 python3-venv python3-pip  # Install Python and the virtual environment tool.
 ```
 
-On macOS, Python 3 comes with the developer tools. If `python3` is missing, run `xcode-select --install`.
+</details>
 
-Then, on every system:
+<details>
+<summary>macOS</summary>
+
+Python 3 comes with the developer tools. **Do not run the `apt` command**: macOS does not have `apt`. Check Python:
+
+```bash
+python3 --version  # Must print a version. If it says command not found, run: xcode-select --install
+```
+
+</details>
+
+Then, on every system (Windows, macOS and Linux):
 
 ```bash
 python3 -m venv ~/netops-venv  # Create the virtual environment in your home folder.
