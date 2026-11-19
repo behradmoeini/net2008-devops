@@ -638,43 +638,43 @@ Terraform creates the infrastructure (servers, networks) and keeps a state file.
 
 ### Important modules
 
-A module does one job. All of these are built in (full name `ansible.builtin.NAME`). The **Today** column marks the ones you use in this lecture or the lab. Read any of them with `ansible-doc NAME`.
+A module does one job. All of these are built in (full name `ansible.builtin.NAME`). Read any of them with `ansible-doc NAME`.
 
-| Group | Module | Use it to | Today |
-|---|---|---|---|
-| Packages | `apt` | Install, update or remove a package (Debian, Ubuntu) | Yes |
-| | `package` | Same, but picks the right package manager for the system | |
-| | `pip` | Install Python packages | |
-| Files | `copy` | Copy a file, or write text into a file | Yes |
-| | `template` | Fill a Jinja2 template and copy the result | Yes |
-| | `file` | Create a folder, set owner and mode, make a link, delete a file | Yes |
-| | `lineinfile` | Make sure one line exists in a file (or is removed) | Yes |
-| | `blockinfile` | Make sure a block of lines exists in a file | |
-| | `replace` | Replace text in a file with a regular expression | |
-| | `fetch` | Copy a file from the server back to your laptop | |
-| | `stat` | Read information about a file: exists, size, owner | Yes |
-| | `unarchive` | Unpack a `.zip` or `.tar.gz` on the server | |
-| | `get_url` | Download a file from a URL | |
-| Users | `user` | Create, change or remove a user | Yes |
-| | `group` | Create or remove a group | |
-| | `authorized_key` | Add an SSH public key to a user | |
-| Services | `service` | Start, stop or enable a service. It needs a service manager, so it does not work in our containers. | |
-| | `systemd` | The same, with systemd options (real servers) | |
-| | `cron` | Create a scheduled job | |
-| Commands | `command` | Run a program (no pipes). Add `creates:` to make it idempotent. | Yes |
-| | `shell` | Run a command with pipes and redirects (not idempotent) | Yes |
-| | `raw` | Run a command with no Python on the server | Yes |
-| | `script` | Copy a script from your laptop and run it on the server | |
-| Information | `ping` | Check that Ansible can connect and run Python | Yes |
-| | `setup` | Read the facts of a server | Yes |
-| | `debug` | Print a message or a variable | Yes |
-| | `uri` | Make an HTTP request and check the answer | Yes |
-| | `assert` | Stop with an error if a condition is false | |
-| | `wait_for` | Wait until a port is open or a file exists | |
-| Control | `set_fact` | Create a variable while the play runs | |
-| | `include_vars` | Load a variables file | |
-| | `meta` | Control the play, for example `flush_handlers` | |
-| | `reboot` | Restart the server and wait for it to return | |
+| Group | Module | Use it to |
+|---|---|---|
+| Packages | `apt` | Install, update or remove a package (Debian, Ubuntu) |
+| | `package` | Same, but picks the right package manager for the system |
+| | `pip` | Install Python packages |
+| Files | `copy` | Copy a file, or write text into a file |
+| | `template` | Fill a Jinja2 template and copy the result |
+| | `file` | Create a folder, set owner and mode, make a link, delete a file |
+| | `lineinfile` | Make sure one line exists in a file (or is removed) |
+| | `blockinfile` | Make sure a block of lines exists in a file |
+| | `replace` | Replace text in a file with a regular expression |
+| | `fetch` | Copy a file from the server back to your laptop |
+| | `stat` | Read information about a file: exists, size, owner |
+| | `unarchive` | Unpack a `.zip` or `.tar.gz` on the server |
+| | `get_url` | Download a file from a URL |
+| Users | `user` | Create, change or remove a user |
+| | `group` | Create or remove a group |
+| | `authorized_key` | Add an SSH public key to a user |
+| Services | `service` | Start, stop or enable a service. It needs a service manager, so it does not work in our containers. |
+| | `systemd` | The same, with systemd options (real servers) |
+| | `cron` | Create a scheduled job |
+| Commands | `command` | Run a program (no pipes). Add `creates:` to make it idempotent. |
+| | `shell` | Run a command with pipes and redirects (not idempotent) |
+| | `raw` | Run a command with no Python on the server |
+| | `script` | Copy a script from your laptop and run it on the server |
+| Information | `ping` | Check that Ansible can connect and run Python |
+| | `setup` | Read the facts of a server |
+| | `debug` | Print a message or a variable |
+| | `uri` | Make an HTTP request and check the answer |
+| | `assert` | Stop with an error if a condition is false |
+| | `wait_for` | Wait until a port is open or a file exists |
+| Control | `set_fact` | Create a variable while the play runs |
+| | `include_vars` | Load a variables file |
+| | `meta` | Control the play, for example `flush_handlers` |
+| | `reboot` | Restart the server and wait for it to return |
 
 Outside the built-in set, **collections** add more modules (clouds, Docker, databases, network devices). Today you installed one, `community.docker`. Find others with `ansible-galaxy collection list` and on [galaxy.ansible.com](https://galaxy.ansible.com).
 
