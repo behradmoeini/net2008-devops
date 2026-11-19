@@ -145,9 +145,17 @@ ansible_python_interpreter=/usr/bin/python3
 EOF
 ```
 
-- Each name is a **container name**.
-- `[all:vars]` sets variables for every server. Here: connect through Docker instead of SSH, and use Python at this path.
-- `all` is a built-in group that contains every server.
+| Line | Meaning |
+|---|---|
+| `[web]` | Starts a **group** called `web`. Every name below it, until the next group, belongs to it. |
+| `web1`, `web2` | Two servers in the `web` group. Each name is a **container name** (the `--name` you gave to `docker run`). |
+| `[db]` | Starts a second group called `db`. |
+| `db1` | One server in the `db` group. |
+| `[all:vars]` | Starts a block of **variables** for the group `all`. `all` is built in and contains every server. |
+| `ansible_connection=community.docker.docker` | How to connect: through Docker, not SSH. On real servers you leave this out and Ansible uses SSH. |
+| `ansible_python_interpreter=/usr/bin/python3` | Where Python is on the servers. Ansible runs its modules with it. |
+
+Blank lines only make the file easier to read. A server can be in more than one group.
 
 ```bash
 ansible-inventory -i inventory.ini --graph  # Show the groups as a tree: @web holds web1 and web2, @db holds db1.
