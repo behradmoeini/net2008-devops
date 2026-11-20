@@ -1,0 +1,17 @@
+<summary>
+  <total_requests>40</total_requests>
+  <malformed>3</malformed>
+  <status_classes>
+    <class name="2xx">20</class>
+    <class name="3xx">5</class>
+    <class name="4xx">5</class>
+    <class name="5xx">10</class>
+  </status_classes>
+  <top_paths>
+    <path count="11">/login</path>
+    <path count="8">/index.html</path>
+    <path count="7">/api/devices</path>
+  </top_paths>
+  <total_bytes>174930</total_bytes>
+  <unique_clients>9</unique_clients>
+</summary>

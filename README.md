@@ -17,7 +17,7 @@ Course material for NET2008 DevOps (Algonquin College). You have the option to w
 | 9 | Containers | | Lab: Docker Containers (2%) |
 | 10 | Container Orchestration | | Lab: Kubernetes (2%) |
 | 11 | Virtualization and IaC | | Lab: VMs, Vagrant and Terraform (2%) |
-| 12 | IaC Cont.: Ansible | [Lecture](week12/W12_Lecture_Ansible.md), [Lab](week12/W12_Lab_Ansible.md), [Practical Assessment 3 brief](week12/pa3/PA3_Project_Brief.pdf), [sample log](week12/pa3/PA3_sample.log), [expected summary](week12/pa3/PA3_expected_summary.json) | Lab: Ansible (2%), [Practical Assessment 3: Containerized Infrastructure Pipeline](week12/pa3/PA3_Project_Brief.pdf) (5%) |
+| 12 | IaC Cont.: Ansible | [Lecture](week12/W12_Lecture_Ansible.md), [Lab](week12/W12_Lab_Ansible.md), [Practical Assessment 3 brief](week12/pa3/PA3_Project_Brief.pdf), [sample log](week12/pa3/PA3_sample.log), [expected JSON](week12/pa3/PA3_expected_summary.json), [expected XML](week12/pa3/PA3_expected_summary.xml) | Lab: Ansible (2%), [Practical Assessment 3: Containerized Infrastructure Pipeline](week12/pa3/PA3_Project_Brief.pdf) (5%) |
 | 13 | CI/CD | | Lab: GitHub Actions and Jenkins (3%) |
 | 14 | Monitoring and Exam Review | | Lab: Nagios, Splunk, Zabbix and ELK (3%) |
 | 15 | Final | | Practical Assessment 4: Pipeline Incident Audit |
