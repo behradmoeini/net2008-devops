@@ -1,6 +1,6 @@
 # NET2008 DevOps: Practical Assessment 3
 
-**Containerized Infrastructure Pipeline** | Docker, Terraform and Ansible | 5% of final grade | 50 marks repository + 50 marks live demo
+**Containerized Infrastructure Pipeline** | Docker, Terraform and Ansible | 5% of final grade | graded only by the live demo
 
 ## The situation
 
@@ -12,12 +12,9 @@ The summary program is given to you. The assessment is about Docker, Terraform a
 
 A **public GitHub repository** named `net2008-pa3`. You submit only the repository URL, as text, in *Practical Assessment 3 Submission* on Brightspace before the deadline.
 
-Your work is marked in two steps:
+**You are graded only by the live demo.** In your lab, **the week after the deadline**, you clone your repository on your own laptop and run the pipeline in front of your instructor (see [The live demo](#the-live-demo)). The submission is required, because it is the version of your work that you demo, but it receives no marks by itself. A repository that is not submitted before the deadline cannot be demoed.
 
-1. **Repository (50 marks).** Your instructor reads the repository as it was at the deadline: the files, the commit history and the evidence folder.
-2. **Live demo (50 marks).** In your lab, **the week after the deadline**, you clone your repository on your own laptop and run the pipeline in front of your instructor. See [The live demo](#the-live-demo).
-
-When you are ready to submit, create the tag `v1.0` on your final commit and push it (`git tag v1.0` and `git push origin v1.0`). The commit with that tag is the one that is marked. Commits made after the deadline are not marked.
+When you are ready to submit, create the tag `v1.0` on your final commit and push it (`git tag v1.0` and `git push origin v1.0`). You demo the commit with that tag. Commits made after the deadline are not accepted in the demo, except the small change that you make during the demo itself.
 
 The repository root contains exactly this layout:
 
@@ -123,18 +120,21 @@ While it runs, `run.sh` saves its results in the `evidence/` folder. You **commi
 - The tag `v1.0` on the final commit.
 - No secrets, no state, no generated files other than `evidence/`.
 
-## How the repository is marked (50 marks)
+## How the demo is marked (100 marks)
 
-The repository is checked by reading it and by running parts of it with a different log in `data/access.log`, so your pipeline must not depend on the sample. Finish the stages in order: a pipeline that works up to Stage B still earns most of its marks.
+During the demo your instructor reads your repository and runs your pipeline on your laptop. A pipeline that works up to Stage B still earns most of the stage marks.
 
-| Stage | What is checked | Marks |
+| Part | What is checked | Marks |
 |---|---|---|
-| A. Docker | Dockerfile rules (6), the image runs and writes to the volume (2), `.dockerignore` and build in `run.sh` (2) | 10 |
-| B. Terraform | `fmt` and `validate` (2), the resources with the right names (6), variables, labels and outputs (4), `apply` and `destroy` work (4) | 16 |
-| C. Ansible | Inventory and bootstrap (3), nginx, template and handler (6), second run `changed=0` (3), page and variables (4) | 16 |
+| Clean run | The pipeline runs from a clean clone with a different log file, exits with code 0, and the page and both summary files show the new numbers | 30 |
+| A. Docker | Dockerfile rules (5), the image runs and writes to the volume (3) | 8 |
+| B. Terraform | `fmt` and `validate` (2), the resources with the right names (4), variables, labels and outputs (3), `apply` and `destroy` work (3) | 12 |
+| C. Ansible | Inventory and bootstrap (2), nginx, template and handler (4), second run `changed=0` (3), page and variables (3) | 12 |
 | D. Pipeline and evidence | `run.sh` steps and exit code (2), evidence files present and consistent (2) | 4 |
 | E. Git and repository | Commits, branch, tag, README and `.gitignore` | 4 |
-| **Total** | | **50** |
+| Explain | Your answers about your own code | 15 |
+| Small change | One change made, run and committed during the demo | 15 |
+| **Total** | | **100** |
 
 ## Suggested plan for the week
 
@@ -150,20 +150,20 @@ Do Stages A and B first. They only need what you already know. Commit after ever
 
 ## The live demo
 
-The demo is in your lab, **the week after the deadline**. It is worth 50 marks and it is done on your own laptop, one student at a time (about 10 minutes). Bring a laptop with Docker, Terraform and Ansible installed and working.
+The demo is in your lab, **the week after the deadline**. It is done on your own laptop, one student at a time (about 10 minutes). Bring a laptop with Docker, Terraform and Ansible installed and working.
 
-1. **Clean run (20 marks).** You clone your repository from GitHub into an empty folder and run `./run.sh destroy`. Your instructor gives you a **different log file**. You put it in `data/access.log`, run `./run.sh`, and open the page in the browser. The pipeline must finish with exit code 0, and the page and both summary files must show the new numbers.
+1. **Clean run (30 marks).** You clone your repository from GitHub into an empty folder, check out the tag `v1.0`, and run `./run.sh destroy`. Your instructor gives you a **different log file**. You put it in `data/access.log`, run `./run.sh`, and open the page in the browser. The pipeline must finish with exit code 0, and the page and both summary files must show the new numbers. While it runs, your instructor reads your files and checks the stage marks above.
 2. **Explain (15 marks).** Your instructor points at parts of your code and asks questions from Weeks 9 to 12: for example what a line of the Dockerfile does, what `terraform apply` changes, why the second Ansible run shows `changed=0`, or why the Terraform output feeds the Ansible variable.
 3. **A small change (15 marks).** Your instructor asks for one change, for example a new label, a different port, or a different line on the page. You make it, run the pipeline again, and commit it with a clear message.
 
-You must understand every part of the code you submit. You may use the course notes and the official documentation during the demo. A pipeline that fails in the demo can still earn the explanation and change marks for the parts that work.
+You must understand every part of the code you submit. You may use the course notes and the official documentation during the demo. A pipeline that fails in the demo can still earn the stage, explanation and change marks for the parts that work.
 
 ## Rules
 
 - This is **individual work**. You may use the course material, documentation and tools of your choice, but you must be able to explain every line you submit.
 - Do not put passwords, tokens or keys in the repository.
 - Keep the repository **public** until the grades are released.
-- If you cannot attend the demo, contact your instructor **before** the deadline.
+- The demo is the only part that is graded. If you cannot attend it, contact your instructor **before** the deadline.
 
 ## Files posted with this brief
 
