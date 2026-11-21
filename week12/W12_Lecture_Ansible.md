@@ -479,21 +479,70 @@ ansible web -m uri -a "url=http://localhost return_content=yes"  # Ask nginx on 
 
 ### Check mode: look before you change
 
-Delete the page on one server by hand, then ask Ansible what it would do:
+On a real server, running a playbook changes things. You often want to know **what would change** before you let it. **Check mode** is a dry run: Ansible goes through every task and reports what it would do, but changes nothing.
+
+Here is a situation to practise on. Someone logs in to **web1** and deletes the home page by hand. The playbook says the page must exist, so web1 now differs from what the playbook describes. We will let Ansible find that out, without fixing it yet.
+
+**Step 1.** Break web1 on purpose, with an ad hoc command:
 
 ```bash
-ansible web1 -m file -a "path=/var/www/html/index.html state=absent"  # Someone deletes the page on web1.
+ansible web1 -m file -a "path=/var/www/html/index.html state=absent"  # Delete the home page on web1 only. It answers CHANGED: the file existed and is now gone.
 ```
+
+The parts: `web1` is the server, `file` is the module, and `state=absent` means "this path must not exist". It is the opposite of `state=present`.
+
+**Step 2.** Ask Ansible what it would change:
 
 ```bash
-ansible-playbook site.yml --check --diff  # Show what WOULD change, with a before and after, without changing anything.
+ansible-playbook site.yml --check --diff  # Dry run: show what WOULD change and how, and change nothing.
 ```
 
-Only web1 shows a change: the page would be created again. This is the Ansible version of `terraform plan`. Use it before every run on real servers.
+Two options do the work:
+
+| Option | What it does |
+|---|---|
+| `--check` (`-C`) | Turns on check mode. Each task still looks at the server and decides `ok` (already correct) or `changed` (would change), but it does not make the change. |
+| `--diff` (`-D`) | For tasks that change a file, prints the difference: lines with `-` would be removed, lines with `+` would be added. |
+
+You can use each one alone. Together they answer "what would change, and what exactly would the file look like?"
+
+**Step 3.** Read the answer. The output looks like this (shortened):
+
+```text
+TASK [Publish a home page] *****************************
+--- before
++++ after
+@@ -0,0 +1 @@
++<h1>Hello from web1</h1>
+
+changed: [web1]
+ok: [web2]
+
+PLAY RECAP *********************************************
+web1 : ok=6  changed=1  unreachable=0  failed=0 ...
+web2 : ok=6  changed=0  unreachable=0  failed=0 ...
+```
+
+How to read it:
+
+- `TASK [Publish a home page]` is the one task that found a difference. Every other task said `ok` on both servers.
+- `changed: [web1]` means web1 does not match the playbook, so this task **would** change it. `ok: [web2]` means web2 is already correct.
+- The `--- before` and `+++ after` block is the diff. The file is missing now, so "before" is empty, and the only line in "after" is `+<h1>Hello from web1</h1>`: the page that would be created.
+- In the recap, `changed=1` on web1 and `changed=0` on web2 sum it up. Nothing was changed, even though it says `changed`: in check mode the word means "would change".
+
+Check the server to be sure that nothing happened:
 
 ```bash
-ansible-playbook site.yml  # Run it for real. Ansible repairs web1 and leaves the others alone.
+ansible web1 -m stat -a "path=/var/www/html/index.html"  # The answer says "exists": false. The page is still missing, so check mode did not repair it.
 ```
+
+**Step 4.** Now run it for real:
+
+```bash
+ansible-playbook site.yml  # Run it for real. Ansible repairs web1 (changed=1) and leaves web2 alone (changed=0).
+```
+
+Check mode is the Ansible version of `terraform plan`. Use it before every run on real servers. It is also a good test: if a playbook that is already applied shows `changed` in check mode, something on the server drifted from what the playbook says.
 
 ## Variables and templates
 
