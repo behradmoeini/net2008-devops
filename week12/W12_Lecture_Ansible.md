@@ -227,20 +227,6 @@ A **module** is a small program that does one job on a server: install a package
 
 Most modules are **idempotent**: they check the current state first and change something only when it is different. Read the manual of any module with `ansible-doc MODULE`, for example `ansible-doc apt`.
 
-### The `state` argument
-
-Most modules have an argument called `state`. It says **what condition you want the thing to be in**, not what action to perform. You do not say "install nginx". You say "nginx is present", and Ansible installs it only if it is missing.
-
-| `state` | Meaning | Example |
-|---|---|---|
-| `present` | It must exist. Create or install it if it is missing. | `apt` with `name=nginx state=present` installs nginx if it is not there. |
-| `absent` | It must not exist. Remove it if it is there. | `file` with `state=absent` deletes the file. |
-| `latest` | It must exist and be the newest version. | `apt` with `state=latest` also upgrades an old package. |
-| `directory` | It must be a folder. | `file` with `state=directory` creates the folder. |
-| `started`, `stopped`, `restarted` | A service must be running, stopped, or restarted now. | `service` with `state=started`. |
-
-If the thing is already in the wanted condition, Ansible does nothing and reports `ok`. This is why `state` is the heart of idempotency. The values that exist depend on the module, so check `ansible-doc MODULE`.
-
 ### Core modules (`ansible.builtin`)
 
 These come with Ansible itself, with no extra installation. Their full name is `ansible.builtin.NAME` (for example `ansible.builtin.apt`), and the short name works too.
@@ -404,6 +390,22 @@ ansible db -m command -a "cat /tmp/hello.txt"  # Read the file back from the ser
 ```
 
 Colour code in the terminal: **green** = already correct, **yellow** = changed something, **red** = failed.
+
+#### The `state` argument
+
+You used `state=present` in the commands above. Here is what it means.
+
+Most modules have an argument called `state`. It says **what condition you want the thing to be in**, not what action to perform. You do not say "install nginx". You say "nginx is present", and Ansible installs it only if it is missing.
+
+| `state` | Meaning | Example |
+|---|---|---|
+| `present` | It must exist. Create or install it if it is missing. | `apt` with `name=nginx state=present` installs nginx if it is not there. |
+| `absent` | It must not exist. Remove it if it is there. | `file` with `state=absent` deletes the file. |
+| `latest` | It must exist and be the newest version. | `apt` with `state=latest` also upgrades an old package. |
+| `directory` | It must be a folder. | `file` with `state=directory` creates the folder. |
+| `started`, `stopped`, `restarted` | A service must be running, stopped, or restarted now. | `service` with `state=started`. |
+
+If the thing is already in the wanted condition, Ansible does nothing and reports `ok`. This is why `state` is the heart of idempotency. The values that exist depend on the module, so check `ansible-doc MODULE`.
 
 Ad hoc commands are good for a quick check or a one-time job. For real work you write the same tasks in a playbook, because a file can be saved, reviewed and repeated.
 
