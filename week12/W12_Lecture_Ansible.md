@@ -806,43 +806,6 @@ ansible db -m command -a "cat /etc/server-role"  # It shows role=database site=o
 docker rm -f web1 web2 db1  # Delete the three containers (the servers). Your files stay.
 ```
 
-## Practice questions
-
-<details>
-<summary>1. What does "idempotent" mean? Give an example from today.</summary>
-
-Running the same playbook again gives the same result and changes nothing that is already correct. Example: the second run of `site.yml` showed `changed=0`, and the `apt` command with `state=present` said `"changed": false` the second time.
-
-</details>
-
-<details>
-<summary>2. Why did the first <code>ping</code> fail, and why did <code>raw</code> work?</summary>
-
-Ansible modules are Python programs that run on the server, and the fresh container had no Python. The `raw` module sends a plain shell command and needs no Python, so it could install Python.
-
-</details>
-
-<details>
-<summary>3. When does a handler run?</summary>
-
-Only when a task that notifies it reports <em>changed</em>, and then once at the end of the play. In the second run nothing changed, so <code>Reload nginx</code> did not run.
-
-</details>
-
-<details>
-<summary>4. You add a fourth web server. Which file do you change, and do you edit the playbook?</summary>
-
-You add its name under <code>[web]</code> in <code>inventory.ini</code>. The playbook stays the same, because it works on the group <code>web</code>, not on single servers.
-
-</details>
-
-<details>
-<summary>5. What is the difference between Terraform and Ansible?</summary>
-
-Terraform creates the infrastructure (servers, networks) and keeps a state file. Ansible configures what is inside the servers (packages, files, users, services) and keeps no state: it asks each server.
-
-</details>
-
 ## Cheat sheet
 
 | Command | What it does |
@@ -874,14 +837,5 @@ For the full list of modules and what each one does, see [Modules and ad hoc com
 | A task shows `changed` on every run | The task is not idempotent. A `command` without `creates:` always reports changed. |
 | `'site' is undefined` | `group_vars/all.yml` is missing or not in the same folder as `inventory.ini`. |
 | Apple silicon: image or package problems | The Debian image has an ARM build. Make sure you did not add `--platform linux/amd64`. |
-
-## Summary
-
-- Ansible configures many servers from one control node. It is agentless: the servers only need Python.
-- The **inventory** lists servers in groups. A **playbook** holds **plays**, and a play holds **tasks**. Each task calls one **module**.
-- Ansible is **idempotent**: the second run changes nothing. `--check --diff` previews a run.
-- **Variables** live in `group_vars`. **Templates** (Jinja2) turn variables and facts into files. **Handlers** run only when something changed.
-- **Loops** and **conditions** repeat or skip tasks. **Roles** split a big playbook into reusable parts.
-- Terraform creates the servers. Ansible sets up what is inside them.
 
 **Next:** the Week 12 lab (graded) configures three servers with your own seed. Then Practical Assessment 3 combines Docker, Terraform and Ansible.
