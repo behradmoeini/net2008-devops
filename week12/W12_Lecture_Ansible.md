@@ -102,7 +102,12 @@ Ansible runs on **one machine** (the control node) and changes **many servers** 
 
 Everything you write is in **YAML**, a plain text format made of `key: value` pairs and lists. Indentation matters: use spaces, never tabs.
 
-**Why people adopted it:** it is idempotent (running it again is safe), its playbooks are readable YAML, and it is agentless (no Ansible program runs on the managed machines; on Linux it uses SSH).
+**Why people adopted it:** 
+- it is idempotent. This is why it is safe to run Ansible again after a failure, or to run it on a server that is half configured.
+- it is playbooks are readable YAML.
+- And it is agentless (no Ansible program runs on the managed machines; on Linux it uses SSH). 
+
+![Idempotent: on the first run the server is empty so installing nginx and publishing the page both report changed and the recap shows changed=2; on the second run the server is already correct so both report ok and the recap shows changed=0](images/idempotent.svg)
 
 ### Terminology
 
@@ -118,12 +123,6 @@ Everything you write is in **YAML**, a plain text format made of `key: value` pa
 | **Playbook** | A YAML file with one or more plays |
 | **Variable** | A named value you can reuse |
 | **Fact** | Information Ansible reads from a server: operating system, memory, address |
-
-### Idempotency
-
-![Idempotent: on the first run the server is empty so installing nginx and publishing the page both report changed and the recap shows changed=2; on the second run the server is already correct so both report ok and the recap shows changed=0](images/idempotent.svg)
-
-Idempotent is the most important idea of today. A shell script that says "install nginx" does the work every time. An Ansible task that says "nginx is present" checks first. This is why it is safe to run Ansible again after a failure, or to run it on a server that is half configured.
 
 ## Hands-on: servers and an inventory
 
