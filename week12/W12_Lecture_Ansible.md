@@ -445,7 +445,7 @@ cat > site.yml <<'EOF'
 EOF
 ```
 
-![The parts of a playbook: the file site.yml is the playbook; a play is the whole block, naming a group of servers (hosts) and holding tasks and handlers; a task has a name and one module with its arguments; a task can notify a handler, shown with an arrow, and the handler runs once at the end only if that task changed something](images/playbook-anatomy.svg)
+![The parts of a playbook: the file site.yml is the playbook; it holds two plays, the first for all servers and the second for the web group; each play names a group of servers (hosts) and holds a list of tasks; a task has a name and one module with its arguments](images/playbook-anatomy.svg)
 
 Read it:
 
@@ -611,6 +611,8 @@ cat > site.yml <<'EOF'
         cmd: nginx -s reload
 EOF
 ```
+
+![Notify and handler: in the second play, the task that publishes the page from a template has notify: Reload nginx, shown with an orange arrow to the handler named Reload nginx at the bottom of the play; the handler runs once at the end of the play, only if that task changed something](images/playbook-handler.svg)
 
 A **handler** is a task that waits. `notify: Reload nginx` calls it, but **only if the task that notifies it changed something**. A web server needs a reload after its files change, and a reload on every run would be wasteful. Handlers run once, at the end of the play.
 

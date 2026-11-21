@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 810" font-family="Helvetica, Arial, sans-serif" font-weight="700" text-anchor="middle">
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#33475b"/></marker><marker id="arrowo" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L12 6 L0 12 Z" fill="#d9772b"/></marker></defs>
+<rect x="1" y="1" width="848" height="808" rx="3" fill="#f6fbff" stroke="#d3e3ee"/>
+<text x="425" y="44" font-size="23" fill="#33475b">Notify and handler</text>
+<rect x="30" y="70" width="530" height="720" fill="#fff" stroke="#2d526e" stroke-width="2"/>
+<rect x="30" y="70" width="530" height="30" fill="#2d526e"/>
+<text x="295" y="91" font-size="14" fill="#fff">site.yml  (the playbook)</text>
+<rect x="42" y="111" width="508" height="148" fill="none" stroke="#4ab8e8" stroke-width="3" stroke-dasharray="7 5"/>
+<rect x="42" y="271" width="508" height="488" fill="none" stroke="#4ab8e8" stroke-width="3" stroke-dasharray="7 5"/>
+<rect x="76" y="173" width="450" height="84" fill="none" stroke="#78b83e" stroke-width="2" stroke-dasharray="5 4"/>
+<rect x="76" y="333" width="450" height="84" fill="none" stroke="#78b83e" stroke-width="2" stroke-dasharray="5 4"/>
+<rect x="76" y="433" width="450" height="124" fill="none" stroke="#78b83e" stroke-width="2" stroke-dasharray="5 4"/>
+<rect x="76" y="573" width="450" height="84" fill="none" stroke="#78b83e" stroke-width="2" stroke-dasharray="5 4"/>
+<rect x="76" y="693" width="450" height="64" fill="none" stroke="#d9772b" stroke-width="2" stroke-dasharray="5 4"/>
+<rect x="87" y="534" width="156" height="21" fill="#fbe9d9" stroke="#d9772b" stroke-width="1.5"/>
+<g font-family="Consolas, Menlo, monospace" font-weight="400" font-size="12" fill="#33475b" text-anchor="start">
+<text x="52" y="130">- name: Baseline for every server</text>
+<text x="66" y="150">hosts: all</text>
+<text x="66" y="170">tasks:</text>
+<text x="81" y="190">- name: Install curl</text>
+<text x="95" y="210">ansible.builtin.apt:</text>
+<text x="110" y="230">name: curl</text>
+<text x="110" y="250">state: present</text>
+<text x="52" y="290">- name: Web servers</text>
+<text x="66" y="310">hosts: web</text>
+<text x="66" y="330">tasks:</text>
+<text x="81" y="350">- name: Install nginx</text>
+<text x="95" y="370">ansible.builtin.apt:</text>
+<text x="110" y="390">name: nginx</text>
+<text x="110" y="410">state: present</text>
+<text x="81" y="450">- name: Publish the home page from a template</text>
+<text x="95" y="470">ansible.builtin.template:</text>
+<text x="110" y="490">src: index.html.j2</text>
+<text x="110" y="510">dest: /var/www/html/index.html</text>
+<text x="110" y="530">mode: &quot;0644&quot;</text>
+<text x="95" y="550">notify: Reload nginx</text>
+<text x="81" y="590">- name: Make sure nginx is running</text>
+<text x="95" y="610">ansible.builtin.command:</text>
+<text x="110" y="630">cmd: nginx</text>
+<text x="110" y="650">creates: /run/nginx.pid</text>
+<text x="66" y="690">handlers:</text>
+<text x="81" y="710">- name: Reload nginx</text>
+<text x="95" y="730">ansible.builtin.command:</text>
+<text x="110" y="750">cmd: nginx -s reload</text>
+</g>
+<path d="M243 545 H538 V725 H529" stroke="#d9772b" stroke-width="2.5" fill="none" marker-end="url(#arrowo)"/>
+<rect x="600" y="112" width="235" height="102" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="717" y="136" font-size="15" fill="#33475b">Play</text>
+<text x="717" y="158" font-size="12" font-weight="400" fill="#33475b">the whole block: one group of</text>
+<text x="717" y="174" font-size="12" font-weight="400" fill="#33475b">servers (hosts) and everything</text>
+<text x="717" y="190" font-size="12" font-weight="400" fill="#33475b">they run: tasks and handlers.</text>
+<path d="M595 126 H554" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="600" y="272" width="235" height="86" fill="#cdeaf8" stroke="#4ab8e8" stroke-width="2"/>
+<text x="717" y="296" font-size="15" fill="#33475b">Play</text>
+<text x="717" y="318" font-size="12" font-weight="400" fill="#33475b">the second play: its tasks and</text>
+<text x="717" y="334" font-size="12" font-weight="400" fill="#33475b">its handler belong to it</text>
+<path d="M595 286 H554" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="600" y="364" width="235" height="102" fill="#78b83e" stroke="#78b83e" stroke-width="2"/>
+<text x="717" y="388" font-size="15" fill="#fff">Task</text>
+<text x="717" y="410" font-size="12" font-weight="400" fill="#fff">one name + one module</text>
+<text x="717" y="426" font-size="12" font-weight="400" fill="#fff">with its arguments.</text>
+<text x="717" y="442" font-size="12" font-weight="400" fill="#fff">A play runs its tasks in order.</text>
+<path d="M595 380 H529" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="600" y="670" width="235" height="134" fill="#fff" stroke="#d9772b" stroke-width="2"/>
+<text x="717" y="694" font-size="15" fill="#33475b">Handler</text>
+<text x="717" y="716" font-size="12" font-weight="400" fill="#33475b">a task that waits. A task calls</text>
+<text x="717" y="732" font-size="12" font-weight="400" fill="#33475b">it with notify (orange arrow).</text>
+<text x="717" y="748" font-size="12" font-weight="400" fill="#33475b">It runs once, at the end of the</text>
+<text x="717" y="764" font-size="12" font-weight="400" fill="#33475b">play, only if that task changed</text>
+<text x="717" y="780" font-size="12" font-weight="400" fill="#33475b">something.</text>
+<path d="M595 730 H529" stroke="#33475b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+</svg>
