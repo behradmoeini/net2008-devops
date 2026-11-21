@@ -113,9 +113,9 @@ Everything you write is in **YAML**, a plain text format made of `key: value` pa
 | **Inventory** | The list of managed nodes, put into groups |
 | **Module** | A ready-made tool that does one job (e.g. `apt` installs packages, `copy` copies a file, `service` manages services) |
 | **Task** | One call of a module, with a name |
+| **Handler** | is a special type of task that runs only when another task explicitly notifies it that a change has occurred, commonly used for operations that should happen only when necessary (e.g. restarting a service after its configuration changes.) |
 | **Play** | A list of tasks that run on one group of servers |
 | **Playbook** | A YAML file with one or more plays |
-| **Handler** | A task that runs only when another task reports a change, for example "reload nginx" |
 | **Variable** | A named value you can reuse |
 | **Fact** | Information Ansible reads from a server: operating system, memory, address |
 
