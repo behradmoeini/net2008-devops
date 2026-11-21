@@ -81,7 +81,7 @@ You use both together: Terraform builds the servers, then Ansible sets them up.
 
 Ansible is a free, open-source tool that automates the setup and management of servers, network devices and applications. You describe what you want in a file, and Ansible makes the machines match it.
 
-**A short history**
+### A short history
 
 | Year | What happened |
 |---|---|
@@ -119,7 +119,7 @@ Everything you write is in **YAML**, a plain text format made of `key: value` pa
 | **Variable** | A named value you can reuse |
 | **Fact** | Information Ansible reads from a server: operating system, memory, address |
 
-### Idempotent
+### Idempotency
 
 ![Idempotent: on the first run the server is empty so installing nginx and publishing the page both report changed and the recap shows changed=2; on the second run the server is already correct so both report ok and the recap shows changed=0](images/idempotent.svg)
 
