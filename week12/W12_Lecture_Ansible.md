@@ -111,7 +111,7 @@ Everything you write is in **YAML**, a plain text format made of `key: value` pa
 | **Control node** | The machine where Ansible runs and from which you give the commands. It can be a laptop, a workstation or a server. In our practice it is your laptop. |
 | **Managed node** | A server that Ansible configures. Today: a Docker container. |
 | **Inventory** | The list of managed nodes, put into groups |
-| **Module** | A ready-made tool that does one job: `apt` installs packages, `copy` copies a file, `service` manages services |
+| **Module** | A ready-made tool that does one job (e.g. `apt` installs packages, `copy` copies a file, `service` manages services) |
 | **Task** | One call of a module, with a name |
 | **Play** | A list of tasks that run on one group of servers |
 | **Playbook** | A YAML file with one or more plays |
