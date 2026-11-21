@@ -55,6 +55,7 @@ docker ps  # Docker must answer with a table (it can be empty). If it shows an e
 ## How to follow this guide
 
 - Every grey box is **one command** (or one file you create). Everything after the `#` on the first line is a comment that says what the command does. Copy the whole box, paste it into the terminal, press Enter, then go to the next box.
+- Steps and subsections marked **REFERENCE** are not presented in class. The full detail stays here for you to read on your own.
 - Do the sections in order. All practice work happens in one folder, `~/ansible-practice`.
 - In this guide your laptop is the control node, and your "servers" are **Docker containers** on it. Ansible treats them exactly like real servers.
 - Close a terminal and you lose the virtual environment. Open a new one and run `source ~/netops-venv/bin/activate` and `cd ~/ansible-practice`.
@@ -753,7 +754,9 @@ ansible-playbook site.yml --list-tasks  # List the tasks. The role's tasks are s
 
 ## Try it yourself: the database server
 
-Add a play for the `db` group at the end of `site.yml` that does three things. Use these modules and look each one up with `ansible-doc MODULE` if you need its options:
+> **REFERENCE** Not presented in class. Try it on your own.
+
+Add a play for the `db` group at the end of `site.yml` that does three things. Each goal below is listed with its module. Find the module in the tables of [Modules and ad hoc commands](#modules-and-ad-hoc-commands) to see what it does, and run `ansible-doc MODULE` for its options:
 
 | Goal | Module |
 |---|---|
