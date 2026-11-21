@@ -445,13 +445,13 @@ cat > site.yml <<'EOF'
 EOF
 ```
 
-![The parts of a playbook: a play names a group of servers (hosts) and holds a list of tasks; a task has a name and one module with its arguments; a task can notify a handler, which runs only if that task changed something](images/playbook-anatomy.svg)
+![The parts of a playbook: the file site.yml is the playbook; a play is the whole block, naming a group of servers (hosts) and holding tasks and handlers; a task has a name and one module with its arguments; a task can notify a handler, shown with an arrow, and the handler runs once at the end only if that task changed something](images/playbook-anatomy.svg)
 
 Read it:
 
 - A playbook is a YAML **list** of plays. Each play starts with `- name:`.
 - `hosts:` picks the group from the inventory. `tasks:` is a list of tasks.
-- A task has a `name` (for humans) and one module with its arguments. `state: present` means "make sure it is installed".
+- A task has a `name` (for humans) and one module with its arguments.
 - `{{ inventory_hostname }}` is a **variable**. Ansible replaces it with the server name.
 - Containers have no service manager, so the last task starts nginx directly. `creates: /run/nginx.pid` tells Ansible to skip the command when that file exists. It is a simple way to make a command idempotent.
 
