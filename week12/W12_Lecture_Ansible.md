@@ -124,9 +124,9 @@ Everything you write is in **YAML**, a plain text format made of `key: value` pa
 | **Variable** | A named value you can reuse |
 | **Fact** | Information Ansible reads from a server: operating system, memory, address |
 
-## Hands-on: servers and an inventory
+### Hands-on: servers and an inventory
 
-### 1. Create three servers
+#### Create three servers
 
 Create the practice folder:
 
@@ -152,7 +152,7 @@ docker run -d --name db1 debian:bookworm-slim sleep infinity  # A database serve
 docker ps --format "table {{.Names}}\t{{.Status}}"  # Three containers are running.
 ```
 
-### 2. Write the inventory
+#### Write the inventory
 
 The inventory lists the servers and puts them in groups. A name in square brackets starts a group:
 
@@ -187,7 +187,7 @@ Blank lines only make the file easier to read. A server can be in more than one 
 ansible-inventory -i inventory.ini --graph  # Show the groups as a tree: @web holds web1 and web2, @db holds db1.
 ```
 
-### 3. The first command fails, on purpose
+#### The first command fails, on purpose
 
 ```bash
 ansible -i inventory.ini all -m ping  # Try the ping module on all servers. It FAILS.
