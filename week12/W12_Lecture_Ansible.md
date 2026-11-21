@@ -219,9 +219,149 @@ EOF
 
 From now on you can type `ansible all -m ping`.
 
-## Ad hoc commands
+## Modules and ad hoc commands
 
-An **ad hoc command** runs one module once, from the command line. The form is `ansible GROUP -m MODULE -a "ARGUMENTS"`.
+### What is a module?
+
+A **module** is a small program that does one job on a server: install a package, copy a file, create a user, start a service. Ansible copies the module to the server, runs it, reads the result, and removes it. Every task in a playbook and every ad hoc command uses a module, so learning Ansible mostly means learning modules.
+
+Most modules are **idempotent**: they check the current state first and change something only when it is different. Read the manual of any module with `ansible-doc MODULE`, for example `ansible-doc apt`.
+
+### Core modules (`ansible.builtin`)
+
+These come with Ansible itself, with no extra installation. Their full name is `ansible.builtin.NAME` (for example `ansible.builtin.apt`), and the short name works too.
+
+**A. System administration**
+
+| Module | What it does |
+|---|---|
+| `user` | Creates, changes or removes a Linux user: name, home folder, shell, groups, password hash. |
+| `group` | Creates or removes a Linux group. |
+| `hostname` | Sets the host name of the machine. |
+| `service` | Starts, stops, restarts or enables a service. It needs a service manager, so it does not work in our containers. |
+| `systemd_service` | The same for systemd, with systemd options such as `daemon_reload`. It is the new name of `systemd`. Real servers only. |
+| `reboot` | Restarts the machine, waits until it is back, and then continues the playbook. |
+| `cron` | Creates, changes or removes a scheduled job (a line in the crontab). |
+| `file` | Creates a folder, sets the owner and permissions of a file, makes a link, or deletes a file. It never changes the content of a file. |
+
+**B. Package management**
+
+| Module | What it does |
+|---|---|
+| `apt` | Installs, upgrades or removes packages on Debian and Ubuntu. `update_cache=yes` refreshes the package list first. This is the module of our containers. |
+| `dnf` | The same on Fedora and RHEL. |
+| `dnf5` | The same for the newer DNF5 package manager. |
+| `yum_repository` | Adds or removes a repository definition, which tells YUM or DNF where to download packages from. |
+| `package` | A generic module: it looks at the system and calls `apt`, `dnf` or the right tool. One playbook then works on different systems. |
+| `pip` | Installs Python packages, optionally into a virtual environment. |
+
+**C. Files and configuration**
+
+| Module | What it does |
+|---|---|
+| `copy` | Copies a file from the control node to the server, or writes text you give it (`content=`) into a file. |
+| `template` | Fills a Jinja2 template (a file with `{{ variables }}`) with the variables of each server and copies the result. |
+| `lineinfile` | Makes sure one line is in a file, changes it if it exists with different text, or removes it. |
+| `blockinfile` | Makes sure a block of several lines is in a file, between marker comments. |
+| `replace` | Replaces every match of a regular expression in a file. |
+| `fetch` | The opposite of `copy`: copies a file from the server back to the control node. |
+| `stat` | Reads information about a path: does it exist, size, owner, permissions. It changes nothing. Use it with a condition. |
+| `find` | Searches for files by name, age or size and returns the list. |
+| `unarchive` | Unpacks a `.zip` or `.tar.gz` on the server. |
+| `get_url` | Downloads a file from a URL to the server, optionally checking its checksum. |
+| `assemble` | Joins many small files from a folder into one configuration file. |
+
+**D. Running commands**
+
+| Module | What it does |
+|---|---|
+| `command` | Runs a program on the server without a shell, so no pipes, `>` or `$VARIABLES`. Add `creates:` or `removes:` to make it skip when the result already exists. |
+| `shell` | Runs the command through a shell, so pipes and redirects work. It is not idempotent: it always reports changed. |
+| `script` | Copies a script from the control node, runs it on the server, and nothing needs to be installed beforehand. |
+| `raw` | Sends the text over SSH and runs it. It does not need Python on the server, so use it to install Python itself. |
+| `expect` | Runs a command and answers its questions (prompts). Needs the Python package `pexpect` on the server. |
+
+Prefer a real module (`apt`, `copy`, `user`) over `command` or `shell`. A real module knows the state and is idempotent. `command` and `shell` cannot know, so they always report changed.
+
+**E. Networking and connectivity**
+
+| Module | What it does |
+|---|---|
+| `ping` | Checks that Ansible can connect and run Python on the server. It is not the network `ping`: it answers `pong`. |
+| `uri` | Makes an HTTP or HTTPS request (GET, POST...) and checks the status code or the answer. Good for testing an API or a web page. |
+| `wait_for` | Waits until a port is open, a file exists, or a text appears in a file. Use it after you start a service. |
+| `wait_for_connection` | Waits until the host can be reached again, for example after a reboot. |
+| `iptables` | Adds or removes a firewall rule on Linux. |
+
+`get_url` (in section C) also belongs here, because it downloads over HTTP and HTTPS.
+
+**F. Playbook execution and control**
+
+| Module | What it does |
+|---|---|
+| `debug` | Prints a message or the value of a variable while the playbook runs. |
+| `assert` | Stops with an error if a condition is false. A way to check your own assumptions. |
+| `fail` | Stops the playbook with an error message you write. |
+| `set_fact` | Creates a variable while the play runs, from a value or a calculation. |
+| `include_tasks` | Loads a file of tasks while the play runs (dynamic). Good with loops and conditions. |
+| `import_tasks` | Loads a file of tasks before the play runs (static). The tasks are always read. |
+| `include_role` | Runs a role at this point in the play (dynamic). |
+| `import_role` | Adds a role to the play before it starts (static). |
+| `pause` | Pauses the play for some seconds or until you press a key. |
+| `meta` | Controls the play itself, for example `flush_handlers` runs the waiting handlers now, and `end_play` stops the play without an error. |
+
+`mount` (manage filesystem mounts) is not a core module. It comes from the `ansible.posix` collection.
+
+### Collection modules
+
+Beyond the core set, **collections** add modules for one product or area. A collection is installed once with `ansible-galaxy collection install NAME`. Today you installed one, `community.docker`, which lets Ansible reach Docker containers.
+
+| Collection | Used for | Example modules |
+|---|---|---|
+| `community.docker` | Docker automation | `docker_container`, `docker_image` |
+| `ansible.posix` | Linux administration | `mount`, `firewalld`, `sysctl`, `authorized_key` |
+| `community.general` | General system automation | `timezone`, `nmcli` |
+| `amazon.aws` | Amazon Web Services | `ec2_instance`, `s3_bucket` |
+| `kubernetes.core` | Kubernetes | `k8s`, `k8s_info` |
+| `cisco.ios` | Cisco IOS routers and switches | `ios_config`, `ios_command` |
+| `arista.eos` | Arista EOS switches | `eos_config`, `eos_command` |
+| `ansible.netcommon` | Network devices in general | `netconf_get`, `netconf_rpc` |
+| `community.vmware` | VMware | VM and vSphere management |
+
+Find more with `ansible-galaxy collection list` and on [galaxy.ansible.com](https://galaxy.ansible.com).
+
+### Ad hoc commands
+
+An **ad hoc command** runs one module once, from the command line, without writing a playbook. The form is `ansible GROUP -m MODULE -a "ARGUMENTS"`. Here is every part of one:
+
+```text
+ansible db -m apt -a "name=tree state=present update_cache=yes" --become
+   |     |    |    |   |                                         |
+   |     |    |    |   |                                         +-- run with administrator rights (sudo)
+   |     |    |    |   +-- the arguments of the module, as name=value pairs
+   |     |    |    +-- -a: "arguments" follow
+   |     |    +-- the module: what to do
+   |     +-- -m: "module" follows
+   +-- the pattern: which servers (a group, a host, or all). The inventory says who they are.
+```
+
+| Part | Meaning |
+|---|---|
+| `ansible` | The ad hoc program. Playbooks use `ansible-playbook` instead. |
+| `db` | The **pattern**: a group name, a host name, `all`, or a combination such as `web:db`. It is looked up in the inventory. |
+| `-m apt` | The **module** to run. If you leave it out, Ansible uses `command`. |
+| `-a "..."` | The **arguments** of the module. Each module has its own. See them with `ansible-doc apt`. |
+| `--become` (`-b`) | Run with administrator rights (like `sudo`). Needed to install packages on a real server. In our containers we are already root. |
+| `-i FILE` | Use this inventory file. Our `ansible.cfg` already sets it, so we skip it. |
+| `-u USER` | Connect as this user. |
+| `--limit HOST` (`-l`) | Run only on this host, even if the pattern is wider. |
+| `--check` | Show what would change, and change nothing. |
+| `-f N` | Run on N servers at the same time (default 5). |
+| `-v`, `-vvv` | Show more detail. Use it to see why a connection fails. |
+
+Ansible does the following for each server: connect, copy the module, run it, collect the answer as JSON, remove the module, and print one coloured result. Different servers can answer at different speeds, because they run in parallel.
+
+Now try it:
 
 ```bash
 ansible web -m command -a "hostname"  # Run a command on the web group only. It answers with the container's name.
@@ -650,47 +790,7 @@ Terraform creates the infrastructure (servers, networks) and keeps a state file.
 | `ansible-inventory --graph` | Show the groups as a tree |
 | `ansible-doc MODULE` | Read the manual of a module |
 
-### Important modules
-
-A module does one job. All of these are built in (full name `ansible.builtin.NAME`). Read any of them with `ansible-doc NAME`.
-
-| Group | Module | Use it to |
-|---|---|---|
-| Packages | `apt` | Install, update or remove a package (Debian, Ubuntu) |
-| | `package` | Same, but picks the right package manager for the system |
-| | `pip` | Install Python packages |
-| Files | `copy` | Copy a file, or write text into a file |
-| | `template` | Fill a Jinja2 template and copy the result |
-| | `file` | Create a folder, set owner and mode, make a link, delete a file |
-| | `lineinfile` | Make sure one line exists in a file (or is removed) |
-| | `blockinfile` | Make sure a block of lines exists in a file |
-| | `replace` | Replace text in a file with a regular expression |
-| | `fetch` | Copy a file from the server back to the control node |
-| | `stat` | Read information about a file: exists, size, owner |
-| | `unarchive` | Unpack a `.zip` or `.tar.gz` on the server |
-| | `get_url` | Download a file from a URL |
-| Users | `user` | Create, change or remove a user |
-| | `group` | Create or remove a group |
-| | `authorized_key` | Add an SSH public key to a user |
-| Services | `service` | Start, stop or enable a service. It needs a service manager, so it does not work in our containers. |
-| | `systemd` | The same, with systemd options (real servers) |
-| | `cron` | Create a scheduled job |
-| Commands | `command` | Run a program (no pipes). Add `creates:` to make it idempotent. |
-| | `shell` | Run a command with pipes and redirects (not idempotent) |
-| | `raw` | Run a command with no Python on the server |
-| | `script` | Copy a script from the control node and run it on the server |
-| Information | `ping` | Check that Ansible can connect and run Python |
-| | `setup` | Read the facts of a server |
-| | `debug` | Print a message or a variable |
-| | `uri` | Make an HTTP request and check the answer |
-| | `assert` | Stop with an error if a condition is false |
-| | `wait_for` | Wait until a port is open or a file exists |
-| Control | `set_fact` | Create a variable while the play runs |
-| | `include_vars` | Load a variables file |
-| | `meta` | Control the play, for example `flush_handlers` |
-| | `reboot` | Restart the server and wait for it to return |
-
-Outside the built-in set, **collections** add more modules (clouds, Docker, databases, network devices). Today you installed one, `community.docker`. Find others with `ansible-galaxy collection list` and on [galaxy.ansible.com](https://galaxy.ansible.com).
+For the full list of modules and what each one does, see [Modules and ad hoc commands](#modules-and-ad-hoc-commands).
 
 ## If something goes wrong
 
