@@ -65,7 +65,7 @@ A machine can be created with Vagrant, in the cloud, or with Terraform. A new ma
 
 **Configuration management** means writing down how a machine must be set up, and letting a tool do it on every machine. **Ansible** is the tool we use.
 
-![Terraform builds the server and Ansible sets it up: Terraform creates an empty server with an address; Ansible installs packages, copies files, creates users and starts services; Terraform remembers what it built in a state file while Ansible remembers nothing and asks the server each time](images/terraform-vs-ansible.svg)
+![Terraform builds the server and Ansible sets it up: Terraform creates an empty server with an address; Ansible then changes what is inside that same server by installing packages, copying files, creating users and starting services, so it becomes a ready server; Terraform remembers what it built in a state file while Ansible remembers nothing and asks the server each time](images/terraform-vs-ansible.svg)
 
 | | Terraform (Week 11) | Ansible (today) |
 |---|---|---|
@@ -78,6 +78,21 @@ You use both together: Terraform builds the servers, then Ansible sets them up.
 ## What is Ansible?
 
 ![Ansible: one laptop configures many servers. The control node (your laptop) holds the inventory and the playbook. Ansible reaches the managed nodes, web1, web2 and db1, grouped as web and db. No agent is installed on the servers, they only need Python](images/ansible-overview.svg)
+
+Ansible is a free, open-source tool that automates the setup and management of servers, network devices and applications. You describe what you want in a file, and Ansible makes the machines match it.
+
+**A short history**
+
+| Year | What happened |
+|---|---|
+| 2012 | Michael DeHaan, who had earlier built the tools Cobbler and Func, released Ansible. He wanted automation that is simpler than Puppet and Chef. |
+| 2013-2014 | It became popular because it is simple, needs no agent on the servers, and uses YAML. |
+| 2015 | Red Hat bought AnsibleWorks, the company behind Ansible. |
+| 2016 | Red Hat added Ansible Tower: a web interface with central control for teams. |
+| 2019 | Tower grew into the Ansible Automation Platform. |
+| Today | Used for Linux administration, network automation, cloud infrastructure, application deployment and DevOps work. The core project is still open source. |
+
+**Why people adopted it:** it is idempotent (running it again is safe), its playbooks are readable YAML, and it is agentless (no Ansible program runs on the managed machines; on Linux it uses SSH).
 
 Ansible runs on **one computer** and changes **many servers**. Three properties make it simple:
 
