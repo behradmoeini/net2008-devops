@@ -546,7 +546,7 @@ Check mode is the Ansible version of `terraform plan`. Use it before every run o
 
 ## Variables and templates
 
-Hard-coded values make a playbook useful for only one case. Put values in **variable files**, and fill them into a **template**: a file with `{{ ... }}` holes, written in a language called **Jinja2**.
+Hard-coded values limit a playbook's reusability. Instead, define values in variable files and use them in templates. Templates contain placeholders ({{ ... }}) that are dynamically populated with variable values using Jinja2, Ansible's templating language.
 
 ```bash
 mkdir -p group_vars templates  # Folders Ansible reads by name: group_vars holds variables, templates holds templates.
