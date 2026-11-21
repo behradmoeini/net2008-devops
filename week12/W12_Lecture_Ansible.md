@@ -811,17 +811,94 @@ docker rm -f web1 web2 db1  # Delete the three containers (the servers). Your fi
 
 ## Cheat sheet
 
+### Commands
+
 | Command | What it does |
 |---|---|
+| `ansible --version` | Show the installed version |
 | `ansible GROUP -m MODULE -a "ARGS"` | Run one module once (ad hoc) |
 | `ansible all -m ping` | Check that Ansible can reach every server |
+| `ansible all -m setup -a "filter=ansible_distribution*"` | Read facts from every server |
 | `ansible-playbook FILE` | Run a playbook |
 | `ansible-playbook FILE --check --diff` | Preview a run without changing anything |
-| `ansible-playbook FILE -e name=value` | Override a variable |
-| `ansible-playbook FILE --syntax-check` | Check the YAML |
+| `ansible-playbook FILE --syntax-check` | Check the YAML and the structure |
 | `ansible-playbook FILE --list-tasks` | List the tasks of a playbook |
+| `ansible-playbook FILE -e name=value` | Override a variable |
+| `ansible-playbook FILE --limit HOST` | Run only on one host or group |
 | `ansible-inventory --graph` | Show the groups as a tree |
 | `ansible-doc MODULE` | Read the manual of a module |
+| `ansible-galaxy collection install NAME` | Install a collection of extra modules |
+| `ansible-galaxy collection list` | List the installed collections |
+
+### Options
+
+| Option | Meaning |
+|---|---|
+| `-i FILE` | Use this inventory file (`ansible.cfg` can set it once) |
+| `-m MODULE` | The module to run (ad hoc) |
+| `-a "ARGS"` | The arguments of the module, as `name=value` pairs |
+| `-e name=value` | Set a variable on the command line |
+| `--check` (`-C`) | Dry run: change nothing |
+| `--diff` (`-D`) | Show the before and after of changed files |
+| `--limit HOST` (`-l`) | Run only on this host or group |
+| `--become` (`-b`) | Run with administrator rights |
+| `-v`, `-vvv` | Show more detail |
+
+### Files and folders
+
+| File or folder | Holds |
+|---|---|
+| `inventory.ini` | The servers, in groups |
+| `ansible.cfg` | Settings, for example `inventory = inventory.ini` |
+| `site.yml` | The playbook |
+| `group_vars/all.yml`, `group_vars/web.yml` | Variables for everyone, or for one group |
+| `templates/NAME.j2` | Jinja2 templates |
+| `roles/NAME/tasks/main.yml` | The tasks of a role |
+| `roles/NAME/handlers/main.yml` | The handlers of a role |
+| `roles/NAME/templates/` | The templates of a role |
+
+### Playbook syntax
+
+```yaml
+- name: Web servers                # a play
+  hosts: web                       # which group
+  roles:
+    - webserver                    # run a role
+  tasks:
+    - name: Install nginx          # a task: a name and one module
+      ansible.builtin.apt:
+        name: nginx
+        state: present             # the state you want
+      notify: Reload nginx         # call a handler if this task changed something
+
+    - name: Install tools          # a loop
+      ansible.builtin.apt:
+        name: "{{ item }}"
+      loop: [curl, tree]
+
+    - name: Only on web servers    # a condition
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}"
+      when: "'web' in group_names"
+
+  handlers:
+    - name: Reload nginx           # runs once at the end, only if notified
+      ansible.builtin.command:
+        cmd: nginx -s reload
+```
+
+| Piece | Meaning |
+|---|---|
+| `{{ variable }}` | Insert a variable (Jinja2) |
+| `inventory_hostname` | The name of the current server |
+| `group_names` | The groups the current server belongs to |
+| `ansible_facts['distribution']` | A fact read from the server |
+| `state: present` / `absent` / `latest` / `directory` | The condition you want |
+| `creates: PATH` | Skip a `command` when the path exists (makes it idempotent) |
+
+### Colours
+
+**Green** `ok` = already correct. **Yellow** `changed` = changed something. **Red** `failed` = an error. In check mode, `changed` means "would change".
 
 For the full list of modules and what each one does, see [Modules and ad hoc commands](#modules-and-ad-hoc-commands).
 
