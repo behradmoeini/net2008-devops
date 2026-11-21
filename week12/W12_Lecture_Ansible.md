@@ -56,7 +56,7 @@ docker ps  # Docker must answer with a table (it can be empty). If it shows an e
 
 - Every grey box is **one command** (or one file you create). Everything after the `#` on the first line is a comment that says what the command does. Copy the whole box, paste it into the terminal, press Enter, then go to the next box.
 - Do the sections in order. All practice work happens in one folder, `~/ansible-practice`.
-- Your "servers" are **Docker containers** on your laptop. Ansible treats them exactly like real servers.
+- In this guide your laptop is the control node, and your "servers" are **Docker containers** on it. Ansible treats them exactly like real servers.
 - Close a terminal and you lose the virtual environment. Open a new one and run `source ~/netops-venv/bin/activate` and `cd ~/ansible-practice`.
 
 ## The big picture
@@ -77,7 +77,7 @@ You use both together: Terraform builds the servers, then Ansible sets them up.
 
 ## What is Ansible?
 
-![Ansible: one laptop configures many servers. The control node (your laptop) holds the inventory and the playbook. Ansible reaches the managed nodes, web1, web2 and db1, grouped as web and db. No agent is installed on the servers, they only need Python](images/ansible-overview.svg)
+![Ansible: one control node configures many servers. The control node (the machine where Ansible runs) holds the inventory and the playbook. Ansible reaches the managed nodes, web1, web2 and db1, grouped as web and db. No agent is installed on the servers, they only need Python](images/ansible-overview.svg)
 
 Ansible is a free, open-source tool that automates the setup and management of servers, network devices and applications. You describe what you want in a file, and Ansible makes the machines match it.
 
@@ -94,11 +94,11 @@ Ansible is a free, open-source tool that automates the setup and management of s
 
 **Why people adopted it:** it is idempotent (running it again is safe), its playbooks are readable YAML, and it is agentless (no Ansible program runs on the managed machines; on Linux it uses SSH).
 
-Ansible runs on **one computer** and changes **many servers**. Three properties make it simple:
+Ansible runs on **one machine** (the control node) and changes **many servers** (the managed nodes). Three properties make it simple:
 
 | Property | Meaning |
 |---|---|
-| **Agentless** | You install nothing on the servers except Python. Ansible connects from your laptop (with SSH on real servers, through Docker today), runs a small program, and removes it. |
+| **Agentless** | You install nothing on the servers except Python. Ansible connects from the control node (with SSH on real servers, through Docker in our practice), runs a small program, and removes it. |
 | **Push** | You run Ansible, and it pushes the changes. Nothing happens until you run it. |
 | **Idempotent** | You describe the **state** you want ("nginx is installed"). If the server is already like that, Ansible changes nothing. You can run the same file ten times with the same result. |
 
@@ -108,7 +108,7 @@ Everything you write is in **YAML**, a plain text format made of `key: value` pa
 
 | Word | Meaning |
 |---|---|
-| **Control node** | The computer where Ansible runs. Your laptop. |
+| **Control node** | The machine where Ansible runs and from which you give the commands. It can be a laptop, a workstation or a server. In our practice it is your laptop. |
 | **Managed node** | A server that Ansible configures. Today: a Docker container. |
 | **Inventory** | The list of managed nodes, put into groups |
 | **Module** | A ready-made tool that does one job: `apt` installs packages, `copy` copies a file, `service` manages services |
@@ -666,7 +666,7 @@ A module does one job. All of these are built in (full name `ansible.builtin.NAM
 | | `lineinfile` | Make sure one line exists in a file (or is removed) |
 | | `blockinfile` | Make sure a block of lines exists in a file |
 | | `replace` | Replace text in a file with a regular expression |
-| | `fetch` | Copy a file from the server back to your laptop |
+| | `fetch` | Copy a file from the server back to the control node |
 | | `stat` | Read information about a file: exists, size, owner |
 | | `unarchive` | Unpack a `.zip` or `.tar.gz` on the server |
 | | `get_url` | Download a file from a URL |
@@ -679,7 +679,7 @@ A module does one job. All of these are built in (full name `ansible.builtin.NAM
 | Commands | `command` | Run a program (no pipes). Add `creates:` to make it idempotent. |
 | | `shell` | Run a command with pipes and redirects (not idempotent) |
 | | `raw` | Run a command with no Python on the server |
-| | `script` | Copy a script from your laptop and run it on the server |
+| | `script` | Copy a script from the control node and run it on the server |
 | Information | `ping` | Check that Ansible can connect and run Python |
 | | `setup` | Read the facts of a server |
 | | `debug` | Print a message or a variable |
@@ -711,7 +711,7 @@ Outside the built-in set, **collections** add more modules (clouds, Docker, data
 
 ## Summary
 
-- Ansible configures servers from one computer. It is agentless: the servers only need Python.
+- Ansible configures many servers from one control node. It is agentless: the servers only need Python.
 - The **inventory** lists servers in groups. A **playbook** holds **plays**, and a play holds **tasks**. Each task calls one **module**.
 - Ansible is **idempotent**: the second run changes nothing. `--check --diff` previews a run.
 - **Variables** live in `group_vars`. **Templates** (Jinja2) turn variables and facts into files. **Handlers** run only when something changed.
