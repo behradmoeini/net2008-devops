@@ -92,8 +92,6 @@ Ansible is a free, open-source tool that automates the setup and management of s
 | 2019 | Tower grew into the Ansible Automation Platform. |
 | Today | Used for Linux administration, network automation, cloud infrastructure, application deployment and DevOps work. The core project is still open source. |
 
-**Why people adopted it:** it is idempotent (running it again is safe), its playbooks are readable YAML, and it is agentless (no Ansible program runs on the managed machines; on Linux it uses SSH).
-
 Ansible runs on **one machine** (the control node) and changes **many servers** (the managed nodes). Three properties make it simple:
 
 | Property | Meaning |
@@ -103,6 +101,8 @@ Ansible runs on **one machine** (the control node) and changes **many servers** 
 | **Idempotent** | You describe the **state** you want ("nginx is installed"). If the server is already like that, Ansible changes nothing. You can run the same file ten times with the same result. |
 
 Everything you write is in **YAML**, a plain text format made of `key: value` pairs and lists. Indentation matters: use spaces, never tabs.
+
+**Why people adopted it:** it is idempotent (running it again is safe), its playbooks are readable YAML, and it is agentless (no Ansible program runs on the managed machines; on Linux it uses SSH).
 
 ### Terminology
 
